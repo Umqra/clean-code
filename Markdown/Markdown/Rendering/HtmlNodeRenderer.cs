@@ -1,28 +1,38 @@
 ﻿using System;
+using System.Text;
+using Markdown.Parsing;
 using Markdown.Parsing.Nodes;
 
 namespace Markdown.Rendering
 {
-    class HtmlNodeRenderer : INodeRenderer
+    public class HtmlNodeRenderer : INodeRenderer
     {
+        private string VisitInternalNode(IInternalNode node, string tagName)
+        {
+            var innerHtml = new StringBuilder();
+            foreach (var child in node.Children)
+                innerHtml.Append(child.Accept(this));
+            return $"<{tagName}>{innerHtml}</{tagName}>";
+        }
+
         public string Visit(ParagraphNode node)
         {
-            throw new NotImplementedException();
+            return VisitInternalNode(node, "p");
         }
 
         public string Visit(BoldTextNode node)
         {
-            throw new NotImplementedException();
+            return VisitInternalNode(node, "strong");
         }
 
         public string Visit(ItalicTextNode node)
         {
-            throw new NotImplementedException();
+            return VisitInternalNode(node, "em");
         }
 
         public string Visit(TextNode node)
         {
-            throw new NotImplementedException();
+            return node.Text;
         }
     }
 }
