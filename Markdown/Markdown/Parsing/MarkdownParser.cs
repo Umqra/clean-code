@@ -7,7 +7,7 @@ namespace Markdown.Parsing
     {
         public ParagraphNode Parse(string text)
         {
-            throw new NotImplementedException();
+            return new ParagraphNode(new [] {new TextNode(text)});
         }
     }
 }
