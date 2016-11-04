@@ -2,15 +2,16 @@
 
 namespace Markdown.Rendering
 {
-    class MarkdownRenderer
+    public class MarkdownRenderer
     {
-        public MarkdownParser Parser { get; set; }
-        public INodeRenderer NodeRenderer { get; set; } 
         public MarkdownRenderer(MarkdownParser parser, INodeRenderer nodeRenderer)
         {
             Parser = parser;
             NodeRenderer = nodeRenderer;
         }
+
+        public MarkdownParser Parser { get; set; }
+        public INodeRenderer NodeRenderer { get; set; }
 
         public string Render(string text)
         {

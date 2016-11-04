@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Markdown.Parsing;
-using Markdown.Parsing.Nodes;
 using Markdown.Rendering;
 using NUnit.Framework;
 
 namespace Markdown.Tests
 {
     [TestFixture]
-    class HtmlRendererTests
+    internal class HtmlRendererTests : BaseTreeTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Renderer = new HtmlNodeRenderer();
+        }
+
         public HtmlNodeRenderer Renderer;
 
         public string Render(INode node)
@@ -21,89 +21,72 @@ namespace Markdown.Tests
             return node.Accept(Renderer);
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            Renderer = new HtmlNodeRenderer();
-        }
-
-        [Test]
-        public void TestEmptyTextNode()
-        {
-            var node = new TextNode("");
-
-            Render(node).Should().Be("");
-        }
-
-        [Test]
-        public void TestTextNode()
-        {
-            var node = new TextNode("sample");
-
-            Render(node).Should().Be("sample");
-        }
-
         [Test]
         public void TestEmptyBoldTextNode()
         {
-            var node = new BoldTextNode(new INode[] {});
+            var node = BoldText();
 
             Render(node).Should().Be("<strong></strong>");
-        }
-        
-        [Test]
-        public void TestManyNodesInBoldTextNode()
-        {
-            var node = new BoldTextNode(new INode[]
-            {
-                new TextNode("first"),
-                new ItalicTextNode(new [] {new TextNode("second") })  
-            });
-
-            Render(node).Should().Be("<strong>first<em>second</em></strong>");
         }
 
         [Test]
         public void TestEmptyItalicNode()
         {
-            var node = new ItalicTextNode(new INode[] {});
+            var node = ItalicText();
 
             Render(node).Should().Be("<em></em>");
         }
 
-        [Test]
-        public void TestManyNodesInItalicNode()
-        {
-            var node = new ItalicTextNode(new INode[]
-            {
-                new TextNode("first"),
-                new BoldTextNode(new[] {new TextNode("second")})  
-            });
-
-            Render(node).Should().Be("<em>first<strong>second</strong></em>");
-        }
-        
 
         [Test]
         public void TestEmptyParagraphNode()
         {
-            var node = new ParagraphNode(new INode[] {});
+            var node = Paragraph();
 
             Render(node).Should().Be("<p></p>");
         }
 
         [Test]
+        public void TestEmptyTextNode()
+        {
+            var node = Text("");
+
+            Render(node).Should().Be("");
+        }
+
+        [Test]
+        public void TestManyNodesInBoldTextNode()
+        {
+            var node = BoldText(Text("first"), ItalicText(Text("second")));
+
+            Render(node).Should().Be("<strong>first<em>second</em></strong>");
+        }
+
+        [Test]
+        public void TestManyNodesInItalicNode()
+        {
+            var node = ItalicText(Text("first"), BoldText(Text("second")));
+
+            Render(node).Should().Be("<em>first<strong>second</strong></em>");
+        }
+
+        [Test]
         public void TestManyNodesInParagraphNode()
         {
-            var node =
-                new ParagraphNode(new INode[]
-                {
-                    new TextNode("first"),
-                    new BoldTextNode(new[] {new TextNode("second")}),
-                    new ItalicTextNode(new[] {new TextNode("third")})
-                });
+            var node = Paragraph(
+                Text("first"),
+                BoldText(Text("second")),
+                ItalicText(Text("third")));
 
             Render(node).Should().Be("<p>first<strong>second</strong><em>third</em></p>");
+        }
+
+        [Test]
+        public void TestTextNode()
+        {
+            var node = Text("sample");
+
+            Render(node).Should().Be("sample");
         }
     }
 }

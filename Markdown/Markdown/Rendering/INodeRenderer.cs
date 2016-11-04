@@ -2,7 +2,7 @@
 
 namespace Markdown.Rendering
 {
-    interface INodeRenderer : INodeVisitor<string>
+    public interface INodeRenderer : INodeVisitor<string>
     {
     }
 }

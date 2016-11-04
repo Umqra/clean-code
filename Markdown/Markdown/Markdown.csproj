@@ -45,6 +45,7 @@
     <Compile Include="Parsing\INodeVisitor.cs" />
     <Compile Include="Parsing\MarkdownParser.cs" />
     <Compile Include="Parsing\Nodes\BoldTextNode.cs" />
+    <Compile Include="Parsing\Nodes\SequenceExtensions.cs" />
     <Compile Include="Parsing\Nodes\ItalicTextNode.cs" />
     <Compile Include="Parsing\Nodes\ParagraphNode.cs" />
     <Compile Include="Parsing\Nodes\TextNode.cs" />
