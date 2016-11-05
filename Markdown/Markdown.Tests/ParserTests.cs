@@ -90,5 +90,19 @@ namespace Markdown.Tests
                         Text(" end"))
                 ));
         }
+
+        [Test]
+        public void NotPairedUnderscores_ShouldNotModifyText()
+        {
+            var sample = "_a";
+            var parsed = Parser.Parse(sample);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Group(
+                        Text("_"),
+                        Text("a"))
+                ));
+        }
     }
 }

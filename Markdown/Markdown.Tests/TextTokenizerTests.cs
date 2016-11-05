@@ -127,6 +127,26 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void SingleUnderscore_NotDetectedInSpaces()
+        {
+            var text = " _ ";
+            Tokenizer = new TextTokenizer(text);
+
+            GetAllTokens().Should().Equal(
+                PlainText(text));
+        }
+
+        [Test]
+        public void DoubleUnderscore_NotDetectedInSpaces()
+        {
+            var text = " __ ";
+            Tokenizer = new TextTokenizer(text);
+
+            GetAllTokens().Should().Equal(
+                PlainText(text));
+        }
+
+        [Test]
         public void Underscores_DetectedAsCharactersInsideWord()
         {
             var text = "a_b__1_c";

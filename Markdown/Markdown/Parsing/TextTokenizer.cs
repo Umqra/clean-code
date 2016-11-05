@@ -63,7 +63,7 @@ namespace Markdown.Parsing
         {
             if (!symbol.HasValue)
                 return false;
-            return symbol.Value == tokenEnd || char.IsLetterOrDigit(symbol.Value);
+            return char.IsLetterOrDigit(symbol.Value);
         }
 
         private IToken TryParseFormatModificator(string modificator)
@@ -72,8 +72,14 @@ namespace Markdown.Parsing
                 return null;
             var before = LookBehind(1);
             var after = LookAhead(modificator.Length);
+
+            //TODO: Strange rules
             if (CanAttachSymbolToToken(before, modificator.First()) ^ CanAttachSymbolToToken(after, modificator.Last()))
-                return new FormatModificatorToken(TakeString(modificator.Length));
+            {
+                if ((!before.HasValue || before.Value != modificator.First())
+                    && (!after.HasValue || after.Value != modificator.Last()))
+                    return new FormatModificatorToken(TakeString(modificator.Length));  
+            }
             return null;
         }
 

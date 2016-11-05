@@ -24,5 +24,10 @@ namespace Markdown.Tests
         {
             return new TextNode(text);
         }
+
+        protected INode Group(params INode[] nodes)
+        {
+            return new GroupNode(nodes);
+        }
     }
 }

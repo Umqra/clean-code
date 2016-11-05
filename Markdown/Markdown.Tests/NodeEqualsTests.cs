@@ -77,5 +77,23 @@ namespace Markdown.Tests
 
             a.Equals(b).Should().BeFalse();
         }
+
+        [Test]
+        public void TestEqualsGroupNodes()
+        {
+            var a = Group(Text("a"), Text("a"));
+            var b = Group(Text("a"), Text("a"));
+
+            a.Equals(b).Should().BeTrue();
+        }
+
+        [Test]
+        public void TestNotEqualsGroupNodes()
+        {
+            var a = Group(Text("a"), Text("b"));
+            var b = Group(Text("b"), Text("a"));
+
+            a.Equals(b).Should().BeFalse();
+        }
     }
 }
