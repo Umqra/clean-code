@@ -1,30 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
 {
-    public delegate bool MatchStreamSymbolDelegate(char symbol, bool inText);
-
     public class TextTokenizer
     {
-        public bool TextEnded => TextPosition == Text.Length;
-
-        private string Text { get; set; }
-        private int TextPosition { get; set; }
-
-        private char CurrentSymbol => Text[TextPosition];
-        private bool IsFirstSymbol => TextPosition == 0;
-        private bool IsLastSymbol => TextPosition == Text.Length - 1;
-
         public TextTokenizer(string text)
         {
             Text = text;
             TextPosition = 0;
         }
+
+        public bool TextEnded => TextPosition == Text.Length;
+
+        private string Text { get; }
+        private int TextPosition { get; set; }
+
+        private char CurrentSymbol => Text[TextPosition];
+        private bool IsLastSymbol => TextPosition == Text.Length - 1;
 
         private char? LookAhead(int distance)
         {
@@ -59,7 +53,7 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private bool CanAttachSymbolToToken(char? symbol, char tokenEnd)
+        private bool CanAttachSymbolToToken(char? symbol)
         {
             if (!symbol.HasValue)
                 return false;
@@ -73,12 +67,11 @@ namespace Markdown.Parsing
             var before = LookBehind(1);
             var after = LookAhead(modificator.Length);
 
-            //TODO: Strange rules
-            if (CanAttachSymbolToToken(before, modificator.First()) ^ CanAttachSymbolToToken(after, modificator.Last()))
+            if (CanAttachSymbolToToken(before) ^ CanAttachSymbolToToken(after))
             {
-                if ((!before.HasValue || before.Value != modificator.First())
-                    && (!after.HasValue || after.Value != modificator.Last()))
-                    return new FormatModificatorToken(TakeString(modificator.Length));  
+                if ((!before.HasValue || before.Value != modificator.First()) &&
+                    (!after.HasValue || after.Value != modificator.Last()))
+                    return new FormatModificatorToken(TakeString(modificator.Length));
             }
             return null;
         }

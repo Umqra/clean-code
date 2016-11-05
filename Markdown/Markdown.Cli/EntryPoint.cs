@@ -7,7 +7,7 @@ using Markdown.Rendering;
 
 namespace Markdown.Cli
 {
-    class EntryPoint
+    internal class EntryPoint
     {
         public static void Main(string[] args)
         {
@@ -18,7 +18,6 @@ namespace Markdown.Cli
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return;
             }
         }
 

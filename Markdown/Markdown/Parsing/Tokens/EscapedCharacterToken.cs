@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Markdown.Parsing.Tokens
+﻿namespace Markdown.Parsing.Tokens
 {
     public class EscapedCharacterToken : IToken
     {
-        public string Text { get; }
-
         public EscapedCharacterToken(char symbol)
         {
             Text = new string(symbol, 1);
         }
+
+        public string Text { get; }
 
         protected bool Equals(EscapedCharacterToken other)
         {
@@ -24,7 +18,7 @@ namespace Markdown.Parsing.Tokens
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((EscapedCharacterToken)obj);
         }
 

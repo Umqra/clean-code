@@ -2,12 +2,12 @@
 {
     public class CharacterToken : IToken
     {
-        public string Text { get; }
-
         public CharacterToken(char symbol)
         {
             Text = new string(symbol, 1);
         }
+
+        public string Text { get; }
 
         protected bool Equals(CharacterToken other)
         {
@@ -18,7 +18,7 @@
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((CharacterToken)obj);
         }
 

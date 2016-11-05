@@ -81,6 +81,6 @@ namespace Markdown.Parsing
                 nodes.Add(node);
             }
             return nodes;
-       }
+        }
     }
 }
