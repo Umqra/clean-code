@@ -26,28 +26,18 @@ namespace Markdown.Parsing
             TextPosition = 0;
         }
 
-        private bool LookAheadMatch(int distance, MatchStreamSymbolDelegate matchPredicate)
+        private char? LookAhead(int distance)
         {
             if (TextPosition + distance < Text.Length)
-                return matchPredicate(Text[TextPosition + distance], true);
-            return matchPredicate('?', false);
+                return Text[TextPosition + distance];
+            return null;
         }
 
-        private bool LookBehindMatch(int distance, MatchStreamSymbolDelegate matchPredicate)
+        private char? LookBehind(int distance)
         {
             if (TextPosition - distance >= 0)
-                return matchPredicate(Text[TextPosition - distance], true);
-            return matchPredicate('?', false);
-        }
-
-        private bool LookAheadMatch(int distance, char symbol)
-        {
-            return LookAheadMatch(distance, (c, inText) => c == symbol && inText);
-        }
-
-        private bool LookBehindMatch(int distance, char symbol)
-        {
-            return LookBehindMatch(distance, (c, inText) => c == symbol && inText);
+                return Text[TextPosition - distance];
+            return null;
         }
 
         public string GetString(int length)
@@ -69,14 +59,22 @@ namespace Markdown.Parsing
             return null;
         }
 
+        private bool CanAttachSymbolToToken(char? symbol, char tokenEnd)
+        {
+            if (!symbol.HasValue)
+                return false;
+            return symbol.Value == tokenEnd || char.IsLetterOrDigit(symbol.Value);
+        }
+
         private IToken TryParseFormatModificator(string modificator)
         {
             if (GetString(modificator.Length) != modificator)
                 return null;
-            if (LookAheadMatch(modificator.Length, (symbol, inText) => inText && char.IsLetterOrDigit(symbol)) &&
-                LookBehindMatch(1, (symbol, inText) => inText && char.IsLetterOrDigit(symbol)))
-                return null;
-            return new FormatModificatorToken(TakeString(modificator.Length));
+            var before = LookBehind(1);
+            var after = LookAhead(modificator.Length);
+            if (CanAttachSymbolToToken(before, modificator.First()) ^ CanAttachSymbolToToken(after, modificator.Last()))
+                return new FormatModificatorToken(TakeString(modificator.Length));
+            return null;
         }
 
         //TODO: Poor performance because of many-many CharacterToken objects

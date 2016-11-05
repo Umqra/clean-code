@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Markdown.Parsing.Nodes;
 using Markdown.Parsing.Tokens;
@@ -17,15 +18,7 @@ namespace Markdown.Parsing
         {
             return new ParagraphNode(PraseNodesUntilNotNull(() => ParsePlainText(tokenizer) ??
                                                                   ParseBoldText(tokenizer) ??
-                                                                  ParseItalicText(tokenizer) ??
-                                                                  ParseInvalidSymbols(tokenizer)));
-        }
-
-        private INode ParseInvalidSymbols(TextTokenizer tokenizer)
-        {
-            if (tokenizer.TextEnded)
-                return null;
-            return new TextNode(tokenizer.TakeString(1));
+                                                                  ParseItalicText(tokenizer)));
         }
 
         private INode ParsePlainText(TextTokenizer tokenizer)
@@ -58,7 +51,7 @@ namespace Markdown.Parsing
                 .TakeNextTokenIfMatch(token => token.Equals(FormatModificatorToken.BoldUnderscore));
             if (endToken != null)
                 return new BoldTextNode(children);
-            throw new NotImplementedException();
+            return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
         }
 
         private INode ParseItalicText(TextTokenizer tokenizer)
@@ -74,7 +67,7 @@ namespace Markdown.Parsing
                 .TakeNextTokenIfMatch(token => token.Equals(FormatModificatorToken.ItalicUnderscore));
             if (endToken != null)
                 return new ItalicTextNode(children);
-            throw new NotImplementedException();
+            return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
         }
 
         private List<INode> PraseNodesUntilNotNull(Func<INode> nodeFactory)
