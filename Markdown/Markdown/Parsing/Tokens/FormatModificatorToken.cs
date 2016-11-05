@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace Markdown.Parsing.Tokens
 {
-    public class EscapedCharacterToken : IToken
+    public class FormatModificatorToken : IToken
     {
+        public static readonly FormatModificatorToken BoldUnderscore = new FormatModificatorToken("__");
+        public static readonly FormatModificatorToken ItalicUnderscore = new FormatModificatorToken("_");
+
         public string Text { get; }
 
-        public EscapedCharacterToken(char symbol)
+        public FormatModificatorToken(string text)
         {
-            Text = new string(symbol, 1);
+            Text = text;
         }
 
-        protected bool Equals(EscapedCharacterToken other)
+        protected bool Equals(FormatModificatorToken other)
         {
             return string.Equals(Text, other.Text);
         }
@@ -25,7 +28,7 @@ namespace Markdown.Parsing.Tokens
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((EscapedCharacterToken)obj);
+            return Equals((FormatModificatorToken)obj);
         }
 
         public override int GetHashCode()

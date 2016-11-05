@@ -8,5 +8,6 @@ namespace Markdown.Parsing
         T Visit(BoldTextNode node);
         T Visit(ItalicTextNode node);
         T Visit(TextNode node);
+        T Visit(GroupNode node);
     }
 }

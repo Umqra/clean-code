@@ -8,17 +8,17 @@ namespace Markdown.Rendering
     {
         public string Visit(ParagraphNode node)
         {
-            return VisitInternalNode(node, "p");
+            return WrapInternalNodesInTag(node, "p");
         }
 
         public string Visit(BoldTextNode node)
         {
-            return VisitInternalNode(node, "strong");
+            return WrapInternalNodesInTag(node, "strong");
         }
 
         public string Visit(ItalicTextNode node)
         {
-            return VisitInternalNode(node, "em");
+            return WrapInternalNodesInTag(node, "em");
         }
 
         public string Visit(TextNode node)
@@ -26,12 +26,22 @@ namespace Markdown.Rendering
             return node.Text;
         }
 
-        private string VisitInternalNode(IInternalNode node, string tagName)
+        public string Visit(GroupNode node)
+        {
+            return VisitInternalNodes(node);
+        }
+
+        private string VisitInternalNodes(IInternalNode node)
         {
             var innerHtml = new StringBuilder();
             foreach (var child in node.Children)
                 innerHtml.Append(child.Accept(this));
-            return $"<{tagName}>{innerHtml}</{tagName}>";
+            return innerHtml.ToString();
+        }
+
+        private string WrapInternalNodesInTag(IInternalNode node, string tagName)
+        {
+            return $"<{tagName}>{VisitInternalNodes(node)}</{tagName}>";
         }
     }
 }

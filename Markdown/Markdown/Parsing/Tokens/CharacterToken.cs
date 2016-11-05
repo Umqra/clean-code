@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Markdown.Parsing.Tokens
+﻿namespace Markdown.Parsing.Tokens
 {
     public class CharacterToken : IToken
     {
-        public char Symbol { get; }
+        public string Text { get; }
 
         public CharacterToken(char symbol)
         {
-            Symbol = symbol;
+            Text = new string(symbol, 1);
         }
 
         protected bool Equals(CharacterToken other)
         {
-            return Symbol == other.Symbol;
+            return string.Equals(Text, other.Text);
         }
 
         public override bool Equals(object obj)
@@ -30,7 +24,7 @@ namespace Markdown.Parsing.Tokens
 
         public override int GetHashCode()
         {
-            return Symbol.GetHashCode();
+            return Text?.GetHashCode() ?? 0;
         }
     }
 }

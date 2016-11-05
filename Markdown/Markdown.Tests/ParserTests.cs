@@ -77,14 +77,17 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BoldInItalic_ShouldNotBeParsed()
+        public void BoldInItalic_ShouldBeParsed()
         {
             var sample = "_italic __bold__ end_";
             var parsed = Parser.Parse(sample);
 
             parsed.Should().Be(
                 Paragraph(
-                    ItalicText(Text("italic __bold__ end"))
+                    ItalicText(
+                        Text("italic "),
+                        BoldText(Text("bold")),
+                        Text(" end"))
                 ));
         }
     }

@@ -11,14 +11,14 @@ namespace Markdown.Parsing
 
     public class TextTokenizer
     {
-        private string Text { get; set; }
+        public bool TextEnded => TextPosition == Text.Length;
 
+        private string Text { get; set; }
         private int TextPosition { get; set; }
 
         private char CurrentSymbol => Text[TextPosition];
         private bool IsFirstSymbol => TextPosition == 0;
         private bool IsLastSymbol => TextPosition == Text.Length - 1;
-        private bool TextEnded => TextPosition == Text.Length;
 
         public TextTokenizer(string text)
         {
@@ -50,14 +50,14 @@ namespace Markdown.Parsing
             return LookBehindMatch(distance, (c, inText) => c == symbol && inText);
         }
 
-        private string Take(int count)
+        public string GetString(int length)
         {
-            return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, count));
+            return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, length));
         }
 
-        private string TakeAndMovePosition(int count)
+        public string TakeString(int length)
         {
-            var result = Take(count);
+            var result = GetString(length);
             TextPosition += result.Length;
             return result;
         }
@@ -65,42 +65,55 @@ namespace Markdown.Parsing
         private IToken TryParseEscapedCharacter()
         {
             if (CurrentSymbol == '\\' && !IsLastSymbol)
-                return new EscapedCharacterToken(TakeAndMovePosition(2)[1]);
+                return new EscapedCharacterToken(TakeString(2)[1]);
             return null;
         }
 
-        private IToken TryParseOpenModificator(string modificator)
+        private IToken TryParseFormatModificator(string modificator)
         {
-            if (Take(modificator.Length) != modificator)
+            if (GetString(modificator.Length) != modificator)
                 return null;
-            if (LookAheadMatch(modificator.Length, (symbol, text) => text && !char.IsWhiteSpace(symbol)) &&
-                LookBehindMatch(1, (symbol, text) => !text || char.IsWhiteSpace(symbol)))
-                return new OpenModificatorToken(TakeAndMovePosition(modificator.Length));
-            return null;
-        }
-
-        private IToken TryParseCloseModificator(string modificator)
-        {
-            if (Take(modificator.Length) != modificator)
+            if (LookAheadMatch(modificator.Length, (symbol, inText) => inText && char.IsLetterOrDigit(symbol)) &&
+                LookBehindMatch(1, (symbol, inText) => inText && char.IsLetterOrDigit(symbol)))
                 return null;
-            if (LookAheadMatch(modificator.Length, (symbol, text) => !text || char.IsWhiteSpace(symbol)) && 
-                LookBehindMatch(1, (symbol, text) => text && !char.IsWhiteSpace(symbol)))
-                return new CloseModificatorToken(TakeAndMovePosition(modificator.Length));
-            return null;
+            return new FormatModificatorToken(TakeString(modificator.Length));
         }
 
         //TODO: Poor performance because of many-many CharacterToken objects
+        private IToken ParseToken()
+        {
+            return TryParseEscapedCharacter() ??
+                   TryParseFormatModificator("__") ??
+                   TryParseFormatModificator("_") ??
+                   new CharacterToken(TakeString(1)[0]);
+        }
+
         public IToken GetNextToken()
+        {
+            var positionDump = TextPosition;
+            var token = TakeNextToken();
+            TextPosition = positionDump;
+
+            return token;
+        }
+
+        public IToken TakeNextToken()
         {
             if (TextEnded)
                 return null;
+            return ParseToken();
+        }
 
-            return TryParseEscapedCharacter() ??
-                   TryParseOpenModificator("__") ??
-                   TryParseOpenModificator("_") ??
-                   TryParseCloseModificator("__") ??
-                   TryParseCloseModificator("_") ??
-                   new CharacterToken(TakeAndMovePosition(1)[0]);
+        public IToken TakeNextTokenIfMatch(Predicate<IToken> matchPredicate)
+        {
+            if (TextEnded)
+                return null;
+            var positionDump = TextPosition;
+            var token = TakeNextToken();
+            if (token != null && matchPredicate(token))
+                return token;
+            TextPosition = positionDump;
+            return null;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Markdown.Tests
         {
             while (true)
             {
-                var node = Tokenizer.GetNextToken();
+                var node = Tokenizer.TakeNextToken();
                 if (node == null)
                     yield break;
                 yield return node;
@@ -44,14 +44,9 @@ namespace Markdown.Tests
             yield return new EscapedCharacterToken(c);
         }
 
-        private IEnumerable<IToken> OpenModificator(string modificator)
+        private IEnumerable<IToken> Modificator(string modificator)
         {
-            yield return new OpenModificatorToken(modificator);
-        }
-
-        private IEnumerable<IToken> CloseModificator(string modificator)
-        {
-            yield return new CloseModificatorToken(modificator);
+            yield return new FormatModificatorToken(modificator);
         }
         #endregion
 
@@ -83,9 +78,9 @@ namespace Markdown.Tests
             Tokenizer = new TextTokenizer(text);
 
             GetAllTokens().Should().Equal(
-                OpenModificator("__")
+                Modificator("__")
                 .Concat(Character('a'))
-                .Concat(CloseModificator("__")));
+                .Concat(Modificator("__")));
         }
 
         [Test]
@@ -98,9 +93,9 @@ namespace Markdown.Tests
                 .Should()
                 .Equal(
                     PlainText("a ")
-                    .Concat(OpenModificator("__"))
+                    .Concat(Modificator("__"))
                     .Concat(PlainText("b c"))
-                    .Concat(CloseModificator("__"))
+                    .Concat(Modificator("__"))
                     .Concat(PlainText(" d"))
                 );
         }
@@ -112,9 +107,9 @@ namespace Markdown.Tests
             Tokenizer = new TextTokenizer(text);
 
             GetAllTokens().Should().Equal(
-                OpenModificator("_")
+                Modificator("_")
                 .Concat(Character('a'))
-                .Concat(CloseModificator("_")));
+                .Concat(Modificator("_")));
         }
 
         [Test]
@@ -125,9 +120,9 @@ namespace Markdown.Tests
 
             GetAllTokens().Should().Equal(
                 PlainText("a ")
-                    .Concat(OpenModificator("_"))
+                    .Concat(Modificator("_"))
                     .Concat(PlainText("b c"))
-                    .Concat(CloseModificator("_"))
+                    .Concat(Modificator("_"))
                     .Concat(PlainText(" d")));
         }
 
