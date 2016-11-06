@@ -17,33 +17,12 @@ namespace Markdown.Parsing
         protected string Text { get; }
         protected int TextPosition { get; set; }
 
-        protected char? LookAhead(int distance)
-        {
-            if (TextPosition + distance < Text.Length)
-                return Text[TextPosition + distance];
-            return null;
-        }
-
-        protected char? LookBehind(int distance)
-        {
-            if (TextPosition - distance >= 0)
-                return Text[TextPosition - distance];
-            return null;
-        }
+        protected abstract T ParseToken();
 
         public string LookAtString(int length)
         {
             return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, length));
         }
-
-        public string TakeString(int length)
-        {
-            var result = LookAtString(length);
-            TextPosition += result.Length;
-            return result;
-        }
-
-        protected abstract T ParseToken();
 
         public T TakeToken()
         {
@@ -77,6 +56,27 @@ namespace Markdown.Parsing
                 tokens.Add(token);
             }
             return tokens;
+        }
+
+        public string TakeString(int length)
+        {
+            var result = LookAtString(length);
+            TextPosition += result.Length;
+            return result;
+        }
+
+        protected char? LookAhead(int distance)
+        {
+            if (TextPosition + distance < Text.Length)
+                return Text[TextPosition + distance];
+            return null;
+        }
+
+        protected char? LookBehind(int distance)
+        {
+            if (TextPosition - distance >= 0)
+                return Text[TextPosition - distance];
+            return null;
         }
     }
 }

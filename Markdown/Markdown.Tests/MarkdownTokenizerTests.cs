@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Markdown.Parsing;
 using Markdown.Parsing.Tokens;
-using NUnit.Framework.Internal;
 using NUnit.Framework;
 
 namespace Markdown.Tests
 {
     [TestFixture]
-    class TextTokenizerTests
+    class MarkdownTokenizerTests
     {
         public MarkdownTokenizer Tokenizer { get; set; }
 
-        #region Auxiliary functions for comfortable unit-testing
         public IEnumerable<IToken> GetAllTokens()
         {
             while (true)
@@ -48,15 +43,16 @@ namespace Markdown.Tests
         {
             yield return new FormatModificatorToken(modificator);
         }
-        #endregion
 
-        [Test]
-        public void TestOnlyCharacterTokens()
+        [TestCase("sample", TestName = "When passed simple plain text")]
+        [TestCase(" _ __\t_\n", TestName = "When underscores surrounded by white spaces")]
+        [TestCase("1_a__b__2_a", TestName = "When underscores surrounded by letters/digits")]
+        public void TestOnlyCharacterTokensInText(string text)
         {
-            var text = "text";
             Tokenizer = new MarkdownTokenizer(text);
 
-            GetAllTokens().Should().Equal(PlainText(text));
+            foreach (var token in GetAllTokens())
+                token.Should().BeOfType<CharacterToken>();
         }
 
         [Test]
@@ -72,7 +68,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void DoubleUnderscore_DetectedOnTextBorders()
+        public void DoubleUnderscoreOnTextBorders_IsModificator()
         {
             var text = "__a__";
             Tokenizer = new MarkdownTokenizer(text);
@@ -84,7 +80,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void DoubleUnderscore_DetectedOnWordBorders()
+        public void DoubleUnderscoreOnWordBorders_IsModificator()
         {
             var text = "a __b c__ d";
             Tokenizer = new MarkdownTokenizer(text);
@@ -101,7 +97,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void SingleUnderscore_DetectedOnTextBorders()
+        public void SingleUnderscoreOnTextBorders_IsModificator()
         {
             var text = "_a_";
             Tokenizer = new MarkdownTokenizer(text);
@@ -113,7 +109,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void SingleUnderscore_DetectedOnWordBorders()
+        public void SingleUnderscoreOnWordBorders_IsModificator()
         {
             var text = "a _b c_ d";
             Tokenizer = new MarkdownTokenizer(text);
@@ -127,32 +123,73 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void SingleUnderscore_NotDetectedInSpaces()
+        public void DoubleUnderscoreSurroundedByPunctuation_IsModificator()
         {
-            var text = " _ ";
+            var text = "this is __!important!__.";
             Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
-                PlainText(text));
+                PlainText("this is ")
+                    .Concat(Modificator("__"))
+                    .Concat(PlainText("!important!"))
+                    .Concat(Modificator("__"))
+                    .Concat(PlainText(".")));
         }
 
         [Test]
-        public void DoubleUnderscore_NotDetectedInSpaces()
+        public void DoubleUnderscoreAtTheEndOfSentence_IsModificator()
         {
-            var text = " __ ";
+            var text = "This is the __end__.";
             Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
-                PlainText(text));
+                PlainText("This is the ")
+                    .Concat(Modificator("__"))
+                    .Concat(PlainText("the"))
+                    .Concat(Modificator("__"))
+                    .Concat(PlainText(".")));
         }
 
         [Test]
-        public void Underscores_DetectedAsCharactersInsideWord()
+        public void SingleUnderscoreSurroundedByPunctuation_IsModificator()
         {
-            var text = "a_b__1_c";
+            var text = "this is _!important!_.";
             Tokenizer = new MarkdownTokenizer(text);
 
-            GetAllTokens().Should().Equal(PlainText(text));
+            GetAllTokens().Should().Equal(
+                PlainText("this is ")
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText("!important!"))
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText(".")));
+        }
+
+        [Test]
+        public void SingleUnderscoreAtTheEndOfSentence_IsModificator()
+        {
+            var text = "This is the _end_.";
+            Tokenizer = new MarkdownTokenizer(text);
+
+            GetAllTokens().Should().Equal(
+                PlainText("This is the ")
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText("the"))
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText(".")));
+        }
+
+        [Test]
+        public void TripleUnderscore_IsItalicInBoldModificators()
+        {
+            var text = "___triple___";
+            Tokenizer = new MarkdownTokenizer(text);
+
+            GetAllTokens().Should().Equal(
+                Modificator("__")
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText("triple"))
+                    .Concat(Modificator("_"))
+                    .Concat(Modificator("__")));
         }
     }
 }

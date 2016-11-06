@@ -26,5 +26,10 @@
         {
             return Text?.GetHashCode() ?? 0;
         }
+
+        public override string ToString()
+        {
+            return $"Char({Text})";
+        }
     }
 }

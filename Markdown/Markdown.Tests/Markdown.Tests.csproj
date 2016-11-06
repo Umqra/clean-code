@@ -63,7 +63,7 @@
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SequenceCollectionTests.cs" />
-    <Compile Include="TextTokenizerTests.cs" />
+    <Compile Include="MarkdownTokenizerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
