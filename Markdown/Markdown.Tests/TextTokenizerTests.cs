@@ -14,14 +14,14 @@ namespace Markdown.Tests
     [TestFixture]
     class TextTokenizerTests
     {
-        public TextTokenizer Tokenizer { get; set; }
+        public MarkdownTokenizer Tokenizer { get; set; }
 
         #region Auxiliary functions for comfortable unit-testing
         public IEnumerable<IToken> GetAllTokens()
         {
             while (true)
             {
-                var node = Tokenizer.TakeNextToken();
+                var node = Tokenizer.TakeToken();
                 if (node == null)
                     yield break;
                 yield return node;
@@ -54,7 +54,7 @@ namespace Markdown.Tests
         public void TestOnlyCharacterTokens()
         {
             var text = "text";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(PlainText(text));
         }
@@ -63,7 +63,7 @@ namespace Markdown.Tests
         public void TestEscapedCharacter()
         {
             var text = @"a\\\_";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 Character('a')
@@ -75,7 +75,7 @@ namespace Markdown.Tests
         public void DoubleUnderscore_DetectedOnTextBorders()
         {
             var text = "__a__";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 Modificator("__")
@@ -87,7 +87,7 @@ namespace Markdown.Tests
         public void DoubleUnderscore_DetectedOnWordBorders()
         {
             var text = "a __b c__ d";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens()
                 .Should()
@@ -104,7 +104,7 @@ namespace Markdown.Tests
         public void SingleUnderscore_DetectedOnTextBorders()
         {
             var text = "_a_";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 Modificator("_")
@@ -116,7 +116,7 @@ namespace Markdown.Tests
         public void SingleUnderscore_DetectedOnWordBorders()
         {
             var text = "a _b c_ d";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText("a ")
@@ -130,7 +130,7 @@ namespace Markdown.Tests
         public void SingleUnderscore_NotDetectedInSpaces()
         {
             var text = " _ ";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText(text));
@@ -140,7 +140,7 @@ namespace Markdown.Tests
         public void DoubleUnderscore_NotDetectedInSpaces()
         {
             var text = " __ ";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText(text));
@@ -150,7 +150,7 @@ namespace Markdown.Tests
         public void Underscores_DetectedAsCharactersInsideWord()
         {
             var text = "a_b__1_c";
-            Tokenizer = new TextTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(PlainText(text));
         }

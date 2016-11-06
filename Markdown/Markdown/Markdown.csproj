@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Parsing\ATokenizer.cs" />
     <Compile Include="Parsing\IInternalNode.cs" />
     <Compile Include="Parsing\INode.cs" />
     <Compile Include="Parsing\INodeVisitor.cs" />
@@ -51,7 +52,7 @@
     <Compile Include="Parsing\Nodes\ItalicTextNode.cs" />
     <Compile Include="Parsing\Nodes\ParagraphNode.cs" />
     <Compile Include="Parsing\Nodes\TextNode.cs" />
-    <Compile Include="Parsing\TextTokenizer.cs" />
+    <Compile Include="Parsing\MarkdownTokenizer.cs" />
     <Compile Include="Parsing\Tokens\FormatModificatorToken.cs" />
     <Compile Include="Parsing\Tokens\EscapedCharacterToken.cs" />
     <Compile Include="Parsing\Tokens\CharacterToken.cs" />
