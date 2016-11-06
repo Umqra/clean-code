@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Markdown.Parsing;
 using Markdown.Parsing.Nodes;
 
@@ -11,14 +12,15 @@ namespace Markdown.Rendering
             return WrapInternalNodesInTag(node, "p");
         }
 
-        public string Visit(BoldTextNode node)
+        public string Visit(EmphasisTextNode node)
         {
-            return WrapInternalNodesInTag(node, "strong");
-        }
-
-        public string Visit(ItalicTextNode node)
-        {
-            return WrapInternalNodesInTag(node, "em");
+            if (node.EmphasisStrength == EmphasisStrength.Low)
+                return WrapInternalNodesInTag(node, "em");
+            if (node.EmphasisStrength == EmphasisStrength.Medium)
+                return WrapInternalNodesInTag(node, "strong");
+            if (node.EmphasisStrength == EmphasisStrength.High)
+                return WrapInternalNodesInTag(node, "b");
+            throw new ArgumentException($"Unknown {nameof(EmphasisStrength)}: {node.EmphasisStrength}");
         }
 
         public string Visit(TextNode node)

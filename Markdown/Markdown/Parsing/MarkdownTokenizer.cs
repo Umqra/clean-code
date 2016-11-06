@@ -9,6 +9,16 @@ namespace Markdown.Parsing
         {
         }
 
+        //TODO: Poor performance because of many-many CharacterToken objects
+        protected override IToken ParseToken()
+        {
+            return TryParseEscapedCharacter() ??
+                   TryParseEmphasisModificator("___") ??
+                   TryParseEmphasisModificator("__") ??
+                   TryParseEmphasisModificator("_") ??
+                   new CharacterToken(TakeString(1)[0]);
+        }
+
         private IToken TryParseEscapedCharacter()
         {
             if (CurrentSymbol == '\\' && TextPosition < Text.Length - 1)
@@ -16,37 +26,21 @@ namespace Markdown.Parsing
             return null;
         }
 
-        //TODO: Bad function!!!
-        private bool CanAttachSymbolToToken(char? symbol)
-        {
-            if (!symbol.HasValue)
-                return false;
-            return char.IsLetterOrDigit(symbol.Value) || char.IsPunctuation(symbol.Value);
-        }
-
-        private IToken TryParseFormatModificator(string modificator)
+        private IToken TryParseEmphasisModificator(string modificator)
         {
             if (LookAtString(modificator.Length) != modificator)
                 return null;
             var before = LookBehind(1);
             var after = LookAhead(modificator.Length);
 
-            if (CanAttachSymbolToToken(before) ^ CanAttachSymbolToToken(after))
-            {
-                if ((!before.HasValue || before.Value != modificator.First()) &&
-                    (!after.HasValue || after.Value != modificator.Last()))
-                    return new FormatModificatorToken(TakeString(modificator.Length));
-            }
-            return null;
-        }
+            if (before.IsWhiteSpace() && after.IsWhiteSpace())
+                return null;
+            if (before == modificator.First() || after == modificator.Last())
+                return null;
+            if (before.IsLetterOrDigit() && after.IsLetterOrDigit())
+                return null;
 
-        //TODO: Poor performance because of many-many CharacterToken objects
-        protected override IToken ParseToken()
-        {
-            return TryParseEscapedCharacter() ??
-                   TryParseFormatModificator("__") ??
-                   TryParseFormatModificator("_") ??
-                   new CharacterToken(TakeString(1)[0]);
+            return new EmphasisModificatorToken(TakeString(modificator.Length));
         }
     }
 }

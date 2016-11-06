@@ -41,12 +41,12 @@ namespace Markdown.Tests
 
         private IEnumerable<IToken> Modificator(string modificator)
         {
-            yield return new FormatModificatorToken(modificator);
+            yield return new EmphasisModificatorToken(modificator);
         }
 
         [TestCase("sample", TestName = "When passed simple plain text")]
         [TestCase(" _ __\t_\n", TestName = "When underscores surrounded by white spaces")]
-        [TestCase("1_a__b__2_a", TestName = "When underscores surrounded by letters/digits")]
+        [TestCase("1_a__b____a2_a", TestName = "When underscores surrounded by letters/digits")]
         public void TestOnlyCharacterTokensInText(string text)
         {
             Tokenizer = new MarkdownTokenizer(text);
@@ -145,7 +145,7 @@ namespace Markdown.Tests
             GetAllTokens().Should().Equal(
                 PlainText("This is the ")
                     .Concat(Modificator("__"))
-                    .Concat(PlainText("the"))
+                    .Concat(PlainText("end"))
                     .Concat(Modificator("__"))
                     .Concat(PlainText(".")));
         }
@@ -173,7 +173,7 @@ namespace Markdown.Tests
             GetAllTokens().Should().Equal(
                 PlainText("This is the ")
                     .Concat(Modificator("_"))
-                    .Concat(PlainText("the"))
+                    .Concat(PlainText("end"))
                     .Concat(Modificator("_"))
                     .Concat(PlainText(".")));
         }
@@ -185,11 +185,9 @@ namespace Markdown.Tests
             Tokenizer = new MarkdownTokenizer(text);
 
             GetAllTokens().Should().Equal(
-                Modificator("__")
-                    .Concat(Modificator("_"))
+                Modificator("___")
                     .Concat(PlainText("triple"))
-                    .Concat(Modificator("_"))
-                    .Concat(Modificator("__")));
+                    .Concat(Modificator("___")));
         }
     }
 }

@@ -7,28 +7,19 @@ namespace Markdown.Tests
     internal class NodeEqualsTests : BaseTreeTests
     {
         [Test]
-        public void TestEqualsBoldTextNodes()
+        public void TestEqualsEmphasisTextNodes()
         {
-            var a = BoldText(Text("a"), ItalicText(Text("b")));
-            var b = BoldText(Text("a"), ItalicText(Text("b")));
+            var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")), HighEmphasisText(Text("c")));
+            var b = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")), HighEmphasisText(Text("c")));
 
             a.Equals(b).Should().BeTrue();
         }
-
-        [Test]
-        public void TestEqualsItalicTextNodes()
-        {
-            var a = ItalicText(Text("a"), BoldText(Text("b")));
-            var b = ItalicText(Text("a"), BoldText(Text("b")));
-
-            a.Equals(b).Should().BeTrue();
-        }
-
+        
         [Test]
         public void TestEqualsParagraphNodes()
         {
-            var a = Paragraph(ItalicText(Text("a")), BoldText(Text("b")));
-            var b = Paragraph(ItalicText(Text("a")), BoldText(Text("b")));
+            var a = Paragraph(LowEmphasisText(Text("a")), MediumEmphasisText(Text("b")));
+            var b = Paragraph(LowEmphasisText(Text("a")), MediumEmphasisText(Text("b")));
 
             a.Equals(b).Should().BeTrue();
         }
@@ -43,10 +34,19 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestNotEqualsBoldTextNodes()
+        public void TestNotEqualsEmphasisTextNodes_WhenStrengthDiffers()
         {
-            var a = BoldText(Text("a"), ItalicText(Text("b")));
-            var b = BoldText(ItalicText(Text("b")), Text("a"));
+            var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")));
+            var b = HighEmphasisText(Text("a"), LowEmphasisText(Text("b")));
+
+            a.Equals(b).Should().BeFalse();
+        }
+
+        [Test]
+        public void TestNotEqualsEmphasisTextNodes_WhenOrderDiffers()
+        {
+            var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")));
+            var b = MediumEmphasisText(LowEmphasisText(Text("b")), Text("a"));
 
             a.Equals(b).Should().BeFalse();
         }
@@ -54,8 +54,8 @@ namespace Markdown.Tests
         [Test]
         public void TestNotEqualsItalicTextNodes()
         {
-            var a = ItalicText(Text("a"), BoldText(Text("b")));
-            var b = ItalicText(BoldText(Text("b")), Text("a"));
+            var a = LowEmphasisText(Text("a"), MediumEmphasisText(Text("b")));
+            var b = LowEmphasisText(MediumEmphasisText(Text("b")), Text("a"));
 
             a.Equals(b).Should().BeFalse();
         }
@@ -63,8 +63,8 @@ namespace Markdown.Tests
         [Test]
         public void TestNotEqualsParagraphNodes()
         {
-            var a = Paragraph(ItalicText(Text("a")), ItalicText(Text("b")));
-            var b = Paragraph(ItalicText(Text("b")), ItalicText(Text("a")));
+            var a = Paragraph(LowEmphasisText(Text("a")), LowEmphasisText(Text("b")));
+            var b = Paragraph(LowEmphasisText(Text("b")), LowEmphasisText(Text("a")));
 
             a.Equals(b).Should().BeFalse();
         }

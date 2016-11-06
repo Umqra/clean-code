@@ -33,8 +33,6 @@ namespace Markdown.Parsing
 
         public T TakeTokenIfMatch(Predicate<T> matchPredicate)
         {
-            if (TextEnded)
-                return null;
             var oldPosition = TextPosition;
 
             var token = TakeToken();

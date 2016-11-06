@@ -32,7 +32,7 @@ namespace Markdown.Tests
             var parsed = Parser.Parse(sample);
 
             parsed.Should().Be(
-                Paragraph(ItalicText(Text("sample text"))));
+                Paragraph(LowEmphasisText(Text("sample text"))));
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace Markdown.Tests
             var parsed = Parser.Parse(sample);
 
             parsed.Should().Be(
-                Paragraph(BoldText(Text("sample text"))));
+                Paragraph(MediumEmphasisText(Text("sample text"))));
         }
 
         [Test]
@@ -53,11 +53,11 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    ItalicText(Text("first")),
+                    LowEmphasisText(Text("first")),
                     Text(" "),
-                    BoldText(Text("second")),
+                    MediumEmphasisText(Text("second")),
                     Text(" "),
-                    ItalicText(Text("third"))
+                    LowEmphasisText(Text("third"))
                 ));
         }
 
@@ -69,9 +69,9 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    BoldText(
+                    MediumEmphasisText(
                         Text("bold "),
-                        ItalicText(Text("italic")),
+                        LowEmphasisText(Text("italic")),
                         Text(" end"))
                 ));
         }
@@ -84,9 +84,9 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    ItalicText(
+                    LowEmphasisText(
                         Text("italic "),
-                        BoldText(Text("bold")),
+                        MediumEmphasisText(Text("bold")),
                         Text(" end"))
                 ));
         }

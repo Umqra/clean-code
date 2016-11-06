@@ -22,17 +22,25 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestEmptyBoldTextNode()
+        public void TestEmptyHighEmphasisTextNode()
         {
-            var node = BoldText();
+            var node = HighEmphasisText();
+
+            Render(node).Should().Be("<b></b>");
+        }
+
+        [Test]
+        public void TestEmptyMediumEmphasisTextNode()
+        {
+            var node = MediumEmphasisText();
 
             Render(node).Should().Be("<strong></strong>");
         }
 
         [Test]
-        public void TestEmptyItalicNode()
+        public void TestEmptyLowEmphasisNode()
         {
-            var node = ItalicText();
+            var node = LowEmphasisText();
 
             Render(node).Should().Be("<em></em>");
         }
@@ -55,17 +63,25 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestManyNodesInBoldTextNode()
+        public void TestManyNodesInHighEmphasisTextNode()
         {
-            var node = BoldText(Text("first"), ItalicText(Text("second")));
+            var node = HighEmphasisText(Text("first"), LowEmphasisText(Text("second")));
+
+            Render(node).Should().Be("<b>first<em>second</em></b>");
+        }
+
+        [Test]
+        public void TestManyNodesInMediumEmphasisTextNode()
+        {
+            var node = MediumEmphasisText(Text("first"), LowEmphasisText(Text("second")));
 
             Render(node).Should().Be("<strong>first<em>second</em></strong>");
         }
 
         [Test]
-        public void TestManyNodesInItalicNode()
+        public void TestManyNodesInLowEmphasisNode()
         {
-            var node = ItalicText(Text("first"), BoldText(Text("second")));
+            var node = LowEmphasisText(Text("first"), MediumEmphasisText(Text("second")));
 
             Render(node).Should().Be("<em>first<strong>second</strong></em>");
         }
@@ -75,8 +91,8 @@ namespace Markdown.Tests
         {
             var node = Paragraph(
                 Text("first"),
-                BoldText(Text("second")),
-                ItalicText(Text("third")));
+                MediumEmphasisText(Text("second")),
+                LowEmphasisText(Text("third")));
 
             Render(node).Should().Be("<p>first<strong>second</strong><em>third</em></p>");
         }

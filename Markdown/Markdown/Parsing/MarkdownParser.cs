@@ -15,9 +15,12 @@ namespace Markdown.Parsing
 
         private INode ParseParagraph(MarkdownTokenizer tokenizer)
         {
-            return new ParagraphNode(PraseNodesUntilNotNull(() => ParsePlainText(tokenizer) ??
-                                                                  ParseBoldText(tokenizer) ??
-                                                                  ParseItalicText(tokenizer)));
+            return new ParagraphNode(
+                ParseNodesUntilNotNull(
+                    () =>
+                        ParsePlainText(tokenizer) ??
+                        ParseEmphasisText(tokenizer, EmphasisExtensions.GetAllEmphasisStrengths().ToArray()))
+            );
         }
 
         private INode ParsePlainText(MarkdownTokenizer tokenizer)
@@ -29,39 +32,33 @@ namespace Markdown.Parsing
             return new TextNode(string.Join("", textTokens.Select(token => token.Text)));
         }
 
-        private INode ParseBoldText(MarkdownTokenizer tokenizer)
+        private INode ParseEmphasisText(MarkdownTokenizer tokenizer, EmphasisStrength[] parsingStrengths)
         {
             var startToken = tokenizer
-                .TakeTokenIfMatch(token => token.Equals(FormatModificatorToken.BoldUnderscore));
+                .TakeTokenIfMatch(token =>
+                {
+                    var modificatorToken = token as EmphasisModificatorToken;
+                    return modificatorToken != null && 
+                           parsingStrengths.Contains(modificatorToken.EmphasisStrength);
+                }) as EmphasisModificatorToken;
+
             if (startToken == null)
                 return null;
 
-            var children = PraseNodesUntilNotNull(() => ParsePlainText(tokenizer) ?? ParseItalicText(tokenizer));
+            var children = ParseNodesUntilNotNull(
+                () =>
+                    ParsePlainText(tokenizer) ??
+                    ParseEmphasisText(tokenizer, startToken.EmphasisStrength.ExcludeFromAllStrengths().ToArray())
+            );
 
             var endToken = tokenizer
-                .TakeTokenIfMatch(token => token.Equals(FormatModificatorToken.BoldUnderscore));
+                .TakeTokenIfMatch(token => token is EmphasisModificatorToken && token.Text == startToken.Text);
             if (endToken != null)
-                return new BoldTextNode(children);
+                return new EmphasisTextNode(startToken.EmphasisStrength, children);
             return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
         }
 
-        private INode ParseItalicText(MarkdownTokenizer tokenizer)
-        {
-            var startToken = tokenizer
-                .TakeTokenIfMatch(token => token.Equals(FormatModificatorToken.ItalicUnderscore));
-            if (startToken == null)
-                return null;
-
-            var children = PraseNodesUntilNotNull(() => ParsePlainText(tokenizer) ?? ParseBoldText(tokenizer));
-
-            var endToken = tokenizer
-                .TakeTokenIfMatch(token => token.Equals(FormatModificatorToken.ItalicUnderscore));
-            if (endToken != null)
-                return new ItalicTextNode(children);
-            return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
-        }
-
-        private List<INode> PraseNodesUntilNotNull(Func<INode> nodeFactory)
+        private List<INode> ParseNodesUntilNotNull(Func<INode> nodeFactory)
         {
             var nodes = new List<INode>();
             while (true)
