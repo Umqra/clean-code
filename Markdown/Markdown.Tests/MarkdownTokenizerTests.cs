@@ -16,7 +16,7 @@ namespace Markdown.Tests
         {
             while (true)
             {
-                var node = Tokenizer.TakeToken();
+                var node = Tokenizer.TakeToken<IToken>();
                 if (node == null)
                     yield break;
                 yield return node;

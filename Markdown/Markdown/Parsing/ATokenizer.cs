@@ -24,19 +24,19 @@ namespace Markdown.Parsing
             return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, length));
         }
 
-        public T TakeToken()
+        public TSpec TakeToken<TSpec>() where TSpec : class, T
         {
             if (TextEnded)
                 return null;
-            return ParseToken();
+            return ParseToken() as TSpec;
         }
 
-        public T TakeTokenIfMatch(Predicate<T> matchPredicate)
+        public TSpec TakeTokenIfMatch<TSpec>(Predicate<TSpec> matchPredicate) where TSpec : class, T
         {
             var oldPosition = TextPosition;
 
-            var token = TakeToken();
-            if (token != null && matchPredicate(token))
+            var token = TakeToken<TSpec>();
+            if (token != null && matchPredicate((TSpec)token))
                 return token;
 
             TextPosition = oldPosition;

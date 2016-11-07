@@ -15,18 +15,21 @@ namespace Markdown.Parsing
 
         private INode ParseParagraph(MarkdownTokenizer tokenizer)
         {
-            return new ParagraphNode(
-                ParseNodesUntilNotNull(
-                    () =>
-                        ParsePlainText(tokenizer) ??
-                        ParseEmphasisText(tokenizer, EmphasisExtensions.GetAllEmphasisStrengths().ToArray()))
-            );
+            return new ParagraphNode(ParseNodesUntilNotNull(() => ParseTextInParagraph(tokenizer)));
+        }
+
+        private INode ParseTextInParagraph(MarkdownTokenizer tokenizer)
+        {
+            return ParsePlainText(tokenizer) ??
+                   ParseEmphasisText(tokenizer, EmphasisExtensions.GetAllEmphasisValues());
         }
 
         private INode ParsePlainText(MarkdownTokenizer tokenizer)
         {
-            var textTokens =
-                tokenizer.TakeTokensUntilMatch(token => token is EscapedCharacterToken || token is CharacterToken);
+            var textTokens = tokenizer.TakeTokensUntilMatch(
+                token => token is EscapedCharacterToken || token is CharacterToken
+            );
+
             if (!textTokens.Any())
                 return null;
             return new TextNode(string.Join("", textTokens.Select(token => token.Text)));
@@ -34,25 +37,24 @@ namespace Markdown.Parsing
 
         private INode ParseEmphasisText(MarkdownTokenizer tokenizer, EmphasisStrength[] parsingStrengths)
         {
-            var startToken = tokenizer
-                .TakeTokenIfMatch(token =>
-                {
-                    var modificatorToken = token as EmphasisModificatorToken;
-                    return modificatorToken != null && 
-                           parsingStrengths.Contains(modificatorToken.EmphasisStrength);
-                }) as EmphasisModificatorToken;
+            var startToken = tokenizer.TakeTokenIfMatch<EmphasisModificatorToken>(
+                token => parsingStrengths.Contains(token.EmphasisStrength)
+            );
 
             if (startToken == null)
                 return null;
 
+            var allEmphasisExceptStart = startToken.EmphasisStrength.ExcludeFromEmphasisValues();
             var children = ParseNodesUntilNotNull(
                 () =>
                     ParsePlainText(tokenizer) ??
-                    ParseEmphasisText(tokenizer, startToken.EmphasisStrength.ExcludeFromAllStrengths().ToArray())
+                    ParseEmphasisText(tokenizer, allEmphasisExceptStart)
             );
 
-            var endToken = tokenizer
-                .TakeTokenIfMatch(token => token is EmphasisModificatorToken && token.Text == startToken.Text);
+            var endToken = tokenizer.TakeTokenIfMatch<EmphasisModificatorToken>(
+                token => token.Text == startToken.Text
+            );
+
             if (endToken != null)
                 return new EmphasisTextNode(startToken.EmphasisStrength, children);
             return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));

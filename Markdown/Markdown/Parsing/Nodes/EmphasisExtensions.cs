@@ -8,14 +8,14 @@ namespace Markdown.Parsing.Nodes
 {
     public static class EmphasisExtensions
     {
-        public static IEnumerable<EmphasisStrength> GetAllEmphasisStrengths()
+        public static EmphasisStrength[] GetAllEmphasisValues()
         {
-            return Enum.GetValues(typeof(EmphasisStrength)).Cast<EmphasisStrength>();
+            return Enum.GetValues(typeof(EmphasisStrength)).Cast<EmphasisStrength>().ToArray();
         }
 
-        public static IEnumerable<EmphasisStrength> ExcludeFromAllStrengths(this EmphasisStrength strength)
+        public static EmphasisStrength[] ExcludeFromEmphasisValues(this EmphasisStrength strength)
         {
-            return GetAllEmphasisStrengths().Except(new[] {strength});
+            return GetAllEmphasisValues().Except(new[] {strength}).ToArray();
         }
     }
 }
