@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Markdown.Parsing;
+using Markdown.Parsing.Nodes;
 using Markdown.Rendering;
 using NUnit.Framework;
 

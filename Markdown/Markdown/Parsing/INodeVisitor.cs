@@ -8,5 +8,6 @@ namespace Markdown.Parsing
         T Visit(EmphasisTextNode node);
         T Visit(TextNode node);
         T Visit(GroupNode node);
+        T Visit(NewLineNode node);
     }
 }

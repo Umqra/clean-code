@@ -33,6 +33,11 @@ namespace Markdown.Rendering
             return VisitInternalNodes(node);
         }
 
+        public string Visit(NewLineNode node)
+        {
+            return "<br/>";
+        }
+
         private string VisitInternalNodes(IInternalNode node)
         {
             var innerHtml = new StringBuilder();

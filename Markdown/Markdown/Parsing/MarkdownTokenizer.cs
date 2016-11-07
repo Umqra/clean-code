@@ -1,18 +1,17 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
 {
     public class MarkdownTokenizer : ATokenizer<IToken>
     {
-        public MarkdownTokenizer(string text) : base(text)
-        {
-        }
-
         //TODO: Poor performance because of many-many CharacterToken objects
         protected override IToken ParseToken()
         {
             return TryParseEscapedCharacter() ??
+                   TryParseNewLineToken("  " + Environment.NewLine) ??
+                   TryParseNewLineToken(Environment.NewLine + Environment.NewLine) ??
                    TryParseEmphasisModificator("___") ??
                    TryParseEmphasisModificator("__") ??
                    TryParseEmphasisModificator("_") ??
@@ -23,6 +22,16 @@ namespace Markdown.Parsing
         {
             if (CurrentSymbol == '\\' && TextPosition < Text.Length - 1)
                 return new EscapedCharacterToken(TakeString(2)[1]);
+            return null;
+        }
+
+        private IToken TryParseNewLineToken(string newLineToken)
+        {
+            if (LookAtString(newLineToken.Length) == newLineToken)
+            {
+                TakeString(newLineToken.Length);
+                return new NewLineToken();
+            }
             return null;
         }
 

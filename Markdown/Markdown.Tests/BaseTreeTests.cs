@@ -34,5 +34,10 @@ namespace Markdown.Tests
         {
             return new GroupNode(nodes);
         }
+
+        protected INode NewLine()
+        {
+            return new NewLineNode();
+        }
     }
 }

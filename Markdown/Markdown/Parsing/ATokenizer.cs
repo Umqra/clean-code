@@ -5,19 +5,20 @@ namespace Markdown.Parsing
 {
     public abstract class ATokenizer<T> where T : class
     {
-        protected ATokenizer(string text)
-        {
-            Text = text;
-            TextPosition = 0;
-        }
-
         public bool TextEnded => TextPosition == Text.Length;
         public char CurrentSymbol => Text[TextPosition];
 
-        protected string Text { get; }
+        protected string Text { get; set; }
         protected int TextPosition { get; set; }
 
         protected abstract T ParseToken();
+
+        public virtual ATokenizer<T> ForText(string text)
+        {
+            Text = text;
+            TextPosition = 0;
+            return this;
+        }
 
         public string LookAtString(int length)
         {
@@ -36,7 +37,7 @@ namespace Markdown.Parsing
             var oldPosition = TextPosition;
 
             var token = TakeToken<TSpec>();
-            if (token != null && matchPredicate((TSpec)token))
+            if (token != null && matchPredicate(token))
                 return token;
 
             TextPosition = oldPosition;

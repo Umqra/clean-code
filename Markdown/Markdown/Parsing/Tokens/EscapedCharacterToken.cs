@@ -1,6 +1,6 @@
 ﻿namespace Markdown.Parsing.Tokens
 {
-    public class EscapedCharacterToken : IToken
+    public class EscapedCharacterToken : IPlainTextToken
     {
         public EscapedCharacterToken(char symbol)
         {
