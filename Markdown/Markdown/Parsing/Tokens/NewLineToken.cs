@@ -4,6 +4,11 @@
     {
         public string Text { get; }
 
+        public NewLineToken(string text)
+        {
+            Text = text;
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

@@ -14,7 +14,16 @@ namespace Markdown.Tests
 
             a.Equals(b).Should().BeTrue();
         }
-        
+
+        [Test]
+        public void TestEqualsGroupNodes()
+        {
+            var a = Group(Text("a"), Text("a"));
+            var b = Group(Text("a"), Text("a"));
+
+            a.Equals(b).Should().BeTrue();
+        }
+
         [Test]
         public void TestEqualsParagraphNodes()
         {
@@ -34,6 +43,15 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestNotEqualsEmphasisTextNodes_WhenOrderDiffers()
+        {
+            var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")));
+            var b = MediumEmphasisText(LowEmphasisText(Text("b")), Text("a"));
+
+            a.Equals(b).Should().BeFalse();
+        }
+
+        [Test]
         public void TestNotEqualsEmphasisTextNodes_WhenStrengthDiffers()
         {
             var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")));
@@ -43,10 +61,10 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestNotEqualsEmphasisTextNodes_WhenOrderDiffers()
+        public void TestNotEqualsGroupNodes()
         {
-            var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")));
-            var b = MediumEmphasisText(LowEmphasisText(Text("b")), Text("a"));
+            var a = Group(Text("a"), Text("b"));
+            var b = Group(Text("b"), Text("a"));
 
             a.Equals(b).Should().BeFalse();
         }
@@ -74,24 +92,6 @@ namespace Markdown.Tests
         {
             var a = Text("first");
             var b = Text("second");
-
-            a.Equals(b).Should().BeFalse();
-        }
-
-        [Test]
-        public void TestEqualsGroupNodes()
-        {
-            var a = Group(Text("a"), Text("a"));
-            var b = Group(Text("a"), Text("a"));
-
-            a.Equals(b).Should().BeTrue();
-        }
-
-        [Test]
-        public void TestNotEqualsGroupNodes()
-        {
-            var a = Group(Text("a"), Text("b"));
-            var b = Group(Text("b"), Text("a"));
 
             a.Equals(b).Should().BeFalse();
         }

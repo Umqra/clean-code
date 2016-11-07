@@ -14,22 +14,22 @@
             return visitor.Visit(this);
         }
 
-        protected bool Equals(EscapedTextNode other)
-        {
-            return string.Equals(Text, other.Text);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((EscapedTextNode)obj);
         }
 
         public override int GetHashCode()
         {
             return Text?.GetHashCode() ?? 0;
+        }
+
+        protected bool Equals(EscapedTextNode other)
+        {
+            return string.Equals(Text, other.Text);
         }
     }
 }

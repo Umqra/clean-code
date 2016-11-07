@@ -17,11 +17,6 @@ namespace Markdown.Parsing.Nodes
             return visitor.Visit(this);
         }
 
-        protected bool Equals(ParagraphNode other)
-        {
-            return Children.SequenceEqual(other.Children);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -33,6 +28,11 @@ namespace Markdown.Parsing.Nodes
         public override int GetHashCode()
         {
             return Children?.CombineElementHashCodesUsingParent(this) ?? 0;
+        }
+
+        protected bool Equals(ParagraphNode other)
+        {
+            return Children.SequenceEqual(other.Children);
         }
     }
 }

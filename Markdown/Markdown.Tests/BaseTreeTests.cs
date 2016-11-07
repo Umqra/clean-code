@@ -1,5 +1,4 @@
-﻿using Markdown.Parsing;
-using Markdown.Parsing.Nodes;
+﻿using Markdown.Parsing.Nodes;
 
 namespace Markdown.Tests
 {

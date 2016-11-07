@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Markdown.Parsing;
 using Markdown.Parsing.Nodes;
 using Markdown.Rendering;
 using NUnit.Framework;
@@ -31,19 +30,19 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestEmptyLowEmphasisTextNode()
+        {
+            var node = LowEmphasisText();
+
+            Render(node).Should().Be("<em></em>");
+        }
+
+        [Test]
         public void TestEmptyMediumEmphasisTextNode()
         {
             var node = MediumEmphasisText();
 
             Render(node).Should().Be("<strong></strong>");
-        }
-
-        [Test]
-        public void TestEmptyLowEmphasisNode()
-        {
-            var node = LowEmphasisText();
-
-            Render(node).Should().Be("<em></em>");
         }
 
 
@@ -72,19 +71,19 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestManyNodesInLowEmphasisTextNode()
+        {
+            var node = LowEmphasisText(Text("first"), MediumEmphasisText(Text("second")));
+
+            Render(node).Should().Be("<em>first<strong>second</strong></em>");
+        }
+
+        [Test]
         public void TestManyNodesInMediumEmphasisTextNode()
         {
             var node = MediumEmphasisText(Text("first"), LowEmphasisText(Text("second")));
 
             Render(node).Should().Be("<strong>first<em>second</em></strong>");
-        }
-
-        [Test]
-        public void TestManyNodesInLowEmphasisNode()
-        {
-            var node = LowEmphasisText(Text("first"), MediumEmphasisText(Text("second")));
-
-            Render(node).Should().Be("<em>first<strong>second</strong></em>");
         }
 
         [Test]

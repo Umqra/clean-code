@@ -39,15 +39,13 @@ namespace Markdown.Parsing
 
         private INode ParsePlainText(ATokenizer<IToken> tokenizer)
         {
-            var textTokens = tokenizer.TakeTokensUntilMatch(
-                token => token is IPlainTextToken
-            );
+            var textTokens = tokenizer.TakeTokensUntilMatch(token => token is IPlainTextToken);
 
             if (!textTokens.Any())
                 return null;
 
             if (textTokens.TrueForAll(token => token is CharacterToken))
-                return new TextNode(String.Join("", textTokens.Select(token => token.Text)));
+                return new TextNode(string.Join("", textTokens.Select(token => token.Text)));
 
             var children = textTokens.Select(token =>
                     token is EscapedCharacterToken

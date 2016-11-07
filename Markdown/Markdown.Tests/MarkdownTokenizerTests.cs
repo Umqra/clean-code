@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Markdown.Tests
 {
     [TestFixture]
-    class MarkdownTokenizerTests
+    internal class MarkdownTokenizerTests
     {
         public ATokenizer<IToken> Tokenizer { get; set; }
 
@@ -45,9 +45,11 @@ namespace Markdown.Tests
             yield return new EmphasisModificatorToken(modificator);
         }
 
-        private IEnumerable<IToken> NewLine()
+        private readonly string twoSpacesNewLine = "  " + Environment.NewLine;
+        private readonly string twoLineBreaksNewLine = Environment.NewLine + Environment.NewLine;
+        private IEnumerable<IToken> NewLine(string text)
         {
-            yield return new NewLineToken();
+            yield return new NewLineToken(text);
         }
 
         [TestCase("sample", TestName = "When passed simple plain text")]
@@ -62,88 +64,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestEscapedCharacter()
-        {
-            var text = @"a\\\_";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
-
-            GetAllTokens().Should().Equal(
-                Character('a')
-                .Concat(Escaped('\\'))
-                .Concat(Escaped('_')));
-        }
-
-        [Test]
-        public void DoubleUnderscoreOnTextBorders_IsModificator()
-        {
-            var text = "__a__";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
-
-            GetAllTokens().Should().Equal(
-                Modificator("__")
-                .Concat(Character('a'))
-                .Concat(Modificator("__")));
-        }
-
-        [Test]
-        public void DoubleUnderscoreOnWordBorders_IsModificator()
-        {
-            var text = "a __b c__ d";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
-
-            GetAllTokens()
-                .Should()
-                .Equal(
-                    PlainText("a ")
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText("b c"))
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText(" d"))
-                );
-        }
-
-        [Test]
-        public void SingleUnderscoreOnTextBorders_IsModificator()
-        {
-            var text = "_a_";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
-
-            GetAllTokens().Should().Equal(
-                Modificator("_")
-                .Concat(Character('a'))
-                .Concat(Modificator("_")));
-        }
-
-        [Test]
-        public void SingleUnderscoreOnWordBorders_IsModificator()
-        {
-            var text = "a _b c_ d";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
-
-            GetAllTokens().Should().Equal(
-                PlainText("a ")
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText("b c"))
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText(" d")));
-        }
-
-        [Test]
-        public void DoubleUnderscoreSurroundedByPunctuation_IsModificator()
-        {
-            var text = "this is __!important!__.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
-
-            GetAllTokens().Should().Equal(
-                PlainText("this is ")
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText("!important!"))
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText(".")));
-        }
-
-        [Test]
-        public void DoubleUnderscoreAtTheEndOfSentence_IsModificator()
+        public void DoubleUnderscore_AtTheEndOfSentence_IsModificator()
         {
             var text = "This is the __end__.";
             Tokenizer = new MarkdownTokenizer().ForText(text);
@@ -157,7 +78,90 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void SingleUnderscoreSurroundedByPunctuation_IsModificator()
+        public void DoubleUnderscore_OnTextBorders_IsModificator()
+        {
+            var text = "__a__";
+            Tokenizer = new MarkdownTokenizer().ForText(text);
+
+            GetAllTokens().Should().Equal(
+                Modificator("__")
+                    .Concat(Character('a'))
+                    .Concat(Modificator("__")));
+        }
+
+        [Test]
+        public void DoubleUnderscore_OnWordBorders_IsModificator()
+        {
+            var text = "a __b c__ d";
+            Tokenizer = new MarkdownTokenizer().ForText(text);
+
+            GetAllTokens()
+                .Should()
+                .Equal(
+                    PlainText("a ")
+                        .Concat(Modificator("__"))
+                        .Concat(PlainText("b c"))
+                        .Concat(Modificator("__"))
+                        .Concat(PlainText(" d"))
+                );
+        }
+
+        [Test]
+        public void DoubleUnderscore_SurroundedByPunctuation_IsModificator()
+        {
+            var text = "this is __!important!__.";
+            Tokenizer = new MarkdownTokenizer().ForText(text);
+
+            GetAllTokens().Should().Equal(
+                PlainText("this is ")
+                    .Concat(Modificator("__"))
+                    .Concat(PlainText("!important!"))
+                    .Concat(Modificator("__"))
+                    .Concat(PlainText(".")));
+        }
+
+        [Test]
+        public void SingleUnderscore_AtTheEndOfSentence_IsModificator()
+        {
+            var text = "This is the _end_.";
+            Tokenizer = new MarkdownTokenizer().ForText(text);
+
+            GetAllTokens().Should().Equal(
+                PlainText("This is the ")
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText("end"))
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText(".")));
+        }
+
+        [Test]
+        public void SingleUnderscore_OnTextBorders_IsModificator()
+        {
+            var text = "_a_";
+            Tokenizer = new MarkdownTokenizer().ForText(text);
+
+            GetAllTokens().Should().Equal(
+                Modificator("_")
+                    .Concat(Character('a'))
+                    .Concat(Modificator("_")));
+        }
+
+        [Test]
+        public void SingleUnderscore_OnWordBorders_IsModificator()
+        {
+            var text = "a _b c_ d";
+            Tokenizer = new MarkdownTokenizer().ForText(text);
+
+            GetAllTokens().Should().Equal(
+                PlainText("a ")
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText("b c"))
+                    .Concat(Modificator("_"))
+                    .Concat(PlainText(" d")));
+        }
+
+        [Test]
+        public void SingleUnderscore_SurroundedByPunctuation_IsModificator()
         {
             var text = "this is _!important!_.";
             Tokenizer = new MarkdownTokenizer().ForText(text);
@@ -171,17 +175,15 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void SingleUnderscoreAtTheEndOfSentence_IsModificator()
+        public void TestEscapedCharacter()
         {
-            var text = "This is the _end_.";
+            var text = @"a\\\_";
             Tokenizer = new MarkdownTokenizer().ForText(text);
 
             GetAllTokens().Should().Equal(
-                PlainText("This is the ")
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText("end"))
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText(".")));
+                Character('a')
+                    .Concat(Escaped('\\'))
+                    .Concat(Escaped('_')));
         }
 
         [Test]
@@ -197,18 +199,6 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TwoSpacesAtTheEndOfLine_IsNewLineToken()
-        {
-            var text = $"hello  {Environment.NewLine}bye";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
-
-            GetAllTokens().Should().Equal(
-                PlainText("hello")
-                    .Concat(NewLine())
-                    .Concat(PlainText("bye")));
-        }
-
-        [Test]
         public void TwoLineBreaks_IsNewLineToken()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
@@ -216,7 +206,19 @@ namespace Markdown.Tests
 
             GetAllTokens().Should().Equal(
                 PlainText("hello")
-                    .Concat(NewLine())
+                    .Concat(NewLine(twoLineBreaksNewLine))
+                    .Concat(PlainText("bye")));
+        }
+
+        [Test]
+        public void TwoSpaces_AtTheEndOfLine_IsNewLineToken()
+        {
+            var text = $"hello  {Environment.NewLine}bye";
+            Tokenizer = new MarkdownTokenizer().ForText(text);
+
+            GetAllTokens().Should().Equal(
+                PlainText("hello")
+                    .Concat(NewLine(twoSpacesNewLine))
                     .Concat(PlainText("bye")));
         }
     }

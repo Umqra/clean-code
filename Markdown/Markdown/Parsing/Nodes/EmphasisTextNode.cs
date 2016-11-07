@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Markdown.Parsing.Nodes
@@ -21,16 +20,11 @@ namespace Markdown.Parsing.Nodes
             return visitor.Visit(this);
         }
 
-        protected bool Equals(EmphasisTextNode other)
-        {
-            return EmphasisStrength == other.EmphasisStrength && Children.SequenceEqual(other.Children);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((EmphasisTextNode)obj);
         }
 
@@ -40,6 +34,11 @@ namespace Markdown.Parsing.Nodes
             {
                 return ((int)EmphasisStrength * 397) ^ (Children?.CombineElementHashCodesUsingParent(this) ?? 0);
             }
+        }
+
+        protected bool Equals(EmphasisTextNode other)
+        {
+            return EmphasisStrength == other.EmphasisStrength && Children.SequenceEqual(other.Children);
         }
     }
 }

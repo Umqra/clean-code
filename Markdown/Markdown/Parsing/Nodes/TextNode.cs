@@ -14,11 +14,6 @@
             return visitor.Visit(this);
         }
 
-        protected bool Equals(TextNode other)
-        {
-            return string.Equals(Text, other.Text);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -30,6 +25,11 @@
         public override int GetHashCode()
         {
             return Text?.GetHashCode() ?? 0;
+        }
+
+        protected bool Equals(TextNode other)
+        {
+            return string.Equals(Text, other.Text);
         }
     }
 }

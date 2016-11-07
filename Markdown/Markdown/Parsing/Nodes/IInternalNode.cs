@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Markdown.Parsing.Nodes;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.Nodes
 {
     public interface IInternalNode : INode
     {

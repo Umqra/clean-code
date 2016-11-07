@@ -1,8 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using FluentAssertions;
 using Markdown.Parsing;
-using Markdown.Parsing.Nodes;
 using Markdown.Parsing.Tokens;
 using NUnit.Framework;
 
@@ -22,22 +20,47 @@ namespace Markdown.Tests
         public ATokenizer<IToken> Tokenizer { get; set; }
 
         [Test]
-        public void TestSimpleText()
+        public void BoldInItalic_ShouldBeParsed()
         {
-            var sample = "sample text";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
-
-            parsed.Should().Be(Paragraph(Text(sample)));
-        }
-
-        [Test]
-        public void TestItalicUnderscore()
-        {
-            var sample = "_sample text_";
+            var sample = "_italic __bold__ end_";
             var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
 
             parsed.Should().Be(
-                Paragraph(LowEmphasisText(Text("sample text"))));
+                Paragraph(
+                    LowEmphasisText(
+                        Text("italic "),
+                        MediumEmphasisText(Text("bold")),
+                        Text(" end"))
+                ));
+        }
+
+        [Test]
+        public void ItalicInBold_ShouldBeParsed()
+        {
+            var sample = "__bold _italic_ end__";
+            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+
+            parsed.Should().Be(
+                Paragraph(
+                    MediumEmphasisText(
+                        Text("bold "),
+                        LowEmphasisText(Text("italic")),
+                        Text(" end"))
+                ));
+        }
+
+        [Test]
+        public void NotPairedUnderscore_ShouldNotModifyText()
+        {
+            var sample = "_a";
+            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+
+            parsed.Should().Be(
+                Paragraph(
+                    Group(
+                        Text("_"),
+                        Text("a"))
+                ));
         }
 
         [Test]
@@ -67,53 +90,28 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void ItalicInBold_ShouldBeParsed()
+        public void TestItalicUnderscore()
         {
-            var sample = "__bold _italic_ end__";
+            var sample = "_sample text_";
             var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
 
             parsed.Should().Be(
-                Paragraph(
-                    MediumEmphasisText(
-                        Text("bold "),
-                        LowEmphasisText(Text("italic")),
-                        Text(" end"))
-                ));
+                Paragraph(LowEmphasisText(Text("sample text"))));
         }
 
         [Test]
-        public void BoldInItalic_ShouldBeParsed()
+        public void TestSimpleText()
         {
-            var sample = "_italic __bold__ end_";
+            var sample = "sample text";
             var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
 
-            parsed.Should().Be(
-                Paragraph(
-                    LowEmphasisText(
-                        Text("italic "),
-                        MediumEmphasisText(Text("bold")),
-                        Text(" end"))
-                ));
+            parsed.Should().Be(Paragraph(Text(sample)));
         }
 
         [Test]
-        public void NotPairedUnderscores_ShouldNotModifyText()
+        public void TwoLineBreaks_IsNewLineNode()
         {
-            var sample = "_a";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
-
-            parsed.Should().Be(
-                Paragraph(
-                    Group(
-                        Text("_"),
-                        Text("a"))
-                ));
-        }
-
-        [Test]
-        public void TwoSpacesAtTheEndOfLine_IsNewLineNode()
-        {
-            var sample = $"hello  {Environment.NewLine}bye";
+            var sample = $"hello{Environment.NewLine}{Environment.NewLine}bye";
             var parsed = Parser.Parse(Tokenizer.ForText(sample));
 
             parsed.Should().Be(
@@ -126,9 +124,9 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TwoLineBreaks_IsNewLineNode()
+        public void TwoSpacesAtTheEndOfLine_IsNewLineNode()
         {
-            var sample = $"hello{Environment.NewLine}{Environment.NewLine}bye";
+            var sample = $"hello  {Environment.NewLine}bye";
             var parsed = Parser.Parse(Tokenizer.ForText(sample));
 
             parsed.Should().Be(

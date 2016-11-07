@@ -10,8 +10,6 @@ namespace Markdown.Parsing.Tokens
             Text = text;
         }
 
-        public string Text { get; }
-
         public EmphasisStrength EmphasisStrength
         {
             get
@@ -26,10 +24,7 @@ namespace Markdown.Parsing.Tokens
             }
         }
 
-        protected bool Equals(EmphasisModificatorToken other)
-        {
-            return string.Equals(Text, other.Text);
-        }
+        public string Text { get; }
 
         public override bool Equals(object obj)
         {
@@ -47,6 +42,11 @@ namespace Markdown.Parsing.Tokens
         public override string ToString()
         {
             return $"Modificator({Text})";
+        }
+
+        protected bool Equals(EmphasisModificatorToken other)
+        {
+            return string.Equals(Text, other.Text);
         }
     }
 }

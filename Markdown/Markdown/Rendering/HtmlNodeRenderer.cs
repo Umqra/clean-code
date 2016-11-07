@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Text;
+using System.Web;
 using Markdown.Parsing;
 using Markdown.Parsing.Nodes;
-using System.Web;
-using System.IO;
 
 namespace Markdown.Rendering
 {

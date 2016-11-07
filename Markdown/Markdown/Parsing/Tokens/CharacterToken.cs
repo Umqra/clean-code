@@ -9,11 +9,6 @@
 
         public string Text { get; }
 
-        protected bool Equals(CharacterToken other)
-        {
-            return string.Equals(Text, other.Text);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -30,6 +25,11 @@
         public override string ToString()
         {
             return $"Char({Text})";
+        }
+
+        protected bool Equals(CharacterToken other)
+        {
+            return string.Equals(Text, other.Text);
         }
     }
 }

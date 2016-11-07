@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Markdown.Parsing.Nodes
+﻿namespace Markdown.Parsing.Nodes
 {
     public class NewLineNode : INode
     {
@@ -13,22 +7,22 @@ namespace Markdown.Parsing.Nodes
             return visitor.Visit(this);
         }
 
-        protected bool Equals(NewLineNode other)
-        {
-            return true;
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((NewLineNode)obj);
         }
 
         public override int GetHashCode()
         {
             return 0;
+        }
+
+        protected bool Equals(NewLineNode other)
+        {
+            return true;
         }
     }
 }

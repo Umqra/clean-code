@@ -28,10 +28,7 @@ namespace Markdown.Parsing
         private IToken TryParseNewLineToken(string newLineToken)
         {
             if (LookAtString(newLineToken.Length) == newLineToken)
-            {
-                TakeString(newLineToken.Length);
-                return new NewLineToken();
-            }
+                return new NewLineToken(TakeString(newLineToken.Length));
             return null;
         }
 
