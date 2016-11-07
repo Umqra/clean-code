@@ -2,6 +2,8 @@
 using System.Text;
 using Markdown.Parsing;
 using Markdown.Parsing.Nodes;
+using System.Web;
+using System.IO;
 
 namespace Markdown.Rendering
 {
@@ -36,6 +38,11 @@ namespace Markdown.Rendering
         public string Visit(NewLineNode node)
         {
             return "<br/>";
+        }
+
+        public string Visit(EscapedTextNode node)
+        {
+            return HttpUtility.HtmlEncode(node.Text);
         }
 
         private string VisitInternalNodes(IInternalNode node)

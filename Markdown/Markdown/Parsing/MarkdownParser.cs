@@ -45,7 +45,16 @@ namespace Markdown.Parsing
 
             if (!textTokens.Any())
                 return null;
-            return new TextNode(string.Join("", textTokens.Select(token => token.Text)));
+
+            if (textTokens.TrueForAll(token => token is CharacterToken))
+                return new TextNode(String.Join("", textTokens.Select(token => token.Text)));
+
+            var children = textTokens.Select(token =>
+                    token is EscapedCharacterToken
+                        ? (INode)new EscapedTextNode(token.Text)
+                        : (INode)new TextNode(token.Text)
+            );
+            return new GroupNode(children);
         }
 
         private INode ParseEmphasisText(ATokenizer<IToken> tokenizer, EmphasisStrength[] parsingStrengths)

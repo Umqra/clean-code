@@ -9,5 +9,6 @@ namespace Markdown.Parsing
         T Visit(TextNode node);
         T Visit(GroupNode node);
         T Visit(NewLineNode node);
+        T Visit(EscapedTextNode node);
     }
 }

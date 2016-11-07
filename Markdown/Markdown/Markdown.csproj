@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,7 +43,8 @@
   <ItemGroup>
     <Compile Include="Parsing\ATokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
-    <Compile Include="Parsing\IInternalNode.cs" />
+    <Compile Include="Parsing\Nodes\IInternalNode.cs" />
+    <Compile Include="Parsing\Nodes\EscapedTextNode.cs" />
     <Compile Include="Parsing\Nodes\INode.cs" />
     <Compile Include="Parsing\INodeVisitor.cs" />
     <Compile Include="Parsing\Nodes\NewLineNode.cs" />
