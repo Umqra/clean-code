@@ -75,12 +75,9 @@ namespace Markdown.Tests
             var text = "This is the __end__.";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("This is the ")
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText("end"))
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText(".")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("This is the "), Modificator("__"), PlainText("end"), Modificator("__"), PlainText(".")
+            );
         }
 
         [Test]
@@ -89,10 +86,9 @@ namespace Markdown.Tests
             var text = "__a__";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                Modificator("__")
-                    .Concat(Character('a'))
-                    .Concat(Modificator("__")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Modificator("__"), Character('a'), Modificator("__")
+            );
         }
 
         [Test]
@@ -101,15 +97,9 @@ namespace Markdown.Tests
             var text = "a __b c__ d";
             SetUpTokenizer(text);
 
-            GetAllTokens()
-                .Should()
-                .Equal(
-                    PlainText("a ")
-                        .Concat(Modificator("__"))
-                        .Concat(PlainText("b c"))
-                        .Concat(Modificator("__"))
-                        .Concat(PlainText(" d"))
-                );
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a "), Modificator("__"), PlainText("b c"), Modificator("__"), PlainText(" d")
+            );
         }
 
         [Test]
@@ -118,12 +108,9 @@ namespace Markdown.Tests
             var text = "this is __!important!__.";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("this is ")
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText("!important!"))
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText(".")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("this is "), Modificator("__"), PlainText("!important!"), Modificator("__"), PlainText(".")
+            );
         }
 
         [Test]
@@ -132,12 +119,9 @@ namespace Markdown.Tests
             var text = "This is the _end_.";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("This is the ")
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText("end"))
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText(".")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("This is the "), Modificator("_"), PlainText("end"), Modificator("_"), PlainText(".")
+            );
         }
 
         [Test]
@@ -146,10 +130,9 @@ namespace Markdown.Tests
             var text = "_a_";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                Modificator("_")
-                    .Concat(Character('a'))
-                    .Concat(Modificator("_")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Modificator("_"), Character('a'), Modificator("_")
+            );
         }
 
         [Test]
@@ -158,12 +141,9 @@ namespace Markdown.Tests
             var text = "a _b c_ d";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("a ")
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText("b c"))
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText(" d")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a "), Modificator("_"), PlainText("b c"), Modificator("_"), PlainText(" d")
+            );
         }
 
         [Test]
@@ -172,12 +152,9 @@ namespace Markdown.Tests
             var text = "this is _!important!_.";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("this is ")
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText("!important!"))
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText(".")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("this is "), Modificator("_"), PlainText("!important!"), Modificator("_"), PlainText(".")
+            );
         }
 
         [Test]
@@ -186,10 +163,9 @@ namespace Markdown.Tests
             var text = @"a\\\_";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                Character('a')
-                    .Concat(Escaped('\\'))
-                    .Concat(Escaped('_')));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Character('a'), Escaped('\\'), Escaped('_')
+            );
         }
 
         [Test]
@@ -198,10 +174,9 @@ namespace Markdown.Tests
             var text = "___triple___";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                Modificator("___")
-                    .Concat(PlainText("triple"))
-                    .Concat(Modificator("___")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Modificator("___"), PlainText("triple"), Modificator("___")
+            );
         }
 
         [Test]
@@ -210,10 +185,9 @@ namespace Markdown.Tests
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("hello")
-                    .Concat(NewLine(twoLineBreaksNewLine))
-                    .Concat(PlainText("bye")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("hello"), NewLine(twoLineBreaksNewLine), PlainText("bye")
+            );
         }
 
         [Test]
@@ -222,10 +196,9 @@ namespace Markdown.Tests
             var text = $"hello  {Environment.NewLine}bye";
             SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("hello")
-                    .Concat(NewLine(twoSpacesNewLine))
-                    .Concat(PlainText("bye")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("hello"), NewLine(twoSpacesNewLine), PlainText("bye")
+            );
         }
     }
 }
