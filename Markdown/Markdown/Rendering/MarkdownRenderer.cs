@@ -1,10 +1,11 @@
 ﻿using Markdown.Parsing;
+using Markdown.Parsing.Tokens;
 
 namespace Markdown.Rendering
 {
     public class MarkdownRenderer
     {
-        public MarkdownRenderer(MarkdownParser parser, MarkdownTokenizer tokenizer, INodeRenderer nodeRenderer)
+        public MarkdownRenderer(MarkdownParser parser, ITokenizerFactory<IToken> tokenizer, INodeRenderer nodeRenderer)
         {
             Parser = parser;
             Tokenizer = tokenizer;
@@ -12,12 +13,12 @@ namespace Markdown.Rendering
         }
 
         public MarkdownParser Parser { get; set; }
-        public MarkdownTokenizer Tokenizer { get; set; }
+        public ITokenizerFactory<IToken> Tokenizer { get; set; }
         public INodeRenderer NodeRenderer { get; set; }
 
         public string Render(string text)
         {
-            return Parser.Parse(Tokenizer.ForText(text)).Accept(NodeRenderer);
+            return Parser.Parse(new MarkdownTokenizer(text)).Accept(NodeRenderer);
         }
     }
 }

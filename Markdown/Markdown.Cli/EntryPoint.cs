@@ -47,7 +47,7 @@ namespace Markdown.Cli
         private static void ConvertMarkdownToHtml(CliOptions options)
         {
             var markdownMarkup = File.ReadAllText(options.InputFilename);
-            var markdownToHtmlRenderer = new MarkdownRenderer(new MarkdownParser(), new MarkdownTokenizer(),
+            var markdownToHtmlRenderer = new MarkdownRenderer(new MarkdownParser(), new MarkdownTokenizerFactory(), 
                 new HtmlNodeRenderer());
             var htmlMarkup = markdownToHtmlRenderer.Render(markdownMarkup);
             File.WriteAllText(options.OutputFilename, htmlMarkup);

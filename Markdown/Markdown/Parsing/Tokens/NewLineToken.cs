@@ -2,12 +2,12 @@
 {
     public class NewLineToken : IToken
     {
-        public string Text { get; }
-
         public NewLineToken(string text)
         {
             Text = text;
         }
+
+        public string Text { get; }
 
         public override bool Equals(object obj)
         {

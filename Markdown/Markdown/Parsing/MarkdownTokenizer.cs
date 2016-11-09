@@ -6,6 +6,10 @@ namespace Markdown.Parsing
 {
     public class MarkdownTokenizer : ATokenizer<IToken>
     {
+        public MarkdownTokenizer(string text) : base(text)
+        {
+        }
+
         //TODO: Poor performance because of many-many CharacterToken objects
         protected override IToken ParseToken()
         {

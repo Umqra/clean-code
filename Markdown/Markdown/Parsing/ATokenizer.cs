@@ -13,11 +13,10 @@ namespace Markdown.Parsing
 
         protected abstract T ParseToken();
 
-        public virtual ATokenizer<T> ForText(string text)
+        protected ATokenizer(string text)
         {
             Text = text;
             TextPosition = 0;
-            return this;
         }
 
         public string LookAtString(int length)

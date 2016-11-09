@@ -41,8 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\ATokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
+    <Compile Include="Parsing\ITokenizerFactory.cs" />
+    <Compile Include="Parsing\MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\IInternalNode.cs" />
     <Compile Include="Parsing\Nodes\EscapedTextNode.cs" />
     <Compile Include="Parsing\Nodes\INode.cs" />

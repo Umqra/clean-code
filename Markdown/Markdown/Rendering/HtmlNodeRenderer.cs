@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Web;
-using Markdown.Parsing;
 using Markdown.Parsing.Nodes;
 
 namespace Markdown.Rendering

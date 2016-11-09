@@ -13,6 +13,11 @@ namespace Markdown.Tests
     {
         public ATokenizer<IToken> Tokenizer { get; set; }
 
+        public void SetUpTokenizer(string text)
+        {
+            Tokenizer = new MarkdownTokenizer(text);
+        }
+
         public IEnumerable<IToken> GetAllTokens()
         {
             while (true)
@@ -47,6 +52,7 @@ namespace Markdown.Tests
 
         private readonly string twoSpacesNewLine = "  " + Environment.NewLine;
         private readonly string twoLineBreaksNewLine = Environment.NewLine + Environment.NewLine;
+
         private IEnumerable<IToken> NewLine(string text)
         {
             yield return new NewLineToken(text);
@@ -57,7 +63,7 @@ namespace Markdown.Tests
         [TestCase("1_a__b____a2_a", TestName = "When underscores surrounded by letters/digits")]
         public void TestOnlyCharacterTokensInText(string text)
         {
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             foreach (var token in GetAllTokens())
                 token.Should().BeOfType<CharacterToken>();
@@ -67,7 +73,7 @@ namespace Markdown.Tests
         public void DoubleUnderscore_AtTheEndOfSentence_IsModificator()
         {
             var text = "This is the __end__.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText("This is the ")
@@ -81,7 +87,7 @@ namespace Markdown.Tests
         public void DoubleUnderscore_OnTextBorders_IsModificator()
         {
             var text = "__a__";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 Modificator("__")
@@ -93,7 +99,7 @@ namespace Markdown.Tests
         public void DoubleUnderscore_OnWordBorders_IsModificator()
         {
             var text = "a __b c__ d";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens()
                 .Should()
@@ -110,7 +116,7 @@ namespace Markdown.Tests
         public void DoubleUnderscore_SurroundedByPunctuation_IsModificator()
         {
             var text = "this is __!important!__.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText("this is ")
@@ -124,7 +130,7 @@ namespace Markdown.Tests
         public void SingleUnderscore_AtTheEndOfSentence_IsModificator()
         {
             var text = "This is the _end_.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText("This is the ")
@@ -138,7 +144,7 @@ namespace Markdown.Tests
         public void SingleUnderscore_OnTextBorders_IsModificator()
         {
             var text = "_a_";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 Modificator("_")
@@ -150,7 +156,7 @@ namespace Markdown.Tests
         public void SingleUnderscore_OnWordBorders_IsModificator()
         {
             var text = "a _b c_ d";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText("a ")
@@ -164,7 +170,7 @@ namespace Markdown.Tests
         public void SingleUnderscore_SurroundedByPunctuation_IsModificator()
         {
             var text = "this is _!important!_.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText("this is ")
@@ -178,7 +184,7 @@ namespace Markdown.Tests
         public void TestEscapedCharacter()
         {
             var text = @"a\\\_";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 Character('a')
@@ -190,7 +196,7 @@ namespace Markdown.Tests
         public void TripleUnderscore_IsItalicInBoldModificators()
         {
             var text = "___triple___";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 Modificator("___")
@@ -202,7 +208,7 @@ namespace Markdown.Tests
         public void TwoLineBreaks_IsNewLineToken()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText("hello")
@@ -214,7 +220,7 @@ namespace Markdown.Tests
         public void TwoSpaces_AtTheEndOfLine_IsNewLineToken()
         {
             var text = $"hello  {Environment.NewLine}bye";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             GetAllTokens().Should().Equal(
                 PlainText("hello")

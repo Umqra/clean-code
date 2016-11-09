@@ -13,17 +13,17 @@ namespace Markdown.Tests
         public void SetUp()
         {
             Parser = new MarkdownParser();
-            Tokenizer = new MarkdownTokenizer();
+            TokenizerFactory = new MarkdownTokenizerFactory();
         }
 
         public MarkdownParser Parser { get; set; }
-        public ATokenizer<IToken> Tokenizer { get; set; }
+        public ITokenizerFactory<IToken> TokenizerFactory { get; set; }
 
         [Test]
         public void BoldInItalic_ShouldBeParsed()
         {
             var sample = "_italic __bold__ end_";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(
                 Paragraph(
@@ -38,7 +38,7 @@ namespace Markdown.Tests
         public void ItalicInBold_ShouldBeParsed()
         {
             var sample = "__bold _italic_ end__";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(
                 Paragraph(
@@ -53,7 +53,7 @@ namespace Markdown.Tests
         public void NotPairedUnderscore_ShouldNotModifyText()
         {
             var sample = "_a";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(
                 Paragraph(
@@ -67,7 +67,7 @@ namespace Markdown.Tests
         public void TestBoldUnderscore()
         {
             var sample = "__sample text__";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(
                 Paragraph(MediumEmphasisText(Text("sample text"))));
@@ -77,7 +77,7 @@ namespace Markdown.Tests
         public void TestConsecutiveModificators()
         {
             var sample = "_first_ __second__ _third_";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(
                 Paragraph(
@@ -93,7 +93,7 @@ namespace Markdown.Tests
         public void TestItalicUnderscore()
         {
             var sample = "_sample text_";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(
                 Paragraph(LowEmphasisText(Text("sample text"))));
@@ -103,7 +103,7 @@ namespace Markdown.Tests
         public void TestSimpleText()
         {
             var sample = "sample text";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(Paragraph(Text(sample)));
         }
@@ -112,7 +112,7 @@ namespace Markdown.Tests
         public void TwoLineBreaks_IsNewLineNode()
         {
             var sample = $"hello{Environment.NewLine}{Environment.NewLine}bye";
-            var parsed = Parser.Parse(Tokenizer.ForText(sample));
+            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(
                 Group(
@@ -127,7 +127,7 @@ namespace Markdown.Tests
         public void TwoSpacesAtTheEndOfLine_IsNewLineNode()
         {
             var sample = $"hello  {Environment.NewLine}bye";
-            var parsed = Parser.Parse(Tokenizer.ForText(sample));
+            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(sample));
 
             parsed.Should().Be(
                 Group(
