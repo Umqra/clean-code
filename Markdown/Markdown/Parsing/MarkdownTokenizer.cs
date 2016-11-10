@@ -18,13 +18,13 @@ namespace Markdown.Parsing
                    TryParseNewLineToken(Environment.NewLine + Environment.NewLine) ??
                    TryParseSemanticModificator("__", s => new MdStrongModificatorToken(s)) ??
                    TryParseSemanticModificator("_", s => new MdEmphasisModificatorToken(s)) ??
-                   new MdCharacterToken(TakeString(1)[0]);
+                   new MdTextToken(TakeString(1));
         }
 
         private IMdToken TryParseEscapedCharacter()
         {
             if (CurrentSymbol == '\\' && TextPosition < Text.Length - 1)
-                return new MdEscapedCharacterToken(TakeString(2)[1]);
+                return new MdEscapedTextToken(TakeString(2).Substring(1));
             return null;
         }
 

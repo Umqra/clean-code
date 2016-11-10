@@ -28,20 +28,15 @@ namespace Markdown.Tests
             }
         }
 
-        private IEnumerable<IMdToken> Character(char c)
+        private IEnumerable<IMdToken> Escaped(string text)
         {
-            yield return new MdCharacterToken(c);
-        }
-
-        private IEnumerable<IMdToken> Escaped(char c)
-        {
-            yield return new MdEscapedCharacterToken(c);
+            yield return new MdEscapedTextToken(text);
         }
 
         private IEnumerable<IMdToken> PlainText(string text)
         {
             foreach (var c in text)
-                yield return new MdCharacterToken(c);
+                yield return new MdTextToken(new string(c, 1));
         }
 
         private IEnumerable<IMdToken> Emphasis(string modificator)
@@ -70,7 +65,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             foreach (var token in GetAllTokens())
-                token.Should().BeOfType<MdCharacterToken>();
+                token.Should().BeOfType<MdTextToken>();
         }
 
         [Test]
@@ -91,7 +86,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                Strong("__"), Character('a'), Strong("__")
+                Strong("__"), PlainText("a"), Strong("__")
             );
         }
 
@@ -135,7 +130,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                Emphasis("_"), Character('a'), Emphasis("_")
+                Emphasis("_"), PlainText("a"), Emphasis("_")
             );
         }
 
@@ -168,7 +163,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                Character('a'), Escaped('\\'), Escaped('_')
+                PlainText("a"), Escaped("\\"), Escaped("_")
             );
         }
 

@@ -45,11 +45,11 @@ namespace Markdown.Parsing
             if (!textTokens.Any())
                 return null;
 
-            if (textTokens.TrueForAll(token => token is MdCharacterToken))
+            if (textTokens.TrueForAll(token => token is MdTextToken))
                 return new TextNode(string.Join("", textTokens.Select(token => token.Text)));
 
             var children = textTokens.Select(token =>
-                    token is MdEscapedCharacterToken
+                    token is MdEscapedTextToken
                         ? (INode)new EscapedTextNode(token.Text)
                         : (INode)new TextNode(token.Text)
             );

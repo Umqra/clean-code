@@ -55,7 +55,7 @@
     <Compile Include="Parsing\Nodes\INode.cs" />
     <Compile Include="Parsing\Visitors\INodeVisitor.cs" />
     <Compile Include="Parsing\Nodes\NewLineNode.cs" />
-    <Compile Include="Parsing\Tokens\MdEscapedCharacterToken.cs" />
+    <Compile Include="Parsing\Tokens\MdEscapedTextToken.cs" />
     <Compile Include="Parsing\Tokens\IMdPlainTextToken.cs" />
     <Compile Include="Parsing\Tokens\IMdToken.cs" />
     <Compile Include="Parsing\MarkdownParser.cs" />
@@ -66,7 +66,7 @@
     <Compile Include="Parsing\Nodes\TextNode.cs" />
     <Compile Include="Parsing\MarkdownTokenizer.cs" />
     <Compile Include="Parsing\Tokens\MdEmphasisModificatorToken.cs" />
-    <Compile Include="Parsing\Tokens\MdCharacterToken.cs" />
+    <Compile Include="Parsing\Tokens\MdTextToken.cs" />
     <Compile Include="Parsing\Tokens\MdNewLineToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEmphasisTag.cs" />
