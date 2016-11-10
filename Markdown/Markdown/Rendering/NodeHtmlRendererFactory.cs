@@ -10,8 +10,9 @@ namespace Markdown.Rendering
         private static readonly Dictionary<Type, Func<INode, IHtmlTag>> internalConversionTable = new
             Dictionary<Type, Func<INode, IHtmlTag>>
             {
-                {typeof(ParagraphNode), node => new HtmlParagraphNode()},
-                {typeof(EmphasisTextNode), node => new HtmlEmphasisTag()}
+                {typeof(ParagraphNode), node => new HtmlParagraphTag()},
+                {typeof(EmphasisModificatorNode), node => new HtmlEmphasisTag()},
+                {typeof(StrongModificatorNode), node => new HtmlStrongTag()}
             };
 
         private static readonly Dictionary<Type, Func<INode, IHtmlContent>> leafConversionTable = new

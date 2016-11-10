@@ -16,9 +16,8 @@ namespace Markdown.Parsing
             return TryParseEscapedCharacter() ??
                    TryParseNewLineToken("  " + Environment.NewLine) ??
                    TryParseNewLineToken(Environment.NewLine + Environment.NewLine) ??
-                   TryParseEmphasisModificator("___") ??
-                   TryParseEmphasisModificator("__") ??
-                   TryParseEmphasisModificator("_") ??
+                   TryParseSemanticModificator("__", s => new MdStrongModificatorToken(s)) ??
+                   TryParseSemanticModificator("_", s => new MdEmphasisModificatorToken(s)) ??
                    new MdCharacterToken(TakeString(1)[0]);
         }
 
@@ -36,7 +35,7 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private IMdToken TryParseEmphasisModificator(string modificator)
+        private IMdToken TryParseSemanticModificator(string modificator, Func<string, IMdToken> factory)
         {
             if (LookAtString(modificator.Length) != modificator)
                 return null;
@@ -50,7 +49,7 @@ namespace Markdown.Parsing
             if (before.IsLetterOrDigit() && after.IsLetterOrDigit())
                 return null;
 
-            return new MdEmphasisModificatorToken(TakeString(modificator.Length));
+            return factory(TakeString(modificator.Length));
         }
     }
 }

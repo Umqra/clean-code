@@ -27,9 +27,9 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    LowEmphasisText(
+                    EmphasisModificator(
                         Text("italic "),
-                        MediumEmphasisText(Text("bold")),
+                        StrongModificator(Text("bold")),
                         Text(" end"))
                 )
             );
@@ -43,9 +43,9 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    MediumEmphasisText(
+                    StrongModificator(
                         Text("bold "),
-                        LowEmphasisText(Text("italic")),
+                        EmphasisModificator(Text("italic")),
                         Text(" end"))
                 )
             );
@@ -66,7 +66,7 @@ namespace Markdown.Tests
             var text = "__sample text__";
             var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
-            parsed.Should().Be(Paragraph(MediumEmphasisText(Text("sample text"))));
+            parsed.Should().Be(Paragraph(StrongModificator(Text("sample text"))));
         }
 
         [Test]
@@ -77,11 +77,11 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    LowEmphasisText(Text("first")),
+                    EmphasisModificator(Text("first")),
                     Text(" "),
-                    MediumEmphasisText(Text("second")),
+                    StrongModificator(Text("second")),
                     Text(" "),
-                    LowEmphasisText(Text("third"))
+                    EmphasisModificator(Text("third"))
                 )
             );
         }
@@ -92,7 +92,7 @@ namespace Markdown.Tests
             var text = "_sample text_";
             var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
-            parsed.Should().Be(Paragraph(LowEmphasisText(Text("sample text"))));
+            parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
         }
 
         [Test]

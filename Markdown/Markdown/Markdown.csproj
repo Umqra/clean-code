@@ -45,6 +45,8 @@
     <Compile Include="Parsing\CharExtensions.cs" />
     <Compile Include="Parsing\ContextTreeVisitor.cs" />
     <Compile Include="Parsing\ITokenizerFactory.cs" />
+    <Compile Include="Parsing\Nodes\StrongModificatorNode.cs" />
+    <Compile Include="Parsing\Tokens\MdStrongModificatorToken.cs" />
     <Compile Include="Parsing\Visitors\ATreeContext.cs" />
     <Compile Include="Parsing\Visitors\ITreeContext.cs" />
     <Compile Include="Parsing\MarkdownTokenizerFactory.cs" />
@@ -57,9 +59,7 @@
     <Compile Include="Parsing\Tokens\IMdPlainTextToken.cs" />
     <Compile Include="Parsing\Tokens\IMdToken.cs" />
     <Compile Include="Parsing\MarkdownParser.cs" />
-    <Compile Include="Parsing\Nodes\EmphasisExtensions.cs" />
-    <Compile Include="Parsing\Nodes\EmphasisStrength.cs" />
-    <Compile Include="Parsing\Nodes\EmphasisTextNode.cs" />
+    <Compile Include="Parsing\Nodes\EmphasisModificatorNode.cs" />
     <Compile Include="Parsing\Nodes\GroupNode.cs" />
     <Compile Include="Parsing\Nodes\SequenceExtensions.cs" />
     <Compile Include="Parsing\Nodes\ParagraphNode.cs" />
@@ -72,7 +72,8 @@
     <Compile Include="Rendering\HtmlEntities\HtmlEmphasisTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEscapedTextContent.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlNewLineContent.cs" />
-    <Compile Include="Rendering\HtmlEntities\HtmlParagraphNode.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlParagraphTag.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlStrongTag.cs" />
     <Compile Include="Rendering\HtmlRenderContext.cs" />
     <Compile Include="Rendering\HtmlRenderer.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlTextContent.cs" />

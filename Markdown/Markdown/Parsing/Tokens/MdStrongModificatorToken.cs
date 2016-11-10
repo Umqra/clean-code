@@ -1,8 +1,8 @@
 ﻿namespace Markdown.Parsing.Tokens
 {
-    public class MdEmphasisModificatorToken : IMdToken
+    public class MdStrongModificatorToken : IMdToken
     {
-        public MdEmphasisModificatorToken(string text)
+        public MdStrongModificatorToken(string text)
         {
             Text = text;
         }
@@ -14,7 +14,7 @@
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((MdEmphasisModificatorToken)obj);
+            return Equals((MdStrongModificatorToken)obj);
         }
 
         public override int GetHashCode()
@@ -24,10 +24,10 @@
 
         public override string ToString()
         {
-            return $"Emphasis({Text})";
+            return $"Strong({Text})";
         }
 
-        protected bool Equals(MdEmphasisModificatorToken other)
+        protected bool Equals(MdStrongModificatorToken other)
         {
             return string.Equals(Text, other.Text);
         }

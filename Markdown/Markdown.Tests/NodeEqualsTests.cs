@@ -7,10 +7,19 @@ namespace Markdown.Tests
     internal class NodeEqualsTests : BaseTreeTests
     {
         [Test]
-        public void TestEqualsEmphasisTextNodes()
+        public void TestEqualsEmphasisModificatorNodes()
         {
-            var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")), HighEmphasisText(Text("c")));
-            var b = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")), HighEmphasisText(Text("c")));
+            var a = EmphasisModificator(Text("a"), Text("b"));
+            var b = EmphasisModificator(Text("a"), Text("b"));
+
+            a.Equals(b).Should().BeTrue();
+        }
+
+        [Test]
+        public void TestEqualsStrongModificatorNodes()
+        {
+            var a = StrongModificator(Text("a"), Text("b"));
+            var b = StrongModificator(Text("a"), Text("b"));
 
             a.Equals(b).Should().BeTrue();
         }
@@ -27,8 +36,8 @@ namespace Markdown.Tests
         [Test]
         public void TestEqualsParagraphNodes()
         {
-            var a = Paragraph(LowEmphasisText(Text("a")), MediumEmphasisText(Text("b")));
-            var b = Paragraph(LowEmphasisText(Text("a")), MediumEmphasisText(Text("b")));
+            var a = Paragraph(EmphasisModificator(Text("a")), StrongModificator(Text("b")));
+            var b = Paragraph(EmphasisModificator(Text("a")), StrongModificator(Text("b")));
 
             a.Equals(b).Should().BeTrue();
         }
@@ -43,24 +52,6 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestNotEqualsEmphasisTextNodes_WhenOrderDiffers()
-        {
-            var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")));
-            var b = MediumEmphasisText(LowEmphasisText(Text("b")), Text("a"));
-
-            a.Equals(b).Should().BeFalse();
-        }
-
-        [Test]
-        public void TestNotEqualsEmphasisTextNodes_WhenStrengthDiffers()
-        {
-            var a = MediumEmphasisText(Text("a"), LowEmphasisText(Text("b")));
-            var b = HighEmphasisText(Text("a"), LowEmphasisText(Text("b")));
-
-            a.Equals(b).Should().BeFalse();
-        }
-
-        [Test]
         public void TestNotEqualsGroupNodes()
         {
             var a = Group(Text("a"), Text("b"));
@@ -70,19 +61,10 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestNotEqualsItalicTextNodes()
-        {
-            var a = LowEmphasisText(Text("a"), MediumEmphasisText(Text("b")));
-            var b = LowEmphasisText(MediumEmphasisText(Text("b")), Text("a"));
-
-            a.Equals(b).Should().BeFalse();
-        }
-
-        [Test]
         public void TestNotEqualsParagraphNodes()
         {
-            var a = Paragraph(LowEmphasisText(Text("a")), LowEmphasisText(Text("b")));
-            var b = Paragraph(LowEmphasisText(Text("b")), LowEmphasisText(Text("a")));
+            var a = Paragraph(EmphasisModificator(Text("a")), EmphasisModificator(Text("b")));
+            var b = Paragraph(EmphasisModificator(Text("b")), EmphasisModificator(Text("a")));
 
             a.Equals(b).Should().BeFalse();
         }
@@ -92,6 +74,24 @@ namespace Markdown.Tests
         {
             var a = Text("first");
             var b = Text("second");
+
+            a.Equals(b).Should().BeFalse();
+        }
+
+        [Test]
+        public void TestNotEqualsEmphasisModificatorNodes()
+        {
+            var a = EmphasisModificator(Text("a"), Text("b"));
+            var b = EmphasisModificator(Text("b"), Text("a"));
+
+            a.Equals(b).Should().BeFalse();
+        }
+
+        [Test]
+        public void TestNotEqualsStrongModificatorNodes()
+        {
+            var a = StrongModificator(Text("a"), Text("b"));
+            var b = StrongModificator(Text("b"), Text("a"));
 
             a.Equals(b).Should().BeFalse();
         }
