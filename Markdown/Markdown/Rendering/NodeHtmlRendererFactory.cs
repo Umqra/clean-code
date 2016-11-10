@@ -12,7 +12,8 @@ namespace Markdown.Rendering
             {
                 {typeof(ParagraphNode), node => new HtmlParagraphTag()},
                 {typeof(EmphasisModificatorNode), node => new HtmlEmphasisTag()},
-                {typeof(StrongModificatorNode), node => new HtmlStrongTag()}
+                {typeof(StrongModificatorNode), node => new HtmlStrongTag()},
+                {typeof(GroupNode), node => new HtmlEmptyTag()}
             };
 
         private static readonly Dictionary<Type, Func<INode, IHtmlContent>> leafConversionTable = new
@@ -25,12 +26,30 @@ namespace Markdown.Rendering
 
         public IHtmlTag CreateInternal(INode node)
         {
-            return internalConversionTable[node.GetType()](node);
+            try
+            {
+                return internalConversionTable[node.GetType()](node);
+            }
+            catch (KeyNotFoundException exception)
+            {
+                throw new ArgumentException(
+                    $"No conversion rule for node {node}. {exception.Message}",
+                    exception);
+            }
         }
 
         public IHtmlContent CreateLeaf(INode node)
         {
-            return leafConversionTable[node.GetType()](node);
+            try
+            {
+                return leafConversionTable[node.GetType()](node);
+            }
+            catch (KeyNotFoundException exception)
+            {
+                throw new ArgumentException(
+                    $"No conversion rule for node {node}. {exception.Message}",
+                    exception);
+            }
         }
     }
 }

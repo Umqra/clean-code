@@ -96,5 +96,13 @@ namespace Markdown.Tests
 
             Render(node).Should().Be("sample");
         }
+
+        [Test]
+        public void TestGroupNode()
+        {
+            var node = Group();
+
+            Render(node).Should().Be("");
+        }
     }
 }
