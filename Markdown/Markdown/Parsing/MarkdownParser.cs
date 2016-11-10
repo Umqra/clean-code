@@ -25,7 +25,7 @@ namespace Markdown.Parsing
 
         private INode ParseNewLine(ATokenizer<IMdToken> tokenizer)
         {
-            var newLineToken = tokenizer.TakeTokenIfMatch<MdNewLineToken>(token => true);
+            var newLineToken = tokenizer.TakeTokenIfMatch<MdNewLineToken>();
             if (newLineToken != null)
                 return new NewLineNode();
             return null;
@@ -58,7 +58,7 @@ namespace Markdown.Parsing
 
         private INode ParseEmphasisModificator(ATokenizer<IMdToken> tokenizer)
         {
-            var startToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>(t => true);
+            var startToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>();
 
             if (startToken == null)
                 return null;
@@ -78,7 +78,7 @@ namespace Markdown.Parsing
 
         private INode ParseStrongModificator(ATokenizer<IMdToken> tokenizer)
         {
-            var startToken = tokenizer.TakeTokenIfMatch<MdStrongModificatorToken>(t => true);
+            var startToken = tokenizer.TakeTokenIfMatch<MdStrongModificatorToken>();
 
             if (startToken == null)
                 return null;

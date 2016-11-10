@@ -43,6 +43,11 @@ namespace Markdown.Parsing
             return null;
         }
 
+        public TSpec TakeTokenIfMatch<TSpec>() where TSpec : class, T
+        {
+            return TakeTokenIfMatch<TSpec>(_ => true);
+        }
+
         public List<T> TakeTokensUntilMatch(Predicate<T> matchPredicate)
         {
             var tokens = new List<T>();

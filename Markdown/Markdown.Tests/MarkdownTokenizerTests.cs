@@ -174,7 +174,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                Strong("__"), Emphasis("_"), PlainText("triple"), Emphasis("_"), Strong("__")
+                PlainText(text)
             );
         }
 

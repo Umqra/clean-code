@@ -15,19 +15,19 @@ namespace Markdown.Tests
             var actualTokens = self.Subject.ToList();
             Execute.Assertion
                 .ForCondition(expectedTokens.SequenceEqual(actualTokens))
-                .FailWith("Expected token sequence: {0}, but found {1}. {2}",
-                    expectedTokens, actualTokens,
-                    DetectInequalityReason(expectedTokens, actualTokens));
+                .FailWith("Expected token sequence: {0}, but found {1}. " +
+                          $"{DetectInequalityReason(expectedTokens, actualTokens)}",
+                    expectedTokens, actualTokens);
         }
 
         public static string DetectInequalityReason(List<IMdToken> expected, List<IMdToken> actual)
         {
             if (expected.Count != actual.Count)
-                return "Because sequences has different lengths";
+                return "Sequences has different lengths";
             for (int i = 0; i < expected.Count; i++)
             {
                 if (!Equals(expected[i], actual[i]))
-                    return $"Because sequences differs at position {i}: {expected[i]} != {actual[i]}";
+                    return $"Sequences differs at position {i}: {expected[i]} != {actual[i]}";
             }
             return "";
         }

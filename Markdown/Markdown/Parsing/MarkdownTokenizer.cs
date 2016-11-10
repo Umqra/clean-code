@@ -35,7 +35,7 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private IMdToken TryParseSemanticModificator(string modificator, Func<string, IMdToken> factory)
+        private IMdToken TryParseSemanticModificator(string modificator, Func<string, IMdToken> modificatorConstructor)
         {
             if (LookAtString(modificator.Length) != modificator)
                 return null;
@@ -49,7 +49,7 @@ namespace Markdown.Parsing
             if (before.IsLetterOrDigit() && after.IsLetterOrDigit())
                 return null;
 
-            return factory(TakeString(modificator.Length));
+            return modificatorConstructor(TakeString(modificator.Length));
         }
     }
 }
