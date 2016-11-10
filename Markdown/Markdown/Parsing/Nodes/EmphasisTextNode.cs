@@ -15,11 +15,6 @@ namespace Markdown.Parsing.Nodes
 
         public List<INode> Children { get; }
 
-        public T Accept<T>(INodeVisitor<T> visitor)
-        {
-            return visitor.Visit(this);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

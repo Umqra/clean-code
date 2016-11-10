@@ -44,7 +44,10 @@
     <Compile Include="MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\ATokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
+    <Compile Include="Parsing\ContextTreeVisitor.cs" />
+    <Compile Include="Parsing\INodeConverter.cs" />
     <Compile Include="Parsing\ITokenizerFactory.cs" />
+    <Compile Include="Parsing\ITreeContext.cs" />
     <Compile Include="Parsing\MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\IInternalNode.cs" />
     <Compile Include="Parsing\Nodes\EscapedTextNode.cs" />
@@ -67,8 +70,13 @@
     <Compile Include="Parsing\Tokens\CharacterToken.cs" />
     <Compile Include="Parsing\Tokens\NewLineToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\HtmlNodeRenderer.cs" />
+    <Compile Include="Rendering\HtmlRenderContext.cs" />
+    <Compile Include="Rendering\HtmlRenderer.cs" />
     <Compile Include="Rendering\INodeRenderer.cs" />
+    <Compile Include="Rendering\NodeHtmlRendererFactory.cs" />
+    <Compile Include="Rendering\IHtmlContent.cs" />
+    <Compile Include="Rendering\IHtmlTag.cs" />
+    <Compile Include="Rendering\INodeHtmlRendererFactory.cs" />
     <Compile Include="Rendering\MarkdownRenderer.cs" />
   </ItemGroup>
   <ItemGroup />

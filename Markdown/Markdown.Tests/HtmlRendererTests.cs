@@ -11,14 +11,14 @@ namespace Markdown.Tests
         [SetUp]
         public void SetUp()
         {
-            Renderer = new HtmlNodeRenderer();
+            Renderer = new HtmlRenderer();
         }
 
-        public HtmlNodeRenderer Renderer;
+        public INodeRenderer Renderer;
 
         public string Render(INode node)
         {
-            return node.Accept(Renderer);
+            return Renderer.Render(node);
         }
 
         [Test]

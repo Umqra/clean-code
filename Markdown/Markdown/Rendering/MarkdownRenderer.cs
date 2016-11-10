@@ -18,7 +18,7 @@ namespace Markdown.Rendering
 
         public string Render(string text)
         {
-            return Parser.Parse(new MarkdownTokenizer(text)).Accept(NodeRenderer);
+            return NodeRenderer.Render(Parser.Parse(new MarkdownTokenizer(text)));
         }
     }
 }

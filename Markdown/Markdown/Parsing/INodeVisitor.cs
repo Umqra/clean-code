@@ -2,13 +2,8 @@
 
 namespace Markdown.Parsing
 {
-    public interface INodeVisitor<out T>
+    public interface INodeVisitor
     {
-        T Visit(ParagraphNode node);
-        T Visit(EmphasisTextNode node);
-        T Visit(TextNode node);
-        T Visit(GroupNode node);
-        T Visit(NewLineNode node);
-        T Visit(EscapedTextNode node);
+        void Visit(INode node);
     }
 }
