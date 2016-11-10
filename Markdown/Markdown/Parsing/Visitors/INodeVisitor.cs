@@ -1,6 +1,6 @@
 ﻿using Markdown.Parsing.Nodes;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.Visitors
 {
     public interface INodeVisitor
     {

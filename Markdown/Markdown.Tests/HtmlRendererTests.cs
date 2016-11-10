@@ -98,6 +98,14 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestNewLineNode()
+        {
+            var node = NewLine();
+
+            Render(node).Should().Be("<br>");
+        }
+
+        [Test]
         public void TestTextNode()
         {
             var node = Text("sample");

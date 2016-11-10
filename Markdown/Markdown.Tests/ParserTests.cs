@@ -17,7 +17,7 @@ namespace Markdown.Tests
         }
 
         public MarkdownParser Parser { get; set; }
-        public ITokenizerFactory<IToken> TokenizerFactory { get; set; }
+        public ITokenizerFactory<IMdToken> TokenizerFactory { get; set; }
 
         [Test]
         public void BoldInItalic_ShouldBeParsed()

@@ -8,14 +8,14 @@ namespace Markdown.Parsing
 {
     public class MarkdownParser
     {
-        public INode Parse(ATokenizer<IToken> tokenizer)
+        public INode Parse(ATokenizer<IMdToken> tokenizer)
         {
             return new GroupNode(
                 ParseNodesUntilNotNull(() => ParseParagraph(tokenizer) ?? ParseNewLine(tokenizer))
             );
         }
 
-        public INode ParseParagraph(ATokenizer<IToken> tokenizer)
+        public INode ParseParagraph(ATokenizer<IMdToken> tokenizer)
         {
             var children = ParseNodesUntilNotNull(() => ParseTextInParagraph(tokenizer)).ToList();
             if (children.Any())
@@ -23,41 +23,41 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private INode ParseNewLine(ATokenizer<IToken> tokenizer)
+        private INode ParseNewLine(ATokenizer<IMdToken> tokenizer)
         {
-            var newLineToken = tokenizer.TakeTokenIfMatch<NewLineToken>(token => true);
+            var newLineToken = tokenizer.TakeTokenIfMatch<MdNewLineToken>(token => true);
             if (newLineToken != null)
                 return new NewLineNode();
             return null;
         }
 
-        private INode ParseTextInParagraph(ATokenizer<IToken> tokenizer)
+        private INode ParseTextInParagraph(ATokenizer<IMdToken> tokenizer)
         {
             return ParsePlainText(tokenizer) ??
                    ParseEmphasisText(tokenizer, EmphasisExtensions.GetAllEmphasisValues());
         }
 
-        private INode ParsePlainText(ATokenizer<IToken> tokenizer)
+        private INode ParsePlainText(ATokenizer<IMdToken> tokenizer)
         {
-            var textTokens = tokenizer.TakeTokensUntilMatch(token => token is IPlainTextToken);
+            var textTokens = tokenizer.TakeTokensUntilMatch(token => token is IMdPlainTextToken);
 
             if (!textTokens.Any())
                 return null;
 
-            if (textTokens.TrueForAll(token => token is CharacterToken))
+            if (textTokens.TrueForAll(token => token is MdCharacterToken))
                 return new TextNode(string.Join("", textTokens.Select(token => token.Text)));
 
             var children = textTokens.Select(token =>
-                    token is EscapedCharacterToken
+                    token is MdEscapedCharacterToken
                         ? (INode)new EscapedTextNode(token.Text)
                         : (INode)new TextNode(token.Text)
             );
             return new GroupNode(children);
         }
 
-        private INode ParseEmphasisText(ATokenizer<IToken> tokenizer, EmphasisStrength[] parsingStrengths)
+        private INode ParseEmphasisText(ATokenizer<IMdToken> tokenizer, EmphasisStrength[] parsingStrengths)
         {
-            var startToken = tokenizer.TakeTokenIfMatch<EmphasisModificatorToken>(
+            var startToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>(
                 token => parsingStrengths.Contains(token.EmphasisStrength)
             );
 
@@ -71,7 +71,7 @@ namespace Markdown.Parsing
                     ParseEmphasisText(tokenizer, allEmphasisExceptStart)
             );
 
-            var endToken = tokenizer.TakeTokenIfMatch<EmphasisModificatorToken>(
+            var endToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>(
                 token => token.Text == startToken.Text
             );
 

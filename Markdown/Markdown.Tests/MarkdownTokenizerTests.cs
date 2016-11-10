@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Markdown.Parsing;
 using Markdown.Parsing.Tokens;
@@ -11,51 +10,51 @@ namespace Markdown.Tests
     [TestFixture]
     internal class MarkdownTokenizerTests
     {
-        public ATokenizer<IToken> Tokenizer { get; set; }
+        public ATokenizer<IMdToken> Tokenizer { get; set; }
 
         public void SetUpTokenizer(string text)
         {
             Tokenizer = new MarkdownTokenizer(text);
         }
 
-        public IEnumerable<IToken> GetAllTokens()
+        public IEnumerable<IMdToken> GetAllTokens()
         {
             while (true)
             {
-                var node = Tokenizer.TakeToken<IToken>();
+                var node = Tokenizer.TakeToken<IMdToken>();
                 if (node == null)
                     yield break;
                 yield return node;
             }
         }
 
-        private IEnumerable<IToken> Character(char c)
+        private IEnumerable<IMdToken> Character(char c)
         {
-            yield return new CharacterToken(c);
+            yield return new MdCharacterToken(c);
         }
 
-        private IEnumerable<IToken> Escaped(char c)
+        private IEnumerable<IMdToken> Escaped(char c)
         {
-            yield return new EscapedCharacterToken(c);
+            yield return new MdEscapedCharacterToken(c);
         }
 
-        private IEnumerable<IToken> PlainText(string text)
+        private IEnumerable<IMdToken> PlainText(string text)
         {
             foreach (var c in text)
-                yield return new CharacterToken(c);
+                yield return new MdCharacterToken(c);
         }
 
-        private IEnumerable<IToken> Modificator(string modificator)
+        private IEnumerable<IMdToken> Modificator(string modificator)
         {
-            yield return new EmphasisModificatorToken(modificator);
+            yield return new MdEmphasisModificatorToken(modificator);
         }
 
         private readonly string twoSpacesNewLine = "  " + Environment.NewLine;
         private readonly string twoLineBreaksNewLine = Environment.NewLine + Environment.NewLine;
 
-        private IEnumerable<IToken> NewLine(string text)
+        private IEnumerable<IMdToken> NewLine(string text)
         {
-            yield return new NewLineToken(text);
+            yield return new MdNewLineToken(text);
         }
 
         [TestCase("sample", TestName = "When passed simple plain text")]
@@ -66,7 +65,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             foreach (var token in GetAllTokens())
-                token.Should().BeOfType<CharacterToken>();
+                token.Should().BeOfType<MdCharacterToken>();
         }
 
         [Test]

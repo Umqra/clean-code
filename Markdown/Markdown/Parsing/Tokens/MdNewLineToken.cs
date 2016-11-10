@@ -1,10 +1,10 @@
 ﻿namespace Markdown.Parsing.Tokens
 {
-    public class CharacterToken : IPlainTextToken
+    public class MdNewLineToken : IMdToken
     {
-        public CharacterToken(char symbol)
+        public MdNewLineToken(string text)
         {
-            Text = new string(symbol, 1);
+            Text = text;
         }
 
         public string Text { get; }
@@ -14,7 +14,7 @@
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((CharacterToken)obj);
+            return Equals((MdNewLineToken)obj);
         }
 
         public override int GetHashCode()
@@ -22,12 +22,8 @@
             return Text?.GetHashCode() ?? 0;
         }
 
-        public override string ToString()
-        {
-            return $"Char({Text})";
-        }
 
-        protected bool Equals(CharacterToken other)
+        protected bool Equals(MdNewLineToken other)
         {
             return string.Equals(Text, other.Text);
         }

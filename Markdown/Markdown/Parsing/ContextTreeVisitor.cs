@@ -1,8 +1,9 @@
 ﻿using Markdown.Parsing.Nodes;
+using Markdown.Parsing.Visitors;
 
 namespace Markdown.Parsing
 {
-    public abstract class ContextTreeVisitor<T> : INodeVisitor where T: ITreeContext
+    public abstract class ContextTreeVisitor<T> : INodeVisitor where T : ITreeContext
     {
         protected T Context { get; set; }
 

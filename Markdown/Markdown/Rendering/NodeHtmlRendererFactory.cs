@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Mime;
-using System.Web;
 using Markdown.Parsing.Nodes;
+using Markdown.Rendering.HtmlEntities;
 
 namespace Markdown.Rendering
 {
@@ -32,42 +31,5 @@ namespace Markdown.Rendering
         {
             return leafConversionTable[node.GetType()](node);
         }
-    }
-
-    public class HtmlEscapedTextContent : IHtmlContent
-    {
-        public HtmlEscapedTextContent(string text)
-        {
-            Content = HttpUtility.HtmlEncode(text);
-        }
-
-        public string Content { get; }
-    }
-
-    public class HtmlNewLineContent : IHtmlContent
-    {
-        public string Content => "<br>";
-    }
-
-    public class HtmlTextContent : IHtmlContent
-    {
-        public HtmlTextContent(string text)
-        {
-            Content = text;
-        }
-
-        public string Content { get; }
-    }
-
-    public class HtmlEmphasisTag : IHtmlTag
-    {
-        public string OpeningTag => "<em>";
-        public string ClosingTag => "</em>";
-    }
-
-    public class HtmlParagraphNode : IHtmlTag
-    {
-        public string OpeningTag => "<p>";
-        public string ClosingTag => "</p>";
     }
 }

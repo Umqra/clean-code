@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Markdown.Parsing.Tokens;
+﻿using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
 {
-    class MarkdownTokenizerFactory : ITokenizerFactory<IToken>
+    public class MarkdownTokenizerFactory : ITokenizerFactory<IMdToken>
     {
-        public ATokenizer<IToken> CreateTokenizer(string text)
+        public ATokenizer<IMdToken> CreateTokenizer(string text)
         {
             return new MarkdownTokenizer(text);
         }

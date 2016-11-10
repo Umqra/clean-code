@@ -1,6 +1,6 @@
 ﻿namespace Markdown.Parsing.Tokens
 {
-    public interface IToken
+    public interface IMdToken
     {
         string Text { get; }
     }

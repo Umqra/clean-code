@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Markdown.Parsing.Nodes;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.Visitors
 {
-    public interface ITreeContext : IDisposable
-    {
-        ITreeContext EnterInternalNode(INode node);
-        ITreeContext EnterLeafNode(INode node);
-    }
     public abstract class ATreeContext : ITreeContext
     {
         protected ATreeContext()
@@ -23,10 +17,6 @@ namespace Markdown.Parsing
             ExitInternalNode(EnteredNodes.Pop());
         }
 
-        protected abstract void EnterInternalNode(INode node);
-        protected abstract void ExitInternalNode(INode node);
-        protected abstract void EnterLeafNode(INode node);
-
         ITreeContext ITreeContext.EnterInternalNode(INode node)
         {
             EnteredNodes.Push(node);
@@ -34,10 +24,13 @@ namespace Markdown.Parsing
             return this;
         }
 
-        ITreeContext ITreeContext.EnterLeafNode(INode node)
+        void ITreeContext.EnterLeafNode(INode node)
         {
             EnterLeafNode(node);
-            return this;
         }
+
+        protected abstract void EnterInternalNode(INode node);
+        protected abstract void ExitInternalNode(INode node);
+        protected abstract void EnterLeafNode(INode node);
     }
 }

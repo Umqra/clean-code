@@ -5,7 +5,7 @@ namespace Markdown.Rendering
 {
     public class MarkdownRenderer
     {
-        public MarkdownRenderer(MarkdownParser parser, ITokenizerFactory<IToken> tokenizer, INodeRenderer nodeRenderer)
+        public MarkdownRenderer(MarkdownParser parser, ITokenizerFactory<IMdToken> tokenizer, INodeRenderer nodeRenderer)
         {
             Parser = parser;
             Tokenizer = tokenizer;
@@ -13,7 +13,7 @@ namespace Markdown.Rendering
         }
 
         public MarkdownParser Parser { get; set; }
-        public ITokenizerFactory<IToken> Tokenizer { get; set; }
+        public ITokenizerFactory<IMdToken> Tokenizer { get; set; }
         public INodeRenderer NodeRenderer { get; set; }
 
         public string Render(string text)

@@ -1,4 +1,4 @@
-﻿namespace Markdown.Rendering
+﻿namespace Markdown.Rendering.HtmlEntities
 {
     public interface IHtmlTag
     {

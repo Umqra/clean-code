@@ -1,8 +1,8 @@
 ﻿namespace Markdown.Parsing.Tokens
 {
-    public class EscapedCharacterToken : IPlainTextToken
+    public class MdEscapedCharacterToken : IMdPlainTextToken
     {
-        public EscapedCharacterToken(char symbol)
+        public MdEscapedCharacterToken(char symbol)
         {
             Text = new string(symbol, 1);
         }
@@ -14,7 +14,7 @@
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((EscapedCharacterToken)obj);
+            return Equals((MdEscapedCharacterToken)obj);
         }
 
         public override int GetHashCode()
@@ -27,7 +27,7 @@
             return $"Escape({Text})";
         }
 
-        protected bool Equals(EscapedCharacterToken other)
+        protected bool Equals(MdEscapedCharacterToken other)
         {
             return string.Equals(Text, other.Text);
         }

@@ -4,14 +4,14 @@ using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
 {
-    public class MarkdownTokenizer : ATokenizer<IToken>
+    public class MarkdownTokenizer : ATokenizer<IMdToken>
     {
         public MarkdownTokenizer(string text) : base(text)
         {
         }
 
         //TODO: Poor performance because of many-many CharacterToken objects
-        protected override IToken ParseToken()
+        protected override IMdToken ParseToken()
         {
             return TryParseEscapedCharacter() ??
                    TryParseNewLineToken("  " + Environment.NewLine) ??
@@ -19,24 +19,24 @@ namespace Markdown.Parsing
                    TryParseEmphasisModificator("___") ??
                    TryParseEmphasisModificator("__") ??
                    TryParseEmphasisModificator("_") ??
-                   new CharacterToken(TakeString(1)[0]);
+                   new MdCharacterToken(TakeString(1)[0]);
         }
 
-        private IToken TryParseEscapedCharacter()
+        private IMdToken TryParseEscapedCharacter()
         {
             if (CurrentSymbol == '\\' && TextPosition < Text.Length - 1)
-                return new EscapedCharacterToken(TakeString(2)[1]);
+                return new MdEscapedCharacterToken(TakeString(2)[1]);
             return null;
         }
 
-        private IToken TryParseNewLineToken(string newLineToken)
+        private IMdToken TryParseNewLineToken(string newLineToken)
         {
             if (LookAtString(newLineToken.Length) == newLineToken)
-                return new NewLineToken(TakeString(newLineToken.Length));
+                return new MdNewLineToken(TakeString(newLineToken.Length));
             return null;
         }
 
-        private IToken TryParseEmphasisModificator(string modificator)
+        private IMdToken TryParseEmphasisModificator(string modificator)
         {
             if (LookAtString(modificator.Length) != modificator)
                 return null;
@@ -50,7 +50,7 @@ namespace Markdown.Parsing
             if (before.IsLetterOrDigit() && after.IsLetterOrDigit())
                 return null;
 
-            return new EmphasisModificatorToken(TakeString(modificator.Length));
+            return new MdEmphasisModificatorToken(TakeString(modificator.Length));
         }
     }
 }

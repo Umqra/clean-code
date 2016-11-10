@@ -41,22 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\ATokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
     <Compile Include="Parsing\ContextTreeVisitor.cs" />
-    <Compile Include="Parsing\INodeConverter.cs" />
     <Compile Include="Parsing\ITokenizerFactory.cs" />
-    <Compile Include="Parsing\ITreeContext.cs" />
+    <Compile Include="Parsing\Visitors\ATreeContext.cs" />
+    <Compile Include="Parsing\Visitors\ITreeContext.cs" />
     <Compile Include="Parsing\MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\IInternalNode.cs" />
     <Compile Include="Parsing\Nodes\EscapedTextNode.cs" />
     <Compile Include="Parsing\Nodes\INode.cs" />
-    <Compile Include="Parsing\INodeVisitor.cs" />
+    <Compile Include="Parsing\Visitors\INodeVisitor.cs" />
     <Compile Include="Parsing\Nodes\NewLineNode.cs" />
-    <Compile Include="Parsing\Tokens\EscapedCharacterToken.cs" />
-    <Compile Include="Parsing\Tokens\IPlainTextToken.cs" />
-    <Compile Include="Parsing\Tokens\IToken.cs" />
+    <Compile Include="Parsing\Tokens\MdEscapedCharacterToken.cs" />
+    <Compile Include="Parsing\Tokens\IMdPlainTextToken.cs" />
+    <Compile Include="Parsing\Tokens\IMdToken.cs" />
     <Compile Include="Parsing\MarkdownParser.cs" />
     <Compile Include="Parsing\Nodes\EmphasisExtensions.cs" />
     <Compile Include="Parsing\Nodes\EmphasisStrength.cs" />
@@ -66,16 +65,21 @@
     <Compile Include="Parsing\Nodes\ParagraphNode.cs" />
     <Compile Include="Parsing\Nodes\TextNode.cs" />
     <Compile Include="Parsing\MarkdownTokenizer.cs" />
-    <Compile Include="Parsing\Tokens\EmphasisModificatorToken.cs" />
-    <Compile Include="Parsing\Tokens\CharacterToken.cs" />
-    <Compile Include="Parsing\Tokens\NewLineToken.cs" />
+    <Compile Include="Parsing\Tokens\MdEmphasisModificatorToken.cs" />
+    <Compile Include="Parsing\Tokens\MdCharacterToken.cs" />
+    <Compile Include="Parsing\Tokens\MdNewLineToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlEmphasisTag.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlEscapedTextContent.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlNewLineContent.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlParagraphNode.cs" />
     <Compile Include="Rendering\HtmlRenderContext.cs" />
     <Compile Include="Rendering\HtmlRenderer.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlTextContent.cs" />
     <Compile Include="Rendering\INodeRenderer.cs" />
     <Compile Include="Rendering\NodeHtmlRendererFactory.cs" />
-    <Compile Include="Rendering\IHtmlContent.cs" />
-    <Compile Include="Rendering\IHtmlTag.cs" />
+    <Compile Include="Rendering\HtmlEntities\IHtmlContent.cs" />
+    <Compile Include="Rendering\HtmlEntities\IHtmlTag.cs" />
     <Compile Include="Rendering\INodeHtmlRendererFactory.cs" />
     <Compile Include="Rendering\MarkdownRenderer.cs" />
   </ItemGroup>

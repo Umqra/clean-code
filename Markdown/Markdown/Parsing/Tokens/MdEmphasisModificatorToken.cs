@@ -3,9 +3,9 @@ using Markdown.Parsing.Nodes;
 
 namespace Markdown.Parsing.Tokens
 {
-    public class EmphasisModificatorToken : IToken
+    public class MdEmphasisModificatorToken : IMdToken
     {
-        public EmphasisModificatorToken(string text)
+        public MdEmphasisModificatorToken(string text)
         {
             Text = text;
         }
@@ -31,7 +31,7 @@ namespace Markdown.Parsing.Tokens
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((EmphasisModificatorToken)obj);
+            return Equals((MdEmphasisModificatorToken)obj);
         }
 
         public override int GetHashCode()
@@ -44,7 +44,7 @@ namespace Markdown.Parsing.Tokens
             return $"Modificator({Text})";
         }
 
-        protected bool Equals(EmphasisModificatorToken other)
+        protected bool Equals(MdEmphasisModificatorToken other)
         {
             return string.Equals(Text, other.Text);
         }

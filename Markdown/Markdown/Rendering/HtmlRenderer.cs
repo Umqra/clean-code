@@ -1,5 +1,4 @@
-﻿using System;
-using Markdown.Parsing;
+﻿using Markdown.Parsing;
 using Markdown.Parsing.Nodes;
 
 namespace Markdown.Rendering
@@ -9,6 +8,7 @@ namespace Markdown.Rendering
         public string Render(INode node)
         {
             Context = new HtmlRenderContext(new NodeHtmlRendererFactory());
+            Visit(node);
             return Context.HtmlMarkup;
         }
     }
