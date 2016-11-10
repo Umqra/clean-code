@@ -12,22 +12,22 @@ namespace Markdown.Parsing.Nodes
 
         public List<INode> Children { get; }
 
-        protected bool Equals(EmphasisModificatorNode other)
-        {
-            return Children.SequenceEqual(other.Children);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((EmphasisModificatorNode)obj);
         }
 
         public override int GetHashCode()
         {
             return Children?.CombineElementHashCodesUsingParent(this) ?? 0;
+        }
+
+        protected bool Equals(EmphasisModificatorNode other)
+        {
+            return Children.SequenceEqual(other.Children);
         }
     }
 }

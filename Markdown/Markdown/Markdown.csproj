@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="Parsing\ATokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
-    <Compile Include="Parsing\ContextTreeVisitor.cs" />
+    <Compile Include="Parsing\Visitors\ContextTreeVisitor.cs" />
     <Compile Include="Parsing\ITokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\StrongModificatorNode.cs" />
     <Compile Include="Parsing\Tokens\MdStrongModificatorToken.cs" />

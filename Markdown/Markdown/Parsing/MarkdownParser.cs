@@ -93,7 +93,7 @@ namespace Markdown.Parsing
 
             if (endToken != null)
                 return new StrongModificatorNode(children);
-            return new GroupNode(new[] { new TextNode(startToken.Text) }.Concat(children));
+            return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
         }
 
         private List<INode> ParseNodesUntilNotNull(Func<INode> nodeFactory)

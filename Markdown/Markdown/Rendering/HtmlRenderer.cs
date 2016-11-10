@@ -1,5 +1,5 @@
-﻿using Markdown.Parsing;
-using Markdown.Parsing.Nodes;
+﻿using Markdown.Parsing.Nodes;
+using Markdown.Parsing.Visitors;
 
 namespace Markdown.Rendering
 {
