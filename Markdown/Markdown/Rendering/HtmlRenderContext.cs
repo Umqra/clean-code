@@ -6,11 +6,11 @@ namespace Markdown.Rendering
 {
     public class HtmlRenderContext : ATreeContext
     {
-        private readonly INodeHtmlRendererFactory rendererFactory;
+        private readonly INodeToHtmlEntityConverter nodeConverter;
 
-        public HtmlRenderContext(INodeHtmlRendererFactory rendererFactory)
+        public HtmlRenderContext(INodeToHtmlEntityConverter nodeConverter)
         {
-            this.rendererFactory = rendererFactory;
+            this.nodeConverter = nodeConverter;
             htmlMarkup = new StringBuilder();
         }
 
@@ -19,17 +19,17 @@ namespace Markdown.Rendering
 
         protected override void EnterLeafNode(INode node)
         {
-            htmlMarkup.Append(rendererFactory.CreateLeaf(node).Content);
+            htmlMarkup.Append(nodeConverter.ConvertLeaf(node).Content);
         }
 
         protected override void EnterInternalNode(INode node)
         {
-            htmlMarkup.Append(rendererFactory.CreateInternal(node).OpeningTag);
+            htmlMarkup.Append(nodeConverter.ConvertInternal(node).OpeningTag);
         }
 
         protected override void ExitInternalNode(INode node)
         {
-            htmlMarkup.Append(rendererFactory.CreateInternal(node).ClosingTag);
+            htmlMarkup.Append(nodeConverter.ConvertInternal(node).ClosingTag);
         }
     }
 }

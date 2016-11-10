@@ -3,9 +3,9 @@ using Markdown.Parsing.Tokens;
 
 namespace Markdown.Rendering
 {
-    public class MarkdownRenderer
+    public class MarkdownToHtmlRenderer
     {
-        public MarkdownRenderer(MarkdownParser parser, ITokenizerFactory<IMdToken> tokenizer, INodeRenderer nodeRenderer)
+        public MarkdownToHtmlRenderer(MarkdownParser parser, ITokenizerFactory<IMdToken> tokenizer, INodeRenderer nodeRenderer)
         {
             Parser = parser;
             Tokenizer = tokenizer;

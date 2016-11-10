@@ -48,10 +48,10 @@ namespace Markdown.Cli
         {
             var markdownMarkup = File.ReadAllText(options.InputFilename);
             var markdownToHtmlRenderer =
-                new MarkdownRenderer(
+                new MarkdownToHtmlRenderer(
                     new MarkdownParser(),
                     new MarkdownTokenizerFactory(),
-                    new HtmlRenderer());
+                    new NodeHtmlRenderer());
             var htmlMarkup = markdownToHtmlRenderer.Render(markdownMarkup);
             File.WriteAllText(options.OutputFilename, htmlMarkup);
         }

@@ -5,7 +5,7 @@ using Markdown.Rendering.HtmlEntities;
 
 namespace Markdown.Rendering
 {
-    public class NodeHtmlRendererFactory : INodeHtmlRendererFactory
+    public class NodeToHtmlEntityConverter : INodeToHtmlEntityConverter
     {
         private static readonly Dictionary<Type, Func<INode, IHtmlTag>> internalConversionTable = new
             Dictionary<Type, Func<INode, IHtmlTag>>
@@ -24,7 +24,7 @@ namespace Markdown.Rendering
                 {typeof(NewLineNode), node => new HtmlNewLineContent()}
             };
 
-        public IHtmlTag CreateInternal(INode node)
+        public IHtmlTag ConvertInternal(INode node)
         {
             try
             {
@@ -33,12 +33,12 @@ namespace Markdown.Rendering
             catch (KeyNotFoundException exception)
             {
                 throw new ArgumentException(
-                    $"No conversion rule for node {node}. {exception.Message}",
+                    $"No conversion rule for internal node {node}. {exception.Message}",
                     exception);
             }
         }
 
-        public IHtmlContent CreateLeaf(INode node)
+        public IHtmlContent ConvertLeaf(INode node)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace Markdown.Rendering
             catch (KeyNotFoundException exception)
             {
                 throw new ArgumentException(
-                    $"No conversion rule for node {node}. {exception.Message}",
+                    $"No conversion rule for leaf node {node}. {exception.Message}",
                     exception);
             }
         }

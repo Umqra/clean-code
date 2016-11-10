@@ -76,14 +76,14 @@
     <Compile Include="Rendering\HtmlEntities\HtmlParagraphTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlStrongTag.cs" />
     <Compile Include="Rendering\HtmlRenderContext.cs" />
-    <Compile Include="Rendering\HtmlRenderer.cs" />
+    <Compile Include="Rendering\NodeHtmlRenderer.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlTextContent.cs" />
     <Compile Include="Rendering\INodeRenderer.cs" />
-    <Compile Include="Rendering\NodeHtmlRendererFactory.cs" />
+    <Compile Include="Rendering\NodeToHtmlEntityConverter.cs" />
     <Compile Include="Rendering\HtmlEntities\IHtmlContent.cs" />
     <Compile Include="Rendering\HtmlEntities\IHtmlTag.cs" />
-    <Compile Include="Rendering\INodeHtmlRendererFactory.cs" />
-    <Compile Include="Rendering\MarkdownRenderer.cs" />
+    <Compile Include="Rendering\INodeToHtmlEntityConverter.cs" />
+    <Compile Include="Rendering\MarkdownToHtmlRenderer.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
