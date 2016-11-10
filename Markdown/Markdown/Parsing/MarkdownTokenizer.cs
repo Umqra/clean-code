@@ -4,35 +4,38 @@ using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
 {
-    public class MarkdownTokenizer : ATokenizer<IToken>
+    public class MarkdownTokenizer : ATokenizer<IMdToken>
     {
+        public MarkdownTokenizer(string text) : base(text)
+        {
+        }
+
         //TODO: Poor performance because of many-many CharacterToken objects
-        protected override IToken ParseToken()
+        protected override IMdToken ParseToken()
         {
             return TryParseEscapedCharacter() ??
                    TryParseNewLineToken("  " + Environment.NewLine) ??
                    TryParseNewLineToken(Environment.NewLine + Environment.NewLine) ??
-                   TryParseEmphasisModificator("___") ??
-                   TryParseEmphasisModificator("__") ??
-                   TryParseEmphasisModificator("_") ??
-                   new CharacterToken(TakeString(1)[0]);
+                   TryParseSemanticModificator("__", s => new MdStrongModificatorToken(s)) ??
+                   TryParseSemanticModificator("_", s => new MdEmphasisModificatorToken(s)) ??
+                   new MdTextToken(TakeString(1));
         }
 
-        private IToken TryParseEscapedCharacter()
+        private IMdToken TryParseEscapedCharacter()
         {
             if (CurrentSymbol == '\\' && TextPosition < Text.Length - 1)
-                return new EscapedCharacterToken(TakeString(2)[1]);
+                return new MdEscapedTextToken(TakeString(2).Substring(1));
             return null;
         }
 
-        private IToken TryParseNewLineToken(string newLineToken)
+        private IMdToken TryParseNewLineToken(string newLineToken)
         {
             if (LookAtString(newLineToken.Length) == newLineToken)
-                return new NewLineToken(TakeString(newLineToken.Length));
+                return new MdNewLineToken(TakeString(newLineToken.Length));
             return null;
         }
 
-        private IToken TryParseEmphasisModificator(string modificator)
+        private IMdToken TryParseSemanticModificator(string modificator, Func<string, IMdToken> modificatorConstructor)
         {
             if (LookAtString(modificator.Length) != modificator)
                 return null;
@@ -46,7 +49,7 @@ namespace Markdown.Parsing
             if (before.IsLetterOrDigit() && after.IsLetterOrDigit())
                 return null;
 
-            return new EmphasisModificatorToken(TakeString(modificator.Length));
+            return modificatorConstructor(TakeString(modificator.Length));
         }
     }
 }

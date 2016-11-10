@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Markdown.Parsing;
 using Markdown.Parsing.Tokens;
@@ -11,45 +10,51 @@ namespace Markdown.Tests
     [TestFixture]
     internal class MarkdownTokenizerTests
     {
-        public ATokenizer<IToken> Tokenizer { get; set; }
+        public ATokenizer<IMdToken> Tokenizer { get; set; }
 
-        public IEnumerable<IToken> GetAllTokens()
+        public void SetUpTokenizer(string text)
+        {
+            Tokenizer = new MarkdownTokenizer(text);
+        }
+
+        public IEnumerable<IMdToken> GetAllTokens()
         {
             while (true)
             {
-                var node = Tokenizer.TakeToken<IToken>();
+                var node = Tokenizer.TakeToken<IMdToken>();
                 if (node == null)
                     yield break;
                 yield return node;
             }
         }
 
-        private IEnumerable<IToken> Character(char c)
+        private IEnumerable<IMdToken> Escaped(string text)
         {
-            yield return new CharacterToken(c);
+            yield return new MdEscapedTextToken(text);
         }
 
-        private IEnumerable<IToken> Escaped(char c)
-        {
-            yield return new EscapedCharacterToken(c);
-        }
-
-        private IEnumerable<IToken> PlainText(string text)
+        private IEnumerable<IMdToken> PlainText(string text)
         {
             foreach (var c in text)
-                yield return new CharacterToken(c);
+                yield return new MdTextToken(new string(c, 1));
         }
 
-        private IEnumerable<IToken> Modificator(string modificator)
+        private IEnumerable<IMdToken> Emphasis(string modificator)
         {
-            yield return new EmphasisModificatorToken(modificator);
+            yield return new MdEmphasisModificatorToken(modificator);
+        }
+
+        private IEnumerable<IMdToken> Strong(string modificator)
+        {
+            yield return new MdStrongModificatorToken(modificator);
         }
 
         private readonly string twoSpacesNewLine = "  " + Environment.NewLine;
         private readonly string twoLineBreaksNewLine = Environment.NewLine + Environment.NewLine;
-        private IEnumerable<IToken> NewLine(string text)
+
+        private IEnumerable<IMdToken> NewLine(string text)
         {
-            yield return new NewLineToken(text);
+            yield return new MdNewLineToken(text);
         }
 
         [TestCase("sample", TestName = "When passed simple plain text")]
@@ -57,169 +62,142 @@ namespace Markdown.Tests
         [TestCase("1_a__b____a2_a", TestName = "When underscores surrounded by letters/digits")]
         public void TestOnlyCharacterTokensInText(string text)
         {
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
             foreach (var token in GetAllTokens())
-                token.Should().BeOfType<CharacterToken>();
+                token.Should().BeOfType<MdTextToken>();
         }
 
         [Test]
-        public void DoubleUnderscore_AtTheEndOfSentence_IsModificator()
+        public void TestDoubleUnderscore_AtTheEndOfSentence()
         {
             var text = "This is the __end__.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("This is the ")
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText("end"))
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText(".")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("This is the "), Strong("__"), PlainText("end"), Strong("__"), PlainText(".")
+            );
         }
 
         [Test]
-        public void DoubleUnderscore_OnTextBorders_IsModificator()
+        public void TestDoubleUnderscore_OnTextBorders()
         {
             var text = "__a__";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                Modificator("__")
-                    .Concat(Character('a'))
-                    .Concat(Modificator("__")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Strong("__"), PlainText("a"), Strong("__")
+            );
         }
 
         [Test]
-        public void DoubleUnderscore_OnWordBorders_IsModificator()
+        public void TestDoubleUnderscore_OnWordBorders()
         {
             var text = "a __b c__ d";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens()
-                .Should()
-                .Equal(
-                    PlainText("a ")
-                        .Concat(Modificator("__"))
-                        .Concat(PlainText("b c"))
-                        .Concat(Modificator("__"))
-                        .Concat(PlainText(" d"))
-                );
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a "), Strong("__"), PlainText("b c"), Strong("__"), PlainText(" d")
+            );
         }
 
         [Test]
-        public void DoubleUnderscore_SurroundedByPunctuation_IsModificator()
+        public void TestDoubleUnderscore_SurroundedByPunctuation()
         {
             var text = "this is __!important!__.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("this is ")
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText("!important!"))
-                    .Concat(Modificator("__"))
-                    .Concat(PlainText(".")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("this is "), Strong("__"), PlainText("!important!"), Strong("__"), PlainText(".")
+            );
         }
 
         [Test]
-        public void SingleUnderscore_AtTheEndOfSentence_IsModificator()
+        public void TestSingleUnderscore_AtTheEndOfSentence()
         {
             var text = "This is the _end_.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("This is the ")
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText("end"))
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText(".")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("This is the "), Emphasis("_"), PlainText("end"), Emphasis("_"), PlainText(".")
+            );
         }
 
         [Test]
-        public void SingleUnderscore_OnTextBorders_IsModificator()
+        public void TestSingleUnderscore_OnTextBorders()
         {
             var text = "_a_";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                Modificator("_")
-                    .Concat(Character('a'))
-                    .Concat(Modificator("_")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Emphasis("_"), PlainText("a"), Emphasis("_")
+            );
         }
 
         [Test]
-        public void SingleUnderscore_OnWordBorders_IsModificator()
+        public void TestSingleUnderscore_OnWordBorders()
         {
             var text = "a _b c_ d";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("a ")
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText("b c"))
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText(" d")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a "), Emphasis("_"), PlainText("b c"), Emphasis("_"), PlainText(" d")
+            );
         }
 
         [Test]
-        public void SingleUnderscore_SurroundedByPunctuation_IsModificator()
+        public void TestSingleUnderscore_SurroundedByPunctuation()
         {
             var text = "this is _!important!_.";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("this is ")
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText("!important!"))
-                    .Concat(Modificator("_"))
-                    .Concat(PlainText(".")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("this is "), Emphasis("_"), PlainText("!important!"), Emphasis("_"), PlainText(".")
+            );
         }
 
         [Test]
         public void TestEscapedCharacter()
         {
             var text = @"a\\\_";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                Character('a')
-                    .Concat(Escaped('\\'))
-                    .Concat(Escaped('_')));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a"), Escaped("\\"), Escaped("_")
+            );
         }
 
         [Test]
-        public void TripleUnderscore_IsItalicInBoldModificators()
+        public void TestTripleUnderscore()
         {
             var text = "___triple___";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                Modificator("___")
-                    .Concat(PlainText("triple"))
-                    .Concat(Modificator("___")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText(text)
+            );
         }
 
         [Test]
-        public void TwoLineBreaks_IsNewLineToken()
+        public void TestTwoLineBreaks()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("hello")
-                    .Concat(NewLine(twoLineBreaksNewLine))
-                    .Concat(PlainText("bye")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("hello"), NewLine(twoLineBreaksNewLine), PlainText("bye")
+            );
         }
 
         [Test]
-        public void TwoSpaces_AtTheEndOfLine_IsNewLineToken()
+        public void TestTwoSpaces_AtTheEndOfLine()
         {
             var text = $"hello  {Environment.NewLine}bye";
-            Tokenizer = new MarkdownTokenizer().ForText(text);
+            SetUpTokenizer(text);
 
-            GetAllTokens().Should().Equal(
-                PlainText("hello")
-                    .Concat(NewLine(twoSpacesNewLine))
-                    .Concat(PlainText("bye")));
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("hello"), NewLine(twoSpacesNewLine), PlainText("bye")
+            );
         }
     }
 }

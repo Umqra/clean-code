@@ -1,10 +1,10 @@
 ﻿namespace Markdown.Parsing.Tokens
 {
-    public class EscapedCharacterToken : IPlainTextToken
+    public class MdEmphasisModificatorToken : IMdToken
     {
-        public EscapedCharacterToken(char symbol)
+        public MdEmphasisModificatorToken(string text)
         {
-            Text = new string(symbol, 1);
+            Text = text;
         }
 
         public string Text { get; }
@@ -14,7 +14,7 @@
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((EscapedCharacterToken)obj);
+            return Equals((MdEmphasisModificatorToken)obj);
         }
 
         public override int GetHashCode()
@@ -24,10 +24,10 @@
 
         public override string ToString()
         {
-            return $"Escape({Text})";
+            return $"Emphasis({Text})";
         }
 
-        protected bool Equals(EscapedCharacterToken other)
+        protected bool Equals(MdEmphasisModificatorToken other)
         {
             return string.Equals(Text, other.Text);
         }

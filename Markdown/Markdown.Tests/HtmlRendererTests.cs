@@ -11,36 +11,28 @@ namespace Markdown.Tests
         [SetUp]
         public void SetUp()
         {
-            Renderer = new HtmlNodeRenderer();
+            Renderer = new NodeHtmlRenderer();
         }
 
-        public HtmlNodeRenderer Renderer;
+        public INodeRenderer Renderer;
 
         public string Render(INode node)
         {
-            return node.Accept(Renderer);
+            return Renderer.Render(node);
         }
 
         [Test]
-        public void TestEmptyHighEmphasisTextNode()
+        public void TestEmptyEmphasisModificator()
         {
-            var node = HighEmphasisText();
-
-            Render(node).Should().Be("<b></b>");
-        }
-
-        [Test]
-        public void TestEmptyLowEmphasisTextNode()
-        {
-            var node = LowEmphasisText();
+            var node = EmphasisModificator();
 
             Render(node).Should().Be("<em></em>");
         }
 
         [Test]
-        public void TestEmptyMediumEmphasisTextNode()
+        public void TestEmptyStrongModificator()
         {
-            var node = MediumEmphasisText();
+            var node = StrongModificator();
 
             Render(node).Should().Be("<strong></strong>");
         }
@@ -63,25 +55,17 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestManyNodesInHighEmphasisTextNode()
+        public void TestManyNodesInEmphasisModificatorNode()
         {
-            var node = HighEmphasisText(Text("first"), LowEmphasisText(Text("second")));
-
-            Render(node).Should().Be("<b>first<em>second</em></b>");
-        }
-
-        [Test]
-        public void TestManyNodesInLowEmphasisTextNode()
-        {
-            var node = LowEmphasisText(Text("first"), MediumEmphasisText(Text("second")));
+            var node = EmphasisModificator(Text("first"), StrongModificator(Text("second")));
 
             Render(node).Should().Be("<em>first<strong>second</strong></em>");
         }
 
         [Test]
-        public void TestManyNodesInMediumEmphasisTextNode()
+        public void TestManyNodesInStrongModificatorNode()
         {
-            var node = MediumEmphasisText(Text("first"), LowEmphasisText(Text("second")));
+            var node = StrongModificator(Text("first"), EmphasisModificator(Text("second")));
 
             Render(node).Should().Be("<strong>first<em>second</em></strong>");
         }
@@ -91,10 +75,18 @@ namespace Markdown.Tests
         {
             var node = Paragraph(
                 Text("first"),
-                MediumEmphasisText(Text("second")),
-                LowEmphasisText(Text("third")));
+                StrongModificator(Text("second")),
+                EmphasisModificator(Text("third")));
 
             Render(node).Should().Be("<p>first<strong>second</strong><em>third</em></p>");
+        }
+
+        [Test]
+        public void TestNewLineNode()
+        {
+            var node = NewLine();
+
+            Render(node).Should().Be("<br>");
         }
 
         [Test]
@@ -103,6 +95,14 @@ namespace Markdown.Tests
             var node = Text("sample");
 
             Render(node).Should().Be("sample");
+        }
+
+        [Test]
+        public void TestGroupNode()
+        {
+            var node = Group();
+
+            Render(node).Should().Be("");
         }
     }
 }

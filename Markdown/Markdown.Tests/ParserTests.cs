@@ -13,106 +13,102 @@ namespace Markdown.Tests
         public void SetUp()
         {
             Parser = new MarkdownParser();
-            Tokenizer = new MarkdownTokenizer();
+            TokenizerFactory = new MarkdownTokenizerFactory();
         }
 
         public MarkdownParser Parser { get; set; }
-        public ATokenizer<IToken> Tokenizer { get; set; }
+        public ITokenizerFactory<IMdToken> TokenizerFactory { get; set; }
 
         [Test]
         public void BoldInItalic_ShouldBeParsed()
         {
-            var sample = "_italic __bold__ end_";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var text = "_italic __bold__ end_";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
             parsed.Should().Be(
                 Paragraph(
-                    LowEmphasisText(
+                    EmphasisModificator(
                         Text("italic "),
-                        MediumEmphasisText(Text("bold")),
+                        StrongModificator(Text("bold")),
                         Text(" end"))
-                ));
+                )
+            );
         }
 
         [Test]
         public void ItalicInBold_ShouldBeParsed()
         {
-            var sample = "__bold _italic_ end__";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var text = "__bold _italic_ end__";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
             parsed.Should().Be(
                 Paragraph(
-                    MediumEmphasisText(
+                    StrongModificator(
                         Text("bold "),
-                        LowEmphasisText(Text("italic")),
+                        EmphasisModificator(Text("italic")),
                         Text(" end"))
-                ));
+                )
+            );
         }
 
         [Test]
         public void NotPairedUnderscore_ShouldNotModifyText()
         {
-            var sample = "_a";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var text = "_a";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
-            parsed.Should().Be(
-                Paragraph(
-                    Group(
-                        Text("_"),
-                        Text("a"))
-                ));
+            parsed.Should().Be(Paragraph(Group(Text("_"), Text("a"))));
         }
 
         [Test]
         public void TestBoldUnderscore()
         {
-            var sample = "__sample text__";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var text = "__sample text__";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
-            parsed.Should().Be(
-                Paragraph(MediumEmphasisText(Text("sample text"))));
+            parsed.Should().Be(Paragraph(StrongModificator(Text("sample text"))));
         }
 
         [Test]
         public void TestConsecutiveModificators()
         {
-            var sample = "_first_ __second__ _third_";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var text = "_first_ __second__ _third_";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
             parsed.Should().Be(
                 Paragraph(
-                    LowEmphasisText(Text("first")),
+                    EmphasisModificator(Text("first")),
                     Text(" "),
-                    MediumEmphasisText(Text("second")),
+                    StrongModificator(Text("second")),
                     Text(" "),
-                    LowEmphasisText(Text("third"))
-                ));
+                    EmphasisModificator(Text("third"))
+                )
+            );
         }
 
         [Test]
         public void TestItalicUnderscore()
         {
-            var sample = "_sample text_";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var text = "_sample text_";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
-            parsed.Should().Be(
-                Paragraph(LowEmphasisText(Text("sample text"))));
+            parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
         }
 
         [Test]
         public void TestSimpleText()
         {
-            var sample = "sample text";
-            var parsed = Parser.ParseParagraph(Tokenizer.ForText(sample));
+            var text = "sample text";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
-            parsed.Should().Be(Paragraph(Text(sample)));
+            parsed.Should().Be(Paragraph(Text(text)));
         }
 
         [Test]
         public void TwoLineBreaks_IsNewLineNode()
         {
-            var sample = $"hello{Environment.NewLine}{Environment.NewLine}bye";
-            var parsed = Parser.Parse(Tokenizer.ForText(sample));
+            var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
+            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
 
             parsed.Should().Be(
                 Group(
@@ -126,8 +122,8 @@ namespace Markdown.Tests
         [Test]
         public void TwoSpacesAtTheEndOfLine_IsNewLineNode()
         {
-            var sample = $"hello  {Environment.NewLine}bye";
-            var parsed = Parser.Parse(Tokenizer.ForText(sample));
+            var text = $"hello  {Environment.NewLine}bye";
+            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
 
             parsed.Should().Be(
                 Group(

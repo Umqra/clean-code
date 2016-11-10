@@ -4,19 +4,14 @@ namespace Markdown.Tests
 {
     internal abstract class BaseTreeTests
     {
-        protected INode HighEmphasisText(params INode[] nodes)
+        protected INode StrongModificator(params INode[] nodes)
         {
-            return new EmphasisTextNode(EmphasisStrength.High, nodes);
+            return new StrongModificatorNode(nodes);
         }
 
-        protected INode MediumEmphasisText(params INode[] nodes)
+        protected INode EmphasisModificator(params INode[] nodes)
         {
-            return new EmphasisTextNode(EmphasisStrength.Medium, nodes);
-        }
-
-        protected INode LowEmphasisText(params INode[] nodes)
-        {
-            return new EmphasisTextNode(EmphasisStrength.Low, nodes);
+            return new EmphasisModificatorNode(nodes);
         }
 
         protected INode Paragraph(params INode[] nodes)
