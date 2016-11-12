@@ -117,7 +117,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TwoLineBreaks_IsNewLineNode()
+        public void TwoLineBreaks_SeparatesParagraphs()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
             var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
@@ -125,14 +125,13 @@ namespace Markdown.Tests
             parsed.Should().Be(
                 Group(
                     Paragraph(Text("hello")),
-                    NewLine(),
                     Paragraph(Text("bye"))
                 )
             );
         }
 
         [Test]
-        public void TwoSpacesAtTheEndOfLine_IsNewLineNode()
+        public void TwoSpacesAtTheEndOfLine_SeparatesParagraph()
         {
             var text = $"hello  {Environment.NewLine}bye";
             var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
@@ -140,8 +139,33 @@ namespace Markdown.Tests
             parsed.Should().Be(
                 Group(
                     Paragraph(Text("hello")),
-                    NewLine(),
                     Paragraph(Text("bye"))
+                )
+            );
+        }
+
+        [Test]
+        public void WhiteSpaceSymbols_BeforeParagraph_Trimmed()
+        {
+            var text = "   new paragraph";
+            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+
+            parsed.Should().Be(
+                Group(
+                    Paragraph(Text("new paragraph"))
+                )
+            );
+        }
+
+        [Test]
+        public void WhiteSpaceSymbols_AfterParagraph_NotTrimmed()
+        {
+            var text = "new paragraph    ";
+            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+
+            parsed.Should().Be(
+                Group(
+                    Paragraph(Text(text))
                 )
             );
         }

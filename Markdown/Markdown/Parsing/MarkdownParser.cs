@@ -11,7 +11,11 @@ namespace Markdown.Parsing
         public INode Parse(ITokenizer<IMdToken> tokenizer)
         {
             return new GroupNode(
-                ParseNodesUntilNotNull(() => ParseParagraph(tokenizer) ?? ParseNewLine(tokenizer))
+                ParseNodesUntilNotNull(() =>
+                {
+                    SkipNewLines(tokenizer);
+                    return ParseParagraph(tokenizer);
+                })
             );
         }
 
@@ -23,12 +27,19 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private INode ParseNewLine(ITokenizer<IMdToken> tokenizer)
+        private bool IsWhiteSpaceToken(IMdToken token)
         {
-            var newLineToken = tokenizer.TakeTokenIfMatch<MdNewLineToken>();
-            if (newLineToken != null)
-                return new NewLineNode();
-            return null;
+            if (token is MdNewLineToken)
+                return true;
+            var textToken = token as MdTextToken;
+            if (textToken != null && textToken.Text.All(char.IsWhiteSpace))
+                return true;
+            return false;
+        }
+
+        private void SkipNewLines(ITokenizer<IMdToken> tokenizer)
+        {
+            tokenizer.TakeTokensUntilMatch(IsWhiteSpaceToken);
         }
 
         private INode ParseTextInParagraph(ITokenizer<IMdToken> tokenizer)
@@ -46,7 +57,10 @@ namespace Markdown.Parsing
                 return null;
 
             if (textTokens.TrueForAll(token => token is MdTextToken))
-                return new TextNode(string.Join("", textTokens.Select(token => token.Text)));
+            {
+                var text = string.Join("", textTokens.Select(token => token.Text));
+                return new TextNode(text);
+            }
 
             var children = textTokens.Select(token =>
                     token is MdEscapedTextToken

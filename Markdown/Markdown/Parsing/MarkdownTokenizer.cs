@@ -35,20 +35,26 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private IMdToken TryParseSemanticModificator(string modificator, Func<string, IMdToken> modificatorConstructor)
+        private bool CanBeSemanticModificator(string modificator)
         {
             if (LookAtString(modificator.Length) != modificator)
-                return null;
+                return false;
             var before = LookBehind(1);
             var after = LookAhead(modificator.Length);
 
             if (before.IsWhiteSpace() && after.IsWhiteSpace())
-                return null;
+                return false;
             if (before == modificator.First() || after == modificator.Last())
-                return null;
+                return false;
             if (before.IsLetterOrDigit() && after.IsLetterOrDigit())
-                return null;
+                return false;
+            return true;
+        }
 
+        private IMdToken TryParseSemanticModificator(string modificator, Func<string, IMdToken> modificatorConstructor)
+        {
+            if (!CanBeSemanticModificator(modificator))
+                return null;
             return modificatorConstructor(TakeString(modificator.Length));
         }
     }
