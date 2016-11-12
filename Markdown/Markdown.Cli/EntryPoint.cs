@@ -17,6 +17,8 @@ namespace Markdown.Cli
             }
             catch (Exception e)
             {
+                // CR: Also, it's a good practice to exit with
+                // non -zero exit code with Environment.Exit
                 Console.WriteLine(e.Message);
             }
         }
@@ -29,6 +31,10 @@ namespace Markdown.Cli
             if (parsingStatus.HelpCalled) return;
             if (parsingStatus.HasErrors)
             {
+                // CR: To avoid working with console in multiple places
+                // (because you might want to switch to dedicated logging solution)
+                // it's better to throw exception here to let top-level handler do it's job.
+                // For example, set exit code to non-zero.
                 Console.Error.WriteLine(parsingStatus.ErrorText);
                 parser.HelpOption.ShowHelp(parsingStatus.Errors.Select(error => error.Option));
                 return;
@@ -37,6 +43,8 @@ namespace Markdown.Cli
             var options = parser.Object;
             if (!options.AreValid())
             {
+                // CR: Same, it's not a valid situiation, so you might want to
+                // set exit-code to non-zero
                 parser.HelpOption.ShowHelp(parser.Options);
                 return;
             }

@@ -4,6 +4,7 @@ namespace Markdown.Parsing.Visitors
 {
     public abstract class ContextTreeVisitor<T> : INodeVisitor where T : ITreeContext
     {
+        // Nit: Do you really need a setter?
         protected T Context { get; set; }
 
         public void Visit(INode node)
@@ -17,6 +18,7 @@ namespace Markdown.Parsing.Visitors
                         Visit(child);
                 }
             }
+            // Nit: If you use if with braces, else should be with braces too.
             else
                 Context.EnterLeafNode(node);
         }

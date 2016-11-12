@@ -7,6 +7,7 @@ namespace Markdown.Rendering
     {
         public string Render(INode node)
         {
+            // Nit: I think it would be safer to initialize context in the constructor
             Context = new HtmlRenderContext(new NodeToHtmlEntityConverter());
             Visit(node);
             return Context.HtmlMarkup;

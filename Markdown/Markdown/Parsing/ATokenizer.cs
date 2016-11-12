@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Markdown.Parsing
 {
+    // Nit: Why ATokenizer? Abstract? Use full name
     public abstract class ATokenizer<T> where T : class
     {
         protected ATokenizer(string text)
@@ -17,6 +18,7 @@ namespace Markdown.Parsing
         protected string Text { get; set; }
         protected int TextPosition { get; set; }
 
+        // CR: Protected method should be below public ones
         protected abstract T ParseToken();
 
         public string LookAtString(int length)

@@ -14,6 +14,7 @@ namespace Markdown.Rendering
             htmlMarkup = new StringBuilder();
         }
 
+        // Nit: Naming issue, mb make it field, not property?
         private StringBuilder htmlMarkup { get; }
         public string HtmlMarkup => htmlMarkup.ToString();
 

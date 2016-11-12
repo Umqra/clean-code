@@ -5,6 +5,7 @@ namespace Markdown.Parsing.Visitors
 {
     public abstract class ATreeContext : ITreeContext
     {
+        // CR: Order
         protected ATreeContext()
         {
             EnteredNodes = new Stack<INode>();
@@ -17,6 +18,7 @@ namespace Markdown.Parsing.Visitors
             ExitInternalNode(EnteredNodes.Pop());
         }
 
+        // CR: No visibility modificator
         ITreeContext ITreeContext.EnterInternalNode(INode node)
         {
             EnteredNodes.Push(node);
@@ -24,6 +26,7 @@ namespace Markdown.Parsing.Visitors
             return this;
         }
 
+        // CR: No visibility modificator
         void ITreeContext.EnterLeafNode(INode node)
         {
             EnterLeafNode(node);

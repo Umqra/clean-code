@@ -35,6 +35,7 @@ namespace Markdown.Tests
             );
         }
 
+        // CR: Suggested earlier: "__bold _still bold end__"
         [Test]
         public void ItalicInBold_ShouldBeParsed()
         {
