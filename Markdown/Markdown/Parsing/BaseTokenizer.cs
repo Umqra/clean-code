@@ -3,35 +3,19 @@ using System.Collections.Generic;
 
 namespace Markdown.Parsing
 {
-    // Nit: Why ATokenizer? Abstract? Use full name
-    public abstract class ATokenizer<T> where T : class
+    public abstract class BaseTokenizer<T> : ITokenizer<T> where T : class
     {
-        protected ATokenizer(string text)
+        protected BaseTokenizer(string text)
         {
             Text = text;
             TextPosition = 0;
         }
 
-        public bool TextEnded => TextPosition == Text.Length;
-        public char CurrentSymbol => Text[TextPosition];
-
-        protected string Text { get; set; }
+        protected string Text { get; }
         protected int TextPosition { get; set; }
 
-        // CR: Protected method should be below public ones
-        protected abstract T ParseToken();
-
-        public string LookAtString(int length)
-        {
-            return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, length));
-        }
-
-        public TSpec TakeToken<TSpec>() where TSpec : class, T
-        {
-            if (TextEnded)
-                return null;
-            return ParseToken() as TSpec;
-        }
+        protected bool TextEnded => TextPosition == Text.Length;
+        protected char CurrentSymbol => Text[TextPosition];
 
         public TSpec TakeTokenIfMatch<TSpec>(Predicate<TSpec> matchPredicate) where TSpec : class, T
         {
@@ -63,7 +47,21 @@ namespace Markdown.Parsing
             return tokens;
         }
 
-        public string TakeString(int length)
+        protected abstract T ParseToken();
+
+        public TSpec TakeToken<TSpec>() where TSpec : class, T
+        {
+            if (TextEnded)
+                return null;
+            return ParseToken() as TSpec;
+        }
+
+        protected string LookAtString(int length)
+        {
+            return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, length));
+        }
+
+        protected string TakeString(int length)
         {
             var result = LookAtString(length);
             TextPosition += result.Length;

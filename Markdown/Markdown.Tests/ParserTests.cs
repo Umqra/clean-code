@@ -35,7 +35,18 @@ namespace Markdown.Tests
             );
         }
 
-        // CR: Suggested earlier: "__bold _still bold end__"
+        [Test]
+        public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsed()
+        {
+            var text = "__bold _still bold end__";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            parsed.Should().Be(
+                Paragraph(
+                    StrongModificator(Text("bold _still bold end"))
+                ));
+        }
+
         [Test]
         public void ItalicInBold_ShouldBeParsed()
         {

@@ -4,7 +4,7 @@ using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
 {
-    public class MarkdownTokenizer : ATokenizer<IMdToken>
+    public class MarkdownTokenizer : BaseTokenizer<IMdToken>
     {
         public MarkdownTokenizer(string text) : base(text)
         {

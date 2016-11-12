@@ -1,17 +1,30 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace Markdown.Cli
 {
     public static class FileExtensions
     {
+        public static void TryGetReadAccess(string filename)
+        {
+            using (File.OpenRead(filename))
+            {
+            }
+        }
+
+        public static void TryGetWriteAccess(string filename)
+        {
+            using (File.OpenWrite(filename))
+            {
+            }
+        }
+
         public static bool HaveReadAccess(string filename)
         {
             try
             {
-                using (File.OpenRead(filename))
-                {
-                }
+                TryGetReadAccess(filename);
             }
             catch (IOException)
             {
@@ -24,9 +37,7 @@ namespace Markdown.Cli
         {
             try
             {
-                using (File.OpenWrite(filename))
-                {
-                }
+                TryGetWriteAccess(filename);
             }
             catch (Exception)
             {

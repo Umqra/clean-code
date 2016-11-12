@@ -18,9 +18,10 @@ namespace Markdown.Parsing.Visitors
                         Visit(child);
                 }
             }
-            // Nit: If you use if with braces, else should be with braces too.
             else
+            {
                 Context.EnterLeafNode(node);
+            }
         }
     }
 }

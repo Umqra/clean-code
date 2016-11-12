@@ -41,13 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Parsing\ATokenizer.cs" />
+    <Compile Include="Parsing\BaseTokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
+    <Compile Include="Parsing\ITokenizer.cs" />
     <Compile Include="Parsing\Visitors\ContextTreeVisitor.cs" />
     <Compile Include="Parsing\ITokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\StrongModificatorNode.cs" />
     <Compile Include="Parsing\Tokens\MdStrongModificatorToken.cs" />
-    <Compile Include="Parsing\Visitors\ATreeContext.cs" />
+    <Compile Include="Parsing\Visitors\BaseTreeContext.cs" />
     <Compile Include="Parsing\Visitors\ITreeContext.cs" />
     <Compile Include="Parsing\MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\IInternalNode.cs" />

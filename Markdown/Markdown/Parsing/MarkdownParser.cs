@@ -8,14 +8,14 @@ namespace Markdown.Parsing
 {
     public class MarkdownParser
     {
-        public INode Parse(ATokenizer<IMdToken> tokenizer)
+        public INode Parse(ITokenizer<IMdToken> tokenizer)
         {
             return new GroupNode(
                 ParseNodesUntilNotNull(() => ParseParagraph(tokenizer) ?? ParseNewLine(tokenizer))
             );
         }
 
-        public INode ParseParagraph(ATokenizer<IMdToken> tokenizer)
+        public INode ParseParagraph(ITokenizer<IMdToken> tokenizer)
         {
             var children = ParseNodesUntilNotNull(() => ParseTextInParagraph(tokenizer)).ToList();
             if (children.Any())
@@ -23,7 +23,7 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private INode ParseNewLine(ATokenizer<IMdToken> tokenizer)
+        private INode ParseNewLine(ITokenizer<IMdToken> tokenizer)
         {
             var newLineToken = tokenizer.TakeTokenIfMatch<MdNewLineToken>();
             if (newLineToken != null)
@@ -31,14 +31,14 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private INode ParseTextInParagraph(ATokenizer<IMdToken> tokenizer)
+        private INode ParseTextInParagraph(ITokenizer<IMdToken> tokenizer)
         {
             return ParsePlainText(tokenizer) ??
                    ParseEmphasisModificator(tokenizer) ??
                    ParseStrongModificator(tokenizer);
         }
 
-        private INode ParsePlainText(ATokenizer<IMdToken> tokenizer)
+        private INode ParsePlainText(ITokenizer<IMdToken> tokenizer)
         {
             var textTokens = tokenizer.TakeTokensUntilMatch(token => token is IMdPlainTextToken);
 
@@ -56,7 +56,7 @@ namespace Markdown.Parsing
             return new GroupNode(children);
         }
 
-        private INode ParseEmphasisModificator(ATokenizer<IMdToken> tokenizer)
+        private INode ParseEmphasisModificator(ITokenizer<IMdToken> tokenizer)
         {
             var startToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>();
 
@@ -76,7 +76,7 @@ namespace Markdown.Parsing
             return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
         }
 
-        private INode ParseStrongModificator(ATokenizer<IMdToken> tokenizer)
+        private INode ParseStrongModificator(ITokenizer<IMdToken> tokenizer)
         {
             var startToken = tokenizer.TakeTokenIfMatch<MdStrongModificatorToken>();
 

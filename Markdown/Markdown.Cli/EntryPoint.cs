@@ -15,11 +15,13 @@ namespace Markdown.Cli
             {
                 RunCli(args);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                // CR: Also, it's a good practice to exit with
-                // non -zero exit code with Environment.Exit
-                Console.WriteLine(e.Message);
+                var innerExceptions = exception.EnumerateInnerExceptions().ToList();
+                Console.WriteLine(string.Join("\n", innerExceptions.Select(e => " - " + e.Message)));
+                if (innerExceptions.Any(e => e is ParseArgumentException))
+                    Console.WriteLine("Type ?, h, --help to call help message");
+                Environment.Exit(1);
             }
         }
 
@@ -30,23 +32,16 @@ namespace Markdown.Cli
             var parsingStatus = parser.Parse(args);
             if (parsingStatus.HelpCalled) return;
             if (parsingStatus.HasErrors)
-            {
-                // CR: To avoid working with console in multiple places
-                // (because you might want to switch to dedicated logging solution)
-                // it's better to throw exception here to let top-level handler do it's job.
-                // For example, set exit code to non-zero.
-                Console.Error.WriteLine(parsingStatus.ErrorText);
-                parser.HelpOption.ShowHelp(parsingStatus.Errors.Select(error => error.Option));
-                return;
-            }
+                throw new ParseArgumentException(parsingStatus.ErrorText);
 
-            var options = parser.Object;
-            if (!options.AreValid())
+            CliOptions options;
+            try
             {
-                // CR: Same, it's not a valid situiation, so you might want to
-                // set exit-code to non-zero
-                parser.HelpOption.ShowHelp(parser.Options);
-                return;
+                options = parser.Object.TryInitialize();
+            }
+            catch (Exception exception)
+            {
+                throw new ParseArgumentException("Invalid cli arguments", exception);
             }
 
             ConvertMarkdownToHtml(options);

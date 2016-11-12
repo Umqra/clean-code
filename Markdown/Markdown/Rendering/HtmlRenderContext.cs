@@ -14,8 +14,7 @@ namespace Markdown.Rendering
             htmlMarkup = new StringBuilder();
         }
 
-        // Nit: Naming issue, mb make it field, not property?
-        private StringBuilder htmlMarkup { get; }
+        private readonly StringBuilder htmlMarkup;
         public string HtmlMarkup => htmlMarkup.ToString();
 
         protected override void EnterLeafNode(INode node)

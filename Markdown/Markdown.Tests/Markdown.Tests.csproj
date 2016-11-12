@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseTreeTests.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="FluentAssertionsExtension.cs" />
     <Compile Include="HtmlRendererTests.cs" />
     <Compile Include="NodeEqualsTests.cs" />

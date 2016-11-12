@@ -10,7 +10,7 @@ namespace Markdown.Tests
     [TestFixture]
     internal class MarkdownTokenizerTests
     {
-        public ATokenizer<IMdToken> Tokenizer { get; set; }
+        public BaseTokenizer<IMdToken> Tokenizer { get; set; }
 
         public void SetUpTokenizer(string text)
         {
