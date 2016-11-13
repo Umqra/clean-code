@@ -59,6 +59,16 @@ namespace Markdown.Tests
             yield return new MdToken(modificator).With(Md.Close, Md.Strong);
         }
 
+        private IEnumerable<IMdToken> OpenCode(string modificator)
+        {
+            yield return new MdToken(modificator).With(Md.Open, Md.Code);
+        }
+
+        private IEnumerable<IMdToken> CloseCode(string modificator)
+        {
+            yield return new MdToken(modificator).With(Md.Close, Md.Code);
+        }
+
         private readonly string twoSpacesNewLine = "  " + Environment.NewLine;
         private readonly string twoLineBreaksNewLine = Environment.NewLine + Environment.NewLine;
 
@@ -208,6 +218,48 @@ namespace Markdown.Tests
             GetAllTokens().Should().BeEqualToFoldedSequence(
                 PlainText("hello"), NewLine(twoSpacesNewLine), PlainText("bye")
             );
+        }
+
+        [Test]
+        public void TestBackTick_OnWordBorders()
+        {
+            var text = "a `b c` d";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a "), OpenCode("`"), PlainText("b c"), CloseCode("`"), PlainText(" d")
+            );
+        }
+
+        [Test]
+        public void TestBackTick_OnTextBorders()
+        {
+            var text = "`text`";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                OpenCode("`"), PlainText("text"), CloseCode("`")
+            );
+        }
+
+        [Test]
+        public void TestBackTick_SurroundedByPunctuation()
+        {
+            var text = "this is `#include<iostream>` code";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("this is `#include<iostream>` code"));
+        }
+
+        [Test]
+        public void TestBackTick_AtTheEndOfSentence()
+        {
+            var text = "this is `code`.";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("this is "), OpenCode("`"), PlainText("code`."));
         }
     }
 }
