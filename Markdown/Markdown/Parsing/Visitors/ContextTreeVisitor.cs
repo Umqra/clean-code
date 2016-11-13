@@ -4,8 +4,12 @@ namespace Markdown.Parsing.Visitors
 {
     public abstract class ContextTreeVisitor<T> : INodeVisitor where T : ITreeContext
     {
-        // Nit: Do you really need a setter?
-        protected T Context { get; set; }
+        protected T Context { get; }
+
+        protected ContextTreeVisitor(T context)
+        {
+            Context = context;
+        }
 
         public void Visit(INode node)
         {

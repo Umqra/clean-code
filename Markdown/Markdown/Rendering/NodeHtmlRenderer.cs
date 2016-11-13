@@ -5,9 +5,8 @@ namespace Markdown.Rendering
 {
     public class NodeHtmlRenderer : ContextTreeVisitor<HtmlRenderContext>, INodeRenderer
     {
-        public NodeHtmlRenderer()
+        public NodeHtmlRenderer(HtmlRenderContext context) : base(context)
         {
-            Context = new HtmlRenderContext(new NodeToHtmlEntityConverter());
         }
 
         public string Render(INode node)

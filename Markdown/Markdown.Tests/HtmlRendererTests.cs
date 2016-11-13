@@ -11,7 +11,7 @@ namespace Markdown.Tests
         [SetUp]
         public void SetUp()
         {
-            Renderer = new NodeHtmlRenderer();
+            Renderer = new NodeHtmlRenderer(new HtmlRenderContext(new NodeToHtmlEntityConverter()));
         }
 
         public INodeRenderer Renderer;

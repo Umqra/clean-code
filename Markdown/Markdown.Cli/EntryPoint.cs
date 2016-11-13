@@ -54,7 +54,8 @@ namespace Markdown.Cli
                 new MarkdownToHtmlRenderer(
                     new MarkdownParser(),
                     new MarkdownTokenizerFactory(),
-                    new NodeHtmlRenderer());
+                    new NodeHtmlRenderer(new HtmlRenderContext(new NodeToHtmlEntityConverter()))
+                );
             var htmlMarkup = markdownToHtmlRenderer.Render(markdownMarkup);
             File.WriteAllText(options.OutputFilename, htmlMarkup);
         }
