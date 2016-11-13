@@ -5,16 +5,17 @@ namespace Markdown.Rendering
 {
     public class MarkdownToHtmlRenderer
     {
-        public MarkdownToHtmlRenderer(MarkdownParser parser, ITokenizerFactory<IMdToken> tokenizer, INodeRenderer nodeRenderer)
+        public MarkdownParser Parser { get; set; }
+        public ITokenizerFactory<IMdToken> Tokenizer { get; set; }
+        public INodeRenderer NodeRenderer { get; set; }
+
+        public MarkdownToHtmlRenderer(MarkdownParser parser, ITokenizerFactory<IMdToken> tokenizer,
+            INodeRenderer nodeRenderer)
         {
             Parser = parser;
             Tokenizer = tokenizer;
             NodeRenderer = nodeRenderer;
         }
-
-        public MarkdownParser Parser { get; set; }
-        public ITokenizerFactory<IMdToken> Tokenizer { get; set; }
-        public INodeRenderer NodeRenderer { get; set; }
 
         public string Render(string text)
         {

@@ -5,13 +5,12 @@ namespace Markdown.Parsing.Visitors
 {
     public abstract class ATreeContext : ITreeContext
     {
-        // CR: Order
+        private Stack<INode> EnteredNodes { get; }
+
         protected ATreeContext()
         {
             EnteredNodes = new Stack<INode>();
         }
-
-        private Stack<INode> EnteredNodes { get; }
 
         public void Dispose()
         {

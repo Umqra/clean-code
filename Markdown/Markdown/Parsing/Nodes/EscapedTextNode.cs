@@ -2,12 +2,12 @@
 {
     public class EscapedTextNode : INode
     {
+        public string Text { get; }
+
         public EscapedTextNode(string text)
         {
             Text = text;
         }
-
-        public string Text { get; }
 
         public override bool Equals(object obj)
         {

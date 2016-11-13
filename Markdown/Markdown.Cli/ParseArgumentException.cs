@@ -10,7 +10,6 @@ namespace Markdown.Cli
 
         public ParseArgumentException(string message, Exception innerException) : base(message, innerException)
         {
-            
         }
     }
 }

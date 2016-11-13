@@ -113,6 +113,17 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestEscapedCharacter()
+        {
+            var text = @"a\\\_";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a"), Escaped("\\"), Escaped("_")
+            );
+        }
+
+        [Test]
         public void TestSingleUnderscore_AtTheEndOfSentence()
         {
             var text = "This is the _end_.";
@@ -153,17 +164,6 @@ namespace Markdown.Tests
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
                 PlainText("this is "), Emphasis("_"), PlainText("!important!"), Emphasis("_"), PlainText(".")
-            );
-        }
-
-        [Test]
-        public void TestEscapedCharacter()
-        {
-            var text = @"a\\\_";
-            SetUpTokenizer(text);
-
-            GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("a"), Escaped("\\"), Escaped("_")
             );
         }
 

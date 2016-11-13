@@ -6,16 +6,16 @@ namespace Markdown.Rendering
 {
     public class HtmlRenderContext : ATreeContext
     {
+        private readonly StringBuilder htmlMarkup;
         private readonly INodeToHtmlEntityConverter nodeConverter;
+
+        public string HtmlMarkup => htmlMarkup.ToString();
 
         public HtmlRenderContext(INodeToHtmlEntityConverter nodeConverter)
         {
             this.nodeConverter = nodeConverter;
             htmlMarkup = new StringBuilder();
         }
-
-        private readonly StringBuilder htmlMarkup;
-        public string HtmlMarkup => htmlMarkup.ToString();
 
         protected override void EnterLeafNode(INode node)
         {

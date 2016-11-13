@@ -5,10 +5,13 @@ namespace Markdown.Rendering
 {
     public class NodeHtmlRenderer : ContextTreeVisitor<HtmlRenderContext>, INodeRenderer
     {
+        public NodeHtmlRenderer()
+        {
+            Context = new HtmlRenderContext(new NodeToHtmlEntityConverter());
+        }
+
         public string Render(INode node)
         {
-            // Nit: I think it would be safer to initialize context in the constructor
-            Context = new HtmlRenderContext(new NodeToHtmlEntityConverter());
             Visit(node);
             return Context.HtmlMarkup;
         }

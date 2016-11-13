@@ -145,19 +145,6 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void WhiteSpaceSymbols_BeforeParagraph_Trimmed()
-        {
-            var text = "   new paragraph";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
-
-            parsed.Should().Be(
-                Group(
-                    Paragraph(Text("new paragraph"))
-                )
-            );
-        }
-
-        [Test]
         public void WhiteSpaceSymbols_AfterParagraph_NotTrimmed()
         {
             var text = "new paragraph    ";
@@ -166,6 +153,19 @@ namespace Markdown.Tests
             parsed.Should().Be(
                 Group(
                     Paragraph(Text(text))
+                )
+            );
+        }
+
+        [Test]
+        public void WhiteSpaceSymbols_BeforeParagraph_Trimmed()
+        {
+            var text = "   new paragraph";
+            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+
+            parsed.Should().Be(
+                Group(
+                    Paragraph(Text("new paragraph"))
                 )
             );
         }

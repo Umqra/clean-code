@@ -22,19 +22,20 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void RendererSaveContextBetweenCalls()
+        {
+            var node = Text("sample");
+
+            Render(node);
+            Render(node).Should().Be("samplesample");
+        }
+
+        [Test]
         public void TestEmptyEmphasisModificator()
         {
             var node = EmphasisModificator();
 
             Render(node).Should().Be("<em></em>");
-        }
-
-        [Test]
-        public void TestEmptyStrongModificator()
-        {
-            var node = StrongModificator();
-
-            Render(node).Should().Be("<strong></strong>");
         }
 
 
@@ -47,9 +48,25 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestEmptyStrongModificator()
+        {
+            var node = StrongModificator();
+
+            Render(node).Should().Be("<strong></strong>");
+        }
+
+        [Test]
         public void TestEmptyTextNode()
         {
             var node = Text("");
+
+            Render(node).Should().Be("");
+        }
+
+        [Test]
+        public void TestGroupNode()
+        {
+            var node = Group();
 
             Render(node).Should().Be("");
         }
@@ -63,14 +80,6 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestManyNodesInStrongModificatorNode()
-        {
-            var node = StrongModificator(Text("first"), EmphasisModificator(Text("second")));
-
-            Render(node).Should().Be("<strong>first<em>second</em></strong>");
-        }
-
-        [Test]
         public void TestManyNodesInParagraphNode()
         {
             var node = Paragraph(
@@ -79,6 +88,14 @@ namespace Markdown.Tests
                 EmphasisModificator(Text("third")));
 
             Render(node).Should().Be("<p>first<strong>second</strong><em>third</em></p>");
+        }
+
+        [Test]
+        public void TestManyNodesInStrongModificatorNode()
+        {
+            var node = StrongModificator(Text("first"), EmphasisModificator(Text("second")));
+
+            Render(node).Should().Be("<strong>first<em>second</em></strong>");
         }
 
         [Test]
@@ -95,14 +112,6 @@ namespace Markdown.Tests
             var node = Text("sample");
 
             Render(node).Should().Be("sample");
-        }
-
-        [Test]
-        public void TestGroupNode()
-        {
-            var node = Group();
-
-            Render(node).Should().Be("");
         }
     }
 }

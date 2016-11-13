@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace Markdown.Cli
 {
@@ -12,7 +11,7 @@ namespace Markdown.Cli
         {
             TryInitializeInputFile();
             TryInitializeOutputFile();
-            
+
             return this;
         }
 

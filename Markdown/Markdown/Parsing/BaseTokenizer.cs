@@ -5,17 +5,17 @@ namespace Markdown.Parsing
 {
     public abstract class BaseTokenizer<T> : ITokenizer<T> where T : class
     {
-        protected BaseTokenizer(string text)
-        {
-            Text = text;
-            TextPosition = 0;
-        }
-
         protected string Text { get; }
         protected int TextPosition { get; set; }
 
         protected bool TextEnded => TextPosition == Text.Length;
         protected char CurrentSymbol => Text[TextPosition];
+
+        protected BaseTokenizer(string text)
+        {
+            Text = text;
+            TextPosition = 0;
+        }
 
         public TSpec TakeTokenIfMatch<TSpec>(Predicate<TSpec> matchPredicate) where TSpec : class, T
         {
