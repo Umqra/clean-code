@@ -43,8 +43,9 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    StrongModificator(Text("bold _still bold end"))
-                ));
+                    StrongModificator(Text("bold "), Group(Text("_"), Text("still bold end")))
+                )
+            );
         }
 
         [Test]

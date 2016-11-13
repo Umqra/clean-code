@@ -44,6 +44,7 @@
     <Compile Include="Parsing\BaseTokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
     <Compile Include="Parsing\ITokenizer.cs" />
+    <Compile Include="Parsing\Nodes\CodeModificatorNode.cs" />
     <Compile Include="Parsing\Tokens\Md.cs" />
     <Compile Include="Parsing\Tokens\MdToken.cs" />
     <Compile Include="Parsing\Visitors\ContextTreeVisitor.cs" />
