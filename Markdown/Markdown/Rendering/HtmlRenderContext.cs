@@ -4,7 +4,7 @@ using Markdown.Parsing.Visitors;
 
 namespace Markdown.Rendering
 {
-    public class HtmlRenderContext : ATreeContext
+    public class HtmlRenderContext : BaseTreeContext
     {
         private readonly StringBuilder htmlMarkup;
         private readonly INodeToHtmlEntityConverter nodeConverter;

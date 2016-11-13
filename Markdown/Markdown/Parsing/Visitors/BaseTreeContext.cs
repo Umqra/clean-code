@@ -3,11 +3,11 @@ using Markdown.Parsing.Nodes;
 
 namespace Markdown.Parsing.Visitors
 {
-    public abstract class ATreeContext : ITreeContext
+    public abstract class BaseTreeContext : ITreeContext
     {
         private Stack<INode> EnteredNodes { get; }
 
-        protected ATreeContext()
+        protected BaseTreeContext()
         {
             EnteredNodes = new Stack<INode>();
         }
