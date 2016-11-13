@@ -5,13 +5,11 @@ namespace Markdown.Parsing.Nodes
     public static class SequenceExtensions
     {
         public static int CombineElementHashCodesUsingParent<T, TParent>(this IEnumerable<T> sequence, TParent parent)
-            where T : class
         {
             return CombineElementHashCodes(sequence, typeof(TParent).GetHashCode());
         }
 
         public static int CombineElementHashCodes<T>(this IEnumerable<T> sequence, int initHashValue = 0)
-            where T : class
         {
             var hashCode = initHashValue;
             foreach (var element in sequence)

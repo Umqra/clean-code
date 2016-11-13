@@ -17,21 +17,16 @@ namespace Markdown.Parsing
             TextPosition = 0;
         }
 
-        public TSpec TakeTokenIfMatch<TSpec>(Predicate<TSpec> matchPredicate) where TSpec : class, T
+        public T TakeTokenIfMatch(Predicate<T> matchPredicate)
         {
             var oldPosition = TextPosition;
 
-            var token = TakeToken<TSpec>();
+            var token = TakeToken();
             if (token != null && matchPredicate(token))
                 return token;
 
             TextPosition = oldPosition;
             return null;
-        }
-
-        public TSpec TakeTokenIfMatch<TSpec>() where TSpec : class, T
-        {
-            return TakeTokenIfMatch<TSpec>(_ => true);
         }
 
         public List<T> TakeTokensUntilMatch(Predicate<T> matchPredicate)
@@ -49,11 +44,11 @@ namespace Markdown.Parsing
 
         protected abstract T ParseToken();
 
-        public TSpec TakeToken<TSpec>() where TSpec : class, T
+        public T TakeToken()
         {
             if (TextEnded)
                 return null;
-            return ParseToken() as TSpec;
+            return ParseToken();
         }
 
         protected string LookAtString(int length)

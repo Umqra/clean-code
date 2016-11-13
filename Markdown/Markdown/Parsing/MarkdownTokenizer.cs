@@ -1,11 +1,21 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
 {
     public class MarkdownTokenizer : BaseTokenizer<IMdToken>
     {
+        private static readonly Dictionary<string, Md> modificatorAttribute =
+            new Dictionary<string, Md>
+            {
+                {"__", Md.Strong},
+                {"**", Md.Strong},
+                {"_", Md.Emphasis},
+                {"*", Md.Emphasis},
+                {"`", Md.Code}
+            };
+
         public MarkdownTokenizer(string text) : base(text)
         {
         }
@@ -14,48 +24,61 @@ namespace Markdown.Parsing
         protected override IMdToken ParseToken()
         {
             return TryParseEscapedCharacter() ??
-                   TryParseNewLineToken("  " + Environment.NewLine) ??
-                   TryParseNewLineToken(Environment.NewLine + Environment.NewLine) ??
-                   TryParseSemanticModificator("__", s => new MdStrongModificatorToken(s)) ??
-                   TryParseSemanticModificator("_", s => new MdEmphasisModificatorToken(s)) ??
-                   new MdTextToken(TakeString(1));
+                   TryParseNewLineToken() ??
+                   TryParseModificator("__", "**", "_", "*", "`") ??
+                   new MdToken(TakeString(1)).With(Md.PlainText);
+        }
+
+        private IMdToken TryParseNewLineToken()
+        {
+            return TryParseNewLineToken("  " + Environment.NewLine) ??
+                   TryParseNewLineToken(Environment.NewLine + Environment.NewLine);
+        }
+
+        private IMdToken TryParseModificator(params string[] modificators)
+        {
+            IMdToken token = null;
+            foreach (var modificator in modificators)
+                token = token ?? TryParseOpenModificator(modificator) ?? TryParseCloseModificator(modificator);
+            return token?.With(modificatorAttribute[token.Text]);
+        }
+
+        private IMdToken TryParseOpenModificator(string modificator)
+        {
+            if (LookAtString(modificator.Length) != modificator)
+                return null;
+            var before = LookBehind(1);
+            var after = LookAhead(modificator.Length);
+
+            if ((before.IsWhiteSpace() || !before.HasValue) && after.IsLetterOrDigit())
+                return new MdToken(TakeString(modificator.Length)).With(Md.Open);
+            return null;
+        }
+
+        private IMdToken TryParseCloseModificator(string modificator)
+        {
+            if (LookAtString(modificator.Length) != modificator)
+                return null;
+            var before = LookBehind(1);
+            var after = LookAhead(modificator.Length);
+
+            if (before.IsLetterOrDigit() && (after.IsWhiteSpace() || !after.HasValue))
+                return new MdToken(TakeString(modificator.Length)).With(Md.Close);
+            return null;
         }
 
         private IMdToken TryParseEscapedCharacter()
         {
             if (CurrentSymbol == '\\' && TextPosition < Text.Length - 1)
-                return new MdEscapedTextToken(TakeString(2).Substring(1));
+                return new MdToken(TakeString(2).Substring(1)).With(Md.Escaped);
             return null;
         }
 
         private IMdToken TryParseNewLineToken(string newLineToken)
         {
             if (LookAtString(newLineToken.Length) == newLineToken)
-                return new MdNewLineToken(TakeString(newLineToken.Length));
+                return new MdToken(TakeString(newLineToken.Length)).With(Md.NewLine);
             return null;
-        }
-
-        private bool CanBeSemanticModificator(string modificator)
-        {
-            if (LookAtString(modificator.Length) != modificator)
-                return false;
-            var before = LookBehind(1);
-            var after = LookAhead(modificator.Length);
-
-            if (before.IsWhiteSpace() && after.IsWhiteSpace())
-                return false;
-            if (before == modificator.First() || after == modificator.Last())
-                return false;
-            if (before.IsLetterOrDigit() && after.IsLetterOrDigit())
-                return false;
-            return true;
-        }
-
-        private IMdToken TryParseSemanticModificator(string modificator, Func<string, IMdToken> modificatorConstructor)
-        {
-            if (!CanBeSemanticModificator(modificator))
-                return null;
-            return modificatorConstructor(TakeString(modificator.Length));
         }
     }
 }

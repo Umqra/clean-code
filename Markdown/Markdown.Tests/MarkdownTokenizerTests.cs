@@ -21,7 +21,7 @@ namespace Markdown.Tests
         {
             while (true)
             {
-                var node = Tokenizer.TakeToken<IMdToken>();
+                var node = Tokenizer.TakeToken();
                 if (node == null)
                     yield break;
                 yield return node;
@@ -30,23 +30,33 @@ namespace Markdown.Tests
 
         private IEnumerable<IMdToken> Escaped(string text)
         {
-            yield return new MdEscapedTextToken(text);
+            yield return new MdToken(text).With(Md.Escaped);
         }
 
         private IEnumerable<IMdToken> PlainText(string text)
         {
             foreach (var c in text)
-                yield return new MdTextToken(new string(c, 1));
+                yield return new MdToken(new string(c, 1)).With(Md.PlainText);
         }
 
-        private IEnumerable<IMdToken> Emphasis(string modificator)
+        private IEnumerable<IMdToken> OpenEmphasis(string modificator)
         {
-            yield return new MdEmphasisModificatorToken(modificator);
+            yield return new MdToken(modificator).With(Md.Open, Md.Emphasis);
         }
 
-        private IEnumerable<IMdToken> Strong(string modificator)
+        private IEnumerable<IMdToken> CloseEmphasis(string modificator)
         {
-            yield return new MdStrongModificatorToken(modificator);
+            yield return new MdToken(modificator).With(Md.Close, Md.Emphasis);
+        }
+
+        private IEnumerable<IMdToken> OpenStrong(string modificator)
+        {
+            yield return new MdToken(modificator).With(Md.Open, Md.Strong);
+        }
+
+        private IEnumerable<IMdToken> CloseStrong(string modificator)
+        {
+            yield return new MdToken(modificator).With(Md.Close, Md.Strong);
         }
 
         private readonly string twoSpacesNewLine = "  " + Environment.NewLine;
@@ -54,7 +64,7 @@ namespace Markdown.Tests
 
         private IEnumerable<IMdToken> NewLine(string text)
         {
-            yield return new MdNewLineToken(text);
+            yield return new MdToken(text).With(Md.NewLine);
         }
 
         [TestCase("sample", TestName = "When passed simple plain text")]
@@ -65,7 +75,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             foreach (var token in GetAllTokens())
-                token.Should().BeOfType<MdTextToken>();
+                (token.Has(Md.PlainText) || token.Has(Md.Escaped)).Should().BeTrue();
         }
 
         [Test]
@@ -75,7 +85,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("This is the "), Strong("__"), PlainText("end"), Strong("__"), PlainText(".")
+                PlainText("This is the "), OpenStrong("__"), PlainText("end__.")
             );
         }
 
@@ -86,7 +96,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                Strong("__"), PlainText("a"), Strong("__")
+                OpenStrong("__"), PlainText("a"), CloseStrong("__")
             );
         }
 
@@ -97,7 +107,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("a "), Strong("__"), PlainText("b c"), Strong("__"), PlainText(" d")
+                PlainText("a "), OpenStrong("__"), PlainText("b c"), CloseStrong("__"), PlainText(" d")
             );
         }
 
@@ -108,7 +118,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("this is "), Strong("__"), PlainText("!important!"), Strong("__"), PlainText(".")
+                PlainText("this is "), PlainText("__!important!__"), PlainText(".")
             );
         }
 
@@ -130,7 +140,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("This is the "), Emphasis("_"), PlainText("end"), Emphasis("_"), PlainText(".")
+                PlainText("This is the "), OpenEmphasis("_"), PlainText("end_.")
             );
         }
 
@@ -141,7 +151,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                Emphasis("_"), PlainText("a"), Emphasis("_")
+                OpenEmphasis("_"), PlainText("a"), CloseEmphasis("_")
             );
         }
 
@@ -152,7 +162,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("a "), Emphasis("_"), PlainText("b c"), Emphasis("_"), PlainText(" d")
+                PlainText("a "), OpenEmphasis("_"), PlainText("b c"), CloseEmphasis("_"), PlainText(" d")
             );
         }
 
@@ -163,7 +173,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("this is "), Emphasis("_"), PlainText("!important!"), Emphasis("_"), PlainText(".")
+                PlainText("this is "), PlainText("_!important!_.")
             );
         }
 

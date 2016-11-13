@@ -29,12 +29,7 @@ namespace Markdown.Parsing
 
         private bool IsWhiteSpaceToken(IMdToken token)
         {
-            if (token is MdNewLineToken)
-                return true;
-            var textToken = token as MdTextToken;
-            if (textToken != null && textToken.Text.All(char.IsWhiteSpace))
-                return true;
-            return false;
+            return token.Has(Md.NewLine) || token.Text.All(char.IsWhiteSpace);
         }
 
         private void SkipNewLines(ITokenizer<IMdToken> tokenizer)
@@ -51,19 +46,19 @@ namespace Markdown.Parsing
 
         private INode ParsePlainText(ITokenizer<IMdToken> tokenizer)
         {
-            var textTokens = tokenizer.TakeTokensUntilMatch(token => token is IMdPlainTextToken);
+            var textTokens = tokenizer.TakeTokensUntilMatch(token => token.Has(Md.PlainText));
 
             if (!textTokens.Any())
                 return null;
 
-            if (textTokens.TrueForAll(token => token is MdTextToken))
+            if (textTokens.TrueForAll(token => token.Has(Md.PlainText)))
             {
                 var text = string.Join("", textTokens.Select(token => token.Text));
                 return new TextNode(text);
             }
 
             var children = textTokens.Select(token =>
-                    token is MdEscapedTextToken
+                    token.Has(Md.Escaped)
                         ? (INode)new EscapedTextNode(token.Text)
                         : (INode)new TextNode(token.Text)
             );
@@ -72,7 +67,7 @@ namespace Markdown.Parsing
 
         private INode ParseEmphasisModificator(ITokenizer<IMdToken> tokenizer)
         {
-            var startToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>();
+            var startToken = tokenizer.TakeTokenIfMatch(token => token.Has(Md.Open, Md.Emphasis));
 
             if (startToken == null)
                 return null;
@@ -81,8 +76,8 @@ namespace Markdown.Parsing
                 () => ParsePlainText(tokenizer) ?? ParseStrongModificator(tokenizer)
             );
 
-            var endToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>(
-                token => token.Text == startToken.Text
+            var endToken = tokenizer.TakeTokenIfMatch(
+                token => token.Has(Md.Close, Md.Emphasis) && token.Text == startToken.Text
             );
 
             if (endToken != null)
@@ -92,7 +87,7 @@ namespace Markdown.Parsing
 
         private INode ParseStrongModificator(ITokenizer<IMdToken> tokenizer)
         {
-            var startToken = tokenizer.TakeTokenIfMatch<MdStrongModificatorToken>();
+            var startToken = tokenizer.TakeTokenIfMatch(token => token.Has(Md.Open, Md.Strong));
 
             if (startToken == null)
                 return null;
@@ -101,8 +96,8 @@ namespace Markdown.Parsing
                 () => ParsePlainText(tokenizer) ?? ParseEmphasisModificator(tokenizer)
             );
 
-            var endToken = tokenizer.TakeTokenIfMatch<MdStrongModificatorToken>(
-                token => token.Text == startToken.Text
+            var endToken = tokenizer.TakeTokenIfMatch(
+                token => token.Has(Md.Close, Md.Strong) && token.Text == startToken.Text
             );
 
             if (endToken != null)
