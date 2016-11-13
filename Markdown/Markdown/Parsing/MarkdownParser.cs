@@ -27,6 +27,21 @@ namespace Markdown.Parsing
             return null;
         }
 
+        public INode CreateModificatorNode(Md modificatorAttribute, IEnumerable<INode> nodes)
+        {
+            switch (modificatorAttribute)
+            {
+                case Md.Emphasis:
+                    return new EmphasisModificatorNode(nodes);
+                case Md.Strong:
+                    return new StrongModificatorNode(nodes);
+                case Md.Code:
+                    return new CodeModificatorNode(nodes);
+                default:
+                    throw new ArgumentException($"Unknown modificator attribute: {modificatorAttribute}");
+            }
+        }
+
         private bool IsWhiteSpaceToken(IMdToken token)
         {
             return token.Has(Md.NewLine) || token.Text.All(char.IsWhiteSpace);
@@ -40,12 +55,21 @@ namespace Markdown.Parsing
         private INode ParseTextInParagraph(ITokenizer<IMdToken> tokenizer)
         {
             return ParsePlainText(tokenizer) ??
-                   ParseModificator(tokenizer);
+                   ParseModificator(tokenizer) ??
+                   ParseBrokenSymbol(tokenizer);
+        }
+
+        private INode ParseBrokenSymbol(ITokenizer<IMdToken> tokenzer)
+        {
+            var token = tokenzer.TakeTokenIfMatch(
+                t => t.Has(Md.Emphasis) || t.Has(Md.Code) || t.Has(Md.Strong)
+            );
+            return token == null ? null : new TextNode(token.Text);
         }
 
         private INode ParsePlainText(ITokenizer<IMdToken> tokenizer)
         {
-            var textTokens = tokenizer.TakeTokensUntilMatch(token => token.Has(Md.PlainText));
+            var textTokens = tokenizer.TakeTokensUntilMatch(token => token.Has(Md.PlainText) || token.Has(Md.Escaped));
 
             if (!textTokens.Any())
                 return null;
@@ -66,9 +90,9 @@ namespace Markdown.Parsing
 
         private INode ParseModificator(ITokenizer<IMdToken> tokenizer)
         {
-            return ParseModificator(tokenizer, Md.Code) ??
-                   ParseModificator(tokenizer, Md.Emphasis) ??
-                   ParseModificator(tokenizer, Md.Strong);
+            return ParseModificator(tokenizer, Md.Emphasis) ??
+                   ParseModificator(tokenizer, Md.Strong) ??
+                   ParseModificator(tokenizer, Md.Code);
         }
 
         private INode ParseModificator(ITokenizer<IMdToken> tokenizer, Md modificatorAttribute)
@@ -91,21 +115,6 @@ namespace Markdown.Parsing
             if (endToken != null)
                 return CreateModificatorNode(modificatorAttribute, children);
             return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
-        }
-
-        public INode CreateModificatorNode(Md modificatorAttribute, IEnumerable<INode> nodes)
-        {
-            switch (modificatorAttribute)
-            {
-                case Md.Emphasis:
-                    return new EmphasisModificatorNode(nodes);
-                case Md.Strong:
-                    return new StrongModificatorNode(nodes);
-                case Md.Code:
-                    return new CodeModificatorNode(nodes);
-                default:
-                    throw new ArgumentException($"Unknown modificator attribute: {modificatorAttribute}");
-            }
         }
 
         private List<INode> ParseNodesUntilNotNull(Func<INode> nodeFactory)

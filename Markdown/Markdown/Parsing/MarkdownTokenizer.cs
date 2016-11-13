@@ -50,7 +50,9 @@ namespace Markdown.Parsing
             var before = LookBehind(1);
             var after = LookAhead(modificator.Length);
 
-            if ((before.IsWhiteSpace() || !before.HasValue) && after.IsLetterOrDigit())
+            if (before.IsPunctuation() && after.IsLetterOrDigit())
+                return new MdToken(TakeString(modificator.Length)).With(Md.Open);
+            if ((before.IsWhiteSpace() || !before.HasValue) && after.HasValue && !after.IsWhiteSpace())
                 return new MdToken(TakeString(modificator.Length)).With(Md.Open);
             return null;
         }
@@ -62,7 +64,9 @@ namespace Markdown.Parsing
             var before = LookBehind(1);
             var after = LookAhead(modificator.Length);
 
-            if (before.IsLetterOrDigit() && (after.IsWhiteSpace() || !after.HasValue))
+            if (before.IsLetterOrDigit() && after.IsPunctuation())
+                return new MdToken(TakeString(modificator.Length)).With(Md.Close);
+            if (before.HasValue && !before.IsWhiteSpace() && (after.IsWhiteSpace() || !after.HasValue))
                 return new MdToken(TakeString(modificator.Length)).With(Md.Close);
             return null;
         }

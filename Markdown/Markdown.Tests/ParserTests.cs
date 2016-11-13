@@ -74,6 +74,18 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestBackticks()
+        {
+            var text = "a `b` c";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "), Code(Text("b")), Text(" c"))
+            );
+        }
+
+        [Test]
         public void TestBoldUnderscore()
         {
             var text = "__sample text__";
@@ -100,12 +112,66 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestEscapedCharacters()
+        {
+            var text = @"hi \_\_!";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            parsed.Should().Be(
+                Paragraph(
+                    Group(
+                        Text("h"), Text("i"), Text(" "), Escaped("_"), Escaped("_"), Text("!"))
+                )
+            );
+        }
+
+        [Test]
         public void TestItalicUnderscore()
         {
             var text = "_sample text_";
             var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
 
             parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
+        }
+
+        [Test]
+        public void TestManyOpenModificators()
+        {
+            var text = "a _b _c d _e";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "),
+                    Group(
+                        Text("_"),
+                        Text("b "),
+                        Group(
+                            Text("_"),
+                            Text("c d "),
+                            Group(Text("_"), Text("e"))
+                        )
+                    )
+                )
+            );
+        }
+
+        [Test]
+        public void TestModificatorInBackticks()
+        {
+            var text = "a `b _c_ d` e";
+            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "),
+                    Code(
+                        Text("b "),
+                        EmphasisModificator(Text("c")),
+                        Text(" d")),
+                    Text(" e")
+                )
+            );
         }
 
         [Test]

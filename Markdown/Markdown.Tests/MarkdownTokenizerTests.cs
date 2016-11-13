@@ -78,8 +78,7 @@ namespace Markdown.Tests
         }
 
         [TestCase("sample", TestName = "When passed simple plain text")]
-        [TestCase(" _ __\t_\n", TestName = "When underscores surrounded by white spaces")]
-        [TestCase("1_a__b____a2_a", TestName = "When underscores surrounded by letters/digits")]
+        [TestCase("1_a_b_a2_a", TestName = "When underscores surrounded by letters/digits")]
         public void TestOnlyCharacterTokensInText(string text)
         {
             SetUpTokenizer(text);
@@ -95,7 +94,11 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("This is the "), OpenStrong("__"), PlainText("end__.")
+                PlainText("This is the "), 
+                OpenStrong("__"), 
+                PlainText("end"), 
+                CloseStrong("__"), 
+                PlainText(".")
             );
         }
 
@@ -128,7 +131,9 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("this is "), PlainText("__!important!__"), PlainText(".")
+                PlainText("this is "), 
+                OpenStrong("__"), 
+                PlainText("!important!__.")
             );
         }
 
@@ -150,7 +155,11 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("This is the "), OpenEmphasis("_"), PlainText("end_.")
+                PlainText("This is the "), 
+                OpenEmphasis("_"), 
+                PlainText("end"), 
+                CloseEmphasis("_"), 
+                PlainText(".")
             );
         }
 
@@ -183,7 +192,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("this is "), PlainText("_!important!_.")
+                PlainText("this is "), OpenEmphasis("_"), PlainText("!important!_.")
             );
         }
 
@@ -194,10 +203,44 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText(text)
+                OpenStrong("__"), 
+                OpenEmphasis("_"), 
+                PlainText("triple"), 
+                CloseStrong("__"), 
+                CloseEmphasis("_")
             );
         }
 
+        [Test]
+        public void TestSingleUnderscoreSurroundingWithSpaces()
+        {
+            var text = " _ ";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText(" _ "));
+        }
+
+
+        [Test]
+        public void TestDoubleUnderscoreSurroundingWithSpaces()
+        {
+            var text = " __ ";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText(" "), OpenEmphasis("_"), CloseEmphasis("_"), PlainText(" "));
+        }
+
+        [Test]
+        public void TestTripleUnderscoreSurroundingWithSpaces()
+        {
+            var text = " ___ ";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText(" "), OpenStrong("__"), CloseEmphasis("_"), PlainText(" "));
+        }
         [Test]
         public void TestTwoLineBreaks()
         {
@@ -221,7 +264,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestBackTick_OnWordBorders()
+        public void TestBacktick_OnWordBorders()
         {
             var text = "a `b c` d";
             SetUpTokenizer(text);
@@ -232,7 +275,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestBackTick_OnTextBorders()
+        public void TestBacktick_OnTextBorders()
         {
             var text = "`text`";
             SetUpTokenizer(text);
@@ -243,23 +286,32 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestBackTick_SurroundedByPunctuation()
+        public void TestBacktick_SurroundedByPunctuation()
         {
             var text = "this is `#include<iostream>` code";
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("this is `#include<iostream>` code"));
+                PlainText("this is "),
+                OpenCode("`"),
+                PlainText("#include<iostream>"),
+                CloseCode("`"),
+                PlainText(" code")
+            );
         }
 
         [Test]
-        public void TestBackTick_AtTheEndOfSentence()
+        public void TestBacktick_AtTheEndOfSentence()
         {
             var text = "this is `code`.";
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("this is "), OpenCode("`"), PlainText("code`."));
+                PlainText("this is "), 
+                OpenCode("`"), 
+                PlainText("code"), 
+                CloseCode("`"), 
+                PlainText("."));
         }
     }
 }
