@@ -7,21 +7,36 @@ namespace Markdown.Cli
         public string InputFilename { get; set; }
         public string OutputFilename { get; set; }
 
-        public bool AreValid()
+        public CliOptions TryInitialize()
         {
-            if (!FileExtensions.HaveReadAccess(InputFilename))
-            {
-                Console.Error.WriteLine($"-i, --input: can't read from input file {InputFilename}");
-                return false;
-            }
+            TryInitializeInputFile();
+            TryInitializeOutputFile();
 
-            if (!FileExtensions.HaveWriteAccess(OutputFilename))
-            {
-                Console.Error.WriteLine($"-o, --output: can't write to output file {OutputFilename}");
-                return false;
-            }
+            return this;
+        }
 
-            return true;
+        private void TryInitializeInputFile()
+        {
+            try
+            {
+                FileExtensions.TryGetReadAccess(InputFilename);
+            }
+            catch (Exception exception)
+            {
+                throw new ArgumentException($"Can't read from input file {InputFilename}", exception);
+            }
+        }
+
+        private void TryInitializeOutputFile()
+        {
+            try
+            {
+                FileExtensions.TryGetWriteAccess(InputFilename);
+            }
+            catch (Exception exception)
+            {
+                throw new ArgumentException($"Can't write to output file {OutputFilename}", exception);
+            }
         }
     }
 }

@@ -8,14 +8,18 @@ namespace Markdown.Parsing
 {
     public class MarkdownParser
     {
-        public INode Parse(ATokenizer<IMdToken> tokenizer)
+        public INode Parse(ITokenizer<IMdToken> tokenizer)
         {
             return new GroupNode(
-                ParseNodesUntilNotNull(() => ParseParagraph(tokenizer) ?? ParseNewLine(tokenizer))
+                ParseNodesUntilNotNull(() =>
+                {
+                    SkipNewLines(tokenizer);
+                    return ParseParagraph(tokenizer);
+                })
             );
         }
 
-        public INode ParseParagraph(ATokenizer<IMdToken> tokenizer)
+        public INode ParseParagraph(ITokenizer<IMdToken> tokenizer)
         {
             var children = ParseNodesUntilNotNull(() => ParseTextInParagraph(tokenizer)).ToList();
             if (children.Any())
@@ -23,76 +27,93 @@ namespace Markdown.Parsing
             return null;
         }
 
-        private INode ParseNewLine(ATokenizer<IMdToken> tokenizer)
+        public INode CreateModificatorNode(Md modificatorAttribute, IEnumerable<INode> nodes)
         {
-            var newLineToken = tokenizer.TakeTokenIfMatch<MdNewLineToken>();
-            if (newLineToken != null)
-                return new NewLineNode();
-            return null;
+            switch (modificatorAttribute)
+            {
+                case Md.Emphasis:
+                    return new EmphasisModificatorNode(nodes);
+                case Md.Strong:
+                    return new StrongModificatorNode(nodes);
+                case Md.Code:
+                    return new CodeModificatorNode(nodes);
+                default:
+                    throw new ArgumentException($"Unknown modificator attribute: {modificatorAttribute}");
+            }
         }
 
-        private INode ParseTextInParagraph(ATokenizer<IMdToken> tokenizer)
+        private bool IsWhiteSpaceToken(IMdToken token)
+        {
+            return token.Has(Md.NewLine) || token.Text.All(char.IsWhiteSpace);
+        }
+
+        private void SkipNewLines(ITokenizer<IMdToken> tokenizer)
+        {
+            tokenizer.TakeTokensUntilMatch(IsWhiteSpaceToken);
+        }
+
+        private INode ParseTextInParagraph(ITokenizer<IMdToken> tokenizer)
         {
             return ParsePlainText(tokenizer) ??
-                   ParseEmphasisModificator(tokenizer) ??
-                   ParseStrongModificator(tokenizer);
+                   ParseModificator(tokenizer) ??
+                   ParseBrokenSymbol(tokenizer);
         }
 
-        private INode ParsePlainText(ATokenizer<IMdToken> tokenizer)
+        private INode ParseBrokenSymbol(ITokenizer<IMdToken> tokenzer)
         {
-            var textTokens = tokenizer.TakeTokensUntilMatch(token => token is IMdPlainTextToken);
+            var token = tokenzer.TakeTokenIfMatch(
+                t => t.Has(Md.Emphasis) || t.Has(Md.Code) || t.Has(Md.Strong)
+            );
+            return token == null ? null : new TextNode(token.Text);
+        }
+
+        private INode ParsePlainText(ITokenizer<IMdToken> tokenizer)
+        {
+            var textTokens = tokenizer.TakeTokensUntilMatch(token => token.Has(Md.PlainText) || token.Has(Md.Escaped));
 
             if (!textTokens.Any())
                 return null;
 
-            if (textTokens.TrueForAll(token => token is MdTextToken))
-                return new TextNode(string.Join("", textTokens.Select(token => token.Text)));
+            if (textTokens.TrueForAll(token => token.Has(Md.PlainText)))
+            {
+                var text = string.Join("", textTokens.Select(token => token.Text));
+                return new TextNode(text);
+            }
 
             var children = textTokens.Select(token =>
-                    token is MdEscapedTextToken
+                    token.Has(Md.Escaped)
                         ? (INode)new EscapedTextNode(token.Text)
                         : (INode)new TextNode(token.Text)
             );
             return new GroupNode(children);
         }
 
-        private INode ParseEmphasisModificator(ATokenizer<IMdToken> tokenizer)
+        private INode ParseModificator(ITokenizer<IMdToken> tokenizer)
         {
-            var startToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>();
-
-            if (startToken == null)
-                return null;
-
-            var children = ParseNodesUntilNotNull(
-                () => ParsePlainText(tokenizer) ?? ParseStrongModificator(tokenizer)
-            );
-
-            var endToken = tokenizer.TakeTokenIfMatch<MdEmphasisModificatorToken>(
-                token => token.Text == startToken.Text
-            );
-
-            if (endToken != null)
-                return new EmphasisModificatorNode(children);
-            return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
+            return ParseModificator(tokenizer, Md.Emphasis) ??
+                   ParseModificator(tokenizer, Md.Strong) ??
+                   ParseModificator(tokenizer, Md.Code);
         }
 
-        private INode ParseStrongModificator(ATokenizer<IMdToken> tokenizer)
+        private INode ParseModificator(ITokenizer<IMdToken> tokenizer, Md modificatorAttribute)
         {
-            var startToken = tokenizer.TakeTokenIfMatch<MdStrongModificatorToken>();
+            var startToken = tokenizer.TakeTokenIfMatch(token => token.Has(Md.Open, modificatorAttribute));
 
             if (startToken == null)
                 return null;
 
             var children = ParseNodesUntilNotNull(
-                () => ParsePlainText(tokenizer) ?? ParseEmphasisModificator(tokenizer)
+                () =>
+                    ParsePlainText(tokenizer) ??
+                    ParseModificator(tokenizer)
             );
 
-            var endToken = tokenizer.TakeTokenIfMatch<MdStrongModificatorToken>(
-                token => token.Text == startToken.Text
+            var endToken = tokenizer.TakeTokenIfMatch(
+                token => token.Has(Md.Close, modificatorAttribute) && token.Text == startToken.Text
             );
 
             if (endToken != null)
-                return new StrongModificatorNode(children);
+                return CreateModificatorNode(modificatorAttribute, children);
             return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
         }
 

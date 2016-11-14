@@ -4,7 +4,12 @@ namespace Markdown.Parsing.Visitors
 {
     public abstract class ContextTreeVisitor<T> : INodeVisitor where T : ITreeContext
     {
-        protected T Context { get; set; }
+        protected T Context { get; }
+
+        protected ContextTreeVisitor(T context)
+        {
+            Context = context;
+        }
 
         public void Visit(INode node)
         {
@@ -18,7 +23,9 @@ namespace Markdown.Parsing.Visitors
                 }
             }
             else
+            {
                 Context.EnterLeafNode(node);
+            }
         }
     }
 }

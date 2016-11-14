@@ -15,9 +15,13 @@ namespace Markdown.Cli
             {
                 RunCli(args);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                var innerExceptions = exception.EnumerateInnerExceptions().ToList();
+                Console.WriteLine(string.Join("\n", innerExceptions.Select(e => " - " + e.Message)));
+                if (innerExceptions.Any(e => e is ParseArgumentException))
+                    Console.WriteLine("Type ?, h, --help to call help message");
+                Environment.Exit(1);
             }
         }
 
@@ -28,17 +32,16 @@ namespace Markdown.Cli
             var parsingStatus = parser.Parse(args);
             if (parsingStatus.HelpCalled) return;
             if (parsingStatus.HasErrors)
-            {
-                Console.Error.WriteLine(parsingStatus.ErrorText);
-                parser.HelpOption.ShowHelp(parsingStatus.Errors.Select(error => error.Option));
-                return;
-            }
+                throw new ParseArgumentException(parsingStatus.ErrorText);
 
-            var options = parser.Object;
-            if (!options.AreValid())
+            CliOptions options;
+            try
             {
-                parser.HelpOption.ShowHelp(parser.Options);
-                return;
+                options = parser.Object.TryInitialize();
+            }
+            catch (Exception exception)
+            {
+                throw new ParseArgumentException("Invalid cli arguments", exception);
             }
 
             ConvertMarkdownToHtml(options);
@@ -51,7 +54,8 @@ namespace Markdown.Cli
                 new MarkdownToHtmlRenderer(
                     new MarkdownParser(),
                     new MarkdownTokenizerFactory(),
-                    new NodeHtmlRenderer());
+                    new NodeHtmlRenderer(new HtmlRenderContext(new NodeToHtmlEntityConverter()))
+                );
             var htmlMarkup = markdownToHtmlRenderer.Render(markdownMarkup);
             File.WriteAllText(options.OutputFilename, htmlMarkup);
         }

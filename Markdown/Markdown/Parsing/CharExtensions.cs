@@ -11,5 +11,10 @@
         {
             return symbol.HasValue && char.IsLetterOrDigit(symbol.Value);
         }
+
+        public static bool IsPunctuation(this char? symbol)
+        {
+            return symbol.HasValue && char.IsPunctuation(symbol.Value);
+        }
     }
 }

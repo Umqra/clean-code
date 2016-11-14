@@ -16,15 +16,6 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestEqualsStrongModificatorNodes()
-        {
-            var a = StrongModificator(Text("a"), Text("b"));
-            var b = StrongModificator(Text("a"), Text("b"));
-
-            a.Equals(b).Should().BeTrue();
-        }
-
-        [Test]
         public void TestEqualsGroupNodes()
         {
             var a = Group(Text("a"), Text("a"));
@@ -43,12 +34,30 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestEqualsStrongModificatorNodes()
+        {
+            var a = StrongModificator(Text("a"), Text("b"));
+            var b = StrongModificator(Text("a"), Text("b"));
+
+            a.Equals(b).Should().BeTrue();
+        }
+
+        [Test]
         public void TestEqualsTextNodes()
         {
             var a = Text("sample");
             var b = Text("sample");
 
             a.Equals(b).Should().BeTrue();
+        }
+
+        [Test]
+        public void TestNotEqualsEmphasisModificatorNodes()
+        {
+            var a = EmphasisModificator(Text("a"), Text("b"));
+            var b = EmphasisModificator(Text("b"), Text("a"));
+
+            a.Equals(b).Should().BeFalse();
         }
 
         [Test]
@@ -70,28 +79,19 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestNotEqualsTextNodes()
-        {
-            var a = Text("first");
-            var b = Text("second");
-
-            a.Equals(b).Should().BeFalse();
-        }
-
-        [Test]
-        public void TestNotEqualsEmphasisModificatorNodes()
-        {
-            var a = EmphasisModificator(Text("a"), Text("b"));
-            var b = EmphasisModificator(Text("b"), Text("a"));
-
-            a.Equals(b).Should().BeFalse();
-        }
-
-        [Test]
         public void TestNotEqualsStrongModificatorNodes()
         {
             var a = StrongModificator(Text("a"), Text("b"));
             var b = StrongModificator(Text("b"), Text("a"));
+
+            a.Equals(b).Should().BeFalse();
+        }
+
+        [Test]
+        public void TestNotEqualsTextNodes()
+        {
+            var a = Text("first");
+            var b = Text("second");
 
             a.Equals(b).Should().BeFalse();
         }

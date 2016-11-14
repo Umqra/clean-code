@@ -2,6 +2,6 @@
 {
     public interface ITokenizerFactory<T> where T : class
     {
-        ATokenizer<T> CreateTokenizer(string text);
+        ITokenizer<T> CreateTokenizer(string text);
     }
 }

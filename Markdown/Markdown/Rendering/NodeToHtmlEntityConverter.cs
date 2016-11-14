@@ -13,6 +13,7 @@ namespace Markdown.Rendering
                 {typeof(ParagraphNode), node => new HtmlParagraphTag()},
                 {typeof(EmphasisModificatorNode), node => new HtmlEmphasisTag()},
                 {typeof(StrongModificatorNode), node => new HtmlStrongTag()},
+                {typeof(CodeModificatorNode), node => new HtmlCodeTag()},
                 {typeof(GroupNode), node => new HtmlEmptyTag()}
             };
 
@@ -33,7 +34,7 @@ namespace Markdown.Rendering
             catch (KeyNotFoundException exception)
             {
                 throw new ArgumentException(
-                    $"No conversion rule for internal node {node}. {exception.Message}",
+                    $"No conversion rule for internal node {node}.",
                     exception);
             }
         }

@@ -3,49 +3,30 @@ using System.Collections.Generic;
 
 namespace Markdown.Parsing
 {
-    public abstract class ATokenizer<T> where T : class
+    public abstract class BaseTokenizer<T> : ITokenizer<T> where T : class
     {
-        protected ATokenizer(string text)
+        protected string Text { get; }
+        protected int TextPosition { get; set; }
+
+        protected bool TextEnded => TextPosition == Text.Length;
+        protected char CurrentSymbol => Text[TextPosition];
+
+        protected BaseTokenizer(string text)
         {
             Text = text;
             TextPosition = 0;
         }
 
-        public bool TextEnded => TextPosition == Text.Length;
-        public char CurrentSymbol => Text[TextPosition];
-
-        protected string Text { get; set; }
-        protected int TextPosition { get; set; }
-
-        protected abstract T ParseToken();
-
-        public string LookAtString(int length)
-        {
-            return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, length));
-        }
-
-        public TSpec TakeToken<TSpec>() where TSpec : class, T
-        {
-            if (TextEnded)
-                return null;
-            return ParseToken() as TSpec;
-        }
-
-        public TSpec TakeTokenIfMatch<TSpec>(Predicate<TSpec> matchPredicate) where TSpec : class, T
+        public T TakeTokenIfMatch(Predicate<T> matchPredicate)
         {
             var oldPosition = TextPosition;
 
-            var token = TakeToken<TSpec>();
+            var token = TakeToken();
             if (token != null && matchPredicate(token))
                 return token;
 
             TextPosition = oldPosition;
             return null;
-        }
-
-        public TSpec TakeTokenIfMatch<TSpec>() where TSpec : class, T
-        {
-            return TakeTokenIfMatch<TSpec>(_ => true);
         }
 
         public List<T> TakeTokensUntilMatch(Predicate<T> matchPredicate)
@@ -61,7 +42,21 @@ namespace Markdown.Parsing
             return tokens;
         }
 
-        public string TakeString(int length)
+        protected abstract T ParseToken();
+
+        public T TakeToken()
+        {
+            if (TextEnded)
+                return null;
+            return ParseToken();
+        }
+
+        protected string LookAtString(int length)
+        {
+            return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, length));
+        }
+
+        protected string TakeString(int length)
         {
             var result = LookAtString(length);
             TextPosition += result.Length;

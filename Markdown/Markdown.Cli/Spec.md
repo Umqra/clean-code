@@ -1,3 +1,41 @@
+# Implemented Markdown syntax
+
+You can simply _emphasize_ any string with __next__ available modificators: \_, \_\_, \*, \*\*.
+
+`You can simply \_emphasize\_ any string with \_\_next\_\_ available modificators: \\\_, \\\_\\\_, \\\*, \\\*\\\*.`
+
+If you do not want to apply modificators - simply escape it with \\ character!
+
+You can use backticks (\`) for selecting blocks of code. For example:
+
+`#include <iostream>
+using namespace std;
+int main()
+{
+	cout << "Hello, world!";
+	return 0;
+}`
+
+There is a little surpirse - you can make your modificators nested!  
+*You will get **something like this***
+
+I say more, you even can use text modificators in your code blocks! Let's look at this:
+`def parse(message):
+	pass # **TODO** very important method`
+
+I don't want to disappoint you, but in this simple parser you can find many disadvantages.
+
+I want enumerate some example of such bad cases:
+
+1. You can't parse triple-modificators like this: `\*\*\*Be careful! Very angry dog!\*\*\*` 
+But you can use next hack for this modificator: `\_\*\*It works!\*\*\_`
+
+2. Your code must be surrounded with spaces. So, you can't write something like this:
+
+Let me show my code:\`code\`
+
+3. I can't find another curious behaviour but i'm sure - it is
+
 # Спецификация языка разметки
 
 Посмотрите этот файл в сыром виде. Сравните с тем, что показывает github.

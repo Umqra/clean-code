@@ -33,5 +33,15 @@ namespace Markdown.Tests
         {
             return new NewLineNode();
         }
+
+        protected INode Escaped(string text)
+        {
+            return new EscapedTextNode(text);
+        }
+
+        protected INode Code(params INode[] nodes)
+        {
+            return new CodeModificatorNode(nodes);
+        }
     }
 }
