@@ -117,6 +117,8 @@ namespace Markdown.Parsing
             return new GroupNode(new[] {new TextNode(startToken.Text)}.Concat(children));
         }
 
+        // Nit: Do you need List? You can make in IEnumerable
+        // and convert to List in-place.
         private List<INode> ParseNodesUntilNotNull(Func<INode> nodeFactory)
         {
             var nodes = new List<INode>();
