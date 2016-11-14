@@ -44,7 +44,6 @@ namespace Markdown.Cli
                 throw new ParseArgumentException("Invalid cli arguments", exception);
             }
 
-            // Nit: You can also move it inside the try block above
             ConvertMarkdownToHtml(options);
         }
 

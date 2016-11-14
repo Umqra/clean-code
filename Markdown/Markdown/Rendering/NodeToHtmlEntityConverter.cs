@@ -14,7 +14,7 @@ namespace Markdown.Rendering
                 {typeof(EmphasisModificatorNode), node => new HtmlEmphasisTag()},
                 {typeof(StrongModificatorNode), node => new HtmlStrongTag()},
                 {typeof(CodeModificatorNode), node => new HtmlCodeTag()},
-                {typeof(GroupNode), node => new HtmlEmptyTag()},
+                {typeof(GroupNode), node => new HtmlEmptyTag()}
             };
 
         private static readonly Dictionary<Type, Func<INode, IHtmlContent>> leafConversionTable = new

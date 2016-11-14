@@ -2,8 +2,7 @@
 {
     public class TextNode : INode
     {
-        // Nit: Do you need setter?
-        public string Text { get; set; }
+        public string Text { get; }
 
         public TextNode(string text)
         {

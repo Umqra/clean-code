@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Markdown.Parsing.Nodes;
 
@@ -7,13 +6,13 @@ namespace Markdown.Parsing.Tokens
 {
     public class MdToken : IMdToken
     {
+        private SortedSet<Md> Attributes { get; }
+
         public MdToken(string text)
         {
             Text = text;
             Attributes = new SortedSet<Md>();
         }
-
-        private SortedSet<Md> Attributes { get; }
 
         public string Text { get; }
 
@@ -29,16 +28,11 @@ namespace Markdown.Parsing.Tokens
             return this;
         }
 
-        protected bool Equals(MdToken other)
-        {
-            return Attributes.SetEquals(other.Attributes) && string.Equals(Text, other.Text);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((MdToken)obj);
         }
 
@@ -48,6 +42,11 @@ namespace Markdown.Parsing.Tokens
             {
                 return ((Attributes?.CombineElementHashCodes() ?? 0) * 397) ^ (Text?.GetHashCode() ?? 0);
             }
+        }
+
+        protected bool Equals(MdToken other)
+        {
+            return Attributes.SetEquals(other.Attributes) && string.Equals(Text, other.Text);
         }
     }
 }
