@@ -31,6 +31,14 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestCodeNode()
+        {
+            var node = Code(Text("sample"));
+
+            Render(node).Should().Be("<pre>sample</pre>");
+        }
+
+        [Test]
         public void TestEmptyEmphasisModificator()
         {
             var node = EmphasisModificator();
