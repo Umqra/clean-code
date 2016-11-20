@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Fclp;
 using Markdown.Parsing;
+using Markdown.Parsing.Tokenizer;
 using Markdown.Rendering;
 
 namespace Markdown.Cli

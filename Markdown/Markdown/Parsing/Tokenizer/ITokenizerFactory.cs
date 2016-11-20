@@ -1,4 +1,4 @@
-﻿namespace Markdown.Parsing
+﻿namespace Markdown.Parsing.Tokenizer
 {
     public interface ITokenizerFactory<out T> where T : class
     {

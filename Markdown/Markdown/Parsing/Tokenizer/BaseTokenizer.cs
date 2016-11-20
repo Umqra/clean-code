@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.Tokenizer
 {
     public abstract class BaseTokenizer<T> : ITokenizer<T> where T : class
     {

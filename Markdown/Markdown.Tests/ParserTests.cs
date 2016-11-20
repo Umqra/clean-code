@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Markdown.Parsing;
 using Markdown.Parsing.Nodes;
+using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 using NUnit.Framework;
 

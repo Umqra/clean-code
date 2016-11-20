@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.Tokenizer
 {
     public sealed class MarkdownTokenizer : BaseTokenizer<IMdToken>
     {

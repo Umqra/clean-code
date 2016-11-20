@@ -1,4 +1,5 @@
 ﻿using System;
+using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing

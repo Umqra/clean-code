@@ -1,6 +1,6 @@
 ﻿using Markdown.Parsing.Tokens;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.Tokenizer
 {
     public class MarkdownTokenizerFactory : ITokenizerFactory<IMdToken>
     {

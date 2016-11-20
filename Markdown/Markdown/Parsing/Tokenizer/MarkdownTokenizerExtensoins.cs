@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Markdown.Parsing.Tokens;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.Tokenizer
 {
     public static class MarkdownTokenizerExtensoins
     {

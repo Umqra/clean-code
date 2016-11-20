@@ -4,6 +4,7 @@ using BenchmarkDotNet.Attributes.Exporters;
 using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Running;
 using Markdown.Parsing;
+using Markdown.Parsing.Tokenizer;
 using Markdown.Rendering;
 
 namespace MarkdownBench
