@@ -45,6 +45,7 @@
     <Compile Include="Parsing\CharExtensions.cs" />
     <Compile Include="Parsing\ITokenizer.cs" />
     <Compile Include="Parsing\MarkdownParsingResult.cs" />
+    <Compile Include="Parsing\MarkdownTokenizerExtensoins.cs" />
     <Compile Include="Parsing\Nodes\BrokenTextNode.cs" />
     <Compile Include="Parsing\Nodes\CodeModificatorNode.cs" />
     <Compile Include="Parsing\Tokens\Md.cs" />

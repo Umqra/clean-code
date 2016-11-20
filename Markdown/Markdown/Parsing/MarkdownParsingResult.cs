@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Markdown.Parsing.Nodes;
 using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
@@ -43,31 +38,6 @@ namespace Markdown.Parsing
             if (Succeed)
                 return this;
             return parser(Remainder);
-        }
-    }
-
-    public static class MarkdownTokenizerExtensoins
-    {
-        public static MarkdownParsingResult<IMdToken> Match(this ITokenizer<IMdToken> tokenizer, Predicate<IMdToken> predicate)
-        {
-            if (tokenizer.AtEnd || !predicate(tokenizer.CurrentToken))
-                return MarkdownParsingResult<IMdToken>.Fail<IMdToken>(tokenizer);
-            return MarkdownParsingResult<IMdToken>.Success(tokenizer.CurrentToken, tokenizer.Advance());
-        }
-
-        public static MarkdownParsingResult<List<IMdToken>> UntilMatch(this ITokenizer<IMdToken> tokenizer,
-            Predicate<IMdToken> predicate)
-        {
-            var tokens = new List<IMdToken>();
-            while (!tokenizer.AtEnd)
-            {
-                var token = tokenizer.CurrentToken;
-                if (!predicate(token))
-                    return MarkdownParsingResult<List<IMdToken>>.Success(tokens, tokenizer);
-                tokenizer = tokenizer.Advance();
-                tokens.Add(token);
-            }
-            return MarkdownParsingResult<List<IMdToken>>.Success(tokens, tokenizer);
         }
     }
 }

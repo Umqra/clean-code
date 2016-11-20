@@ -1,6 +1,6 @@
 ﻿namespace Markdown.Parsing
 {
-    public interface ITokenizerFactory<T> where T : class
+    public interface ITokenizerFactory<out T> where T : class
     {
         ITokenizer<T> CreateTokenizer(string text);
     }
