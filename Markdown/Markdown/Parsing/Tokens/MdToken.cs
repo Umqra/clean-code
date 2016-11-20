@@ -4,7 +4,7 @@ using Markdown.Parsing.Nodes;
 
 namespace Markdown.Parsing.Tokens
 {
-    public class MdToken : IMdToken
+    public struct MdToken : IMdToken
     {
         private SortedSet<Md> Attributes { get; }
         public string UnderlyingText { get; }
@@ -23,7 +23,12 @@ namespace Markdown.Parsing.Tokens
 
         public bool Has(params Md[] attributes)
         {
-            return attributes.All(attribute => Attributes.Contains(attribute));
+            foreach (var attribute in attributes)
+            {
+                if (!Attributes.Contains(attribute))
+                    return false;
+            }
+            return true;
         }
 
         public IMdToken With(params Md[] attributes)
@@ -36,7 +41,6 @@ namespace Markdown.Parsing.Tokens
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals((MdToken)obj);
         }
@@ -49,7 +53,7 @@ namespace Markdown.Parsing.Tokens
             }
         }
 
-        protected bool Equals(MdToken other)
+        private bool Equals(MdToken other)
         {
             return Attributes.SetEquals(other.Attributes) && string.Equals(Text, other.Text);
         }
