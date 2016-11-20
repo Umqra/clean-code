@@ -10,19 +10,19 @@ namespace Markdown.Parsing
     {
         public MarkdownParsingResult<INode> Parse(ITokenizer<IMdToken> tokenizer)
         {
-            var parsed = ParseNodesUntilNotNull(tokenizer, t => SkipNewLines(t).IfSuccess(ParseParagraph));
-            return parsed.Remainder.Success<INode>(new GroupNode(parsed.Parsed));
+            var children = ParseNodesUntilMatch(tokenizer, t => SkipNewLines(t).IfSuccess(ParseParagraph));
+            return children.Remainder.SuccessWith<INode>(new GroupNode(children.Parsed));
         }
 
         public MarkdownParsingResult<INode> ParseParagraph(ITokenizer<IMdToken> tokenizer)
         {
-            var childrenParsed = ParseNodesUntilNotNull(tokenizer, ParseParagraphContent);
-            if (childrenParsed.Parsed.Any())
-                return childrenParsed.Remainder.Success<INode>(new ParagraphNode(childrenParsed.Parsed));
+            var children = ParseNodesUntilMatch(tokenizer, ParseParagraphContent);
+            if (children.Parsed.Any())
+                return children.Remainder.SuccessWith<INode>(new ParagraphNode(children.Parsed));
             return tokenizer.Fail<INode>();
         }
 
-        public INode CreateModificatorNode(Md modificatorAttribute, IEnumerable<INode> nodes)
+        private INode CreateModificatorNode(Md modificatorAttribute, IEnumerable<INode> nodes)
         {
             switch (modificatorAttribute)
             {
@@ -39,62 +39,12 @@ namespace Markdown.Parsing
 
         private bool IsWhiteSpaceToken(IMdToken token)
         {
-            return token.Has(Md.NewLine) || token.Text.All(char.IsWhiteSpace);
+            return token.Text.All(char.IsWhiteSpace);
         }
 
         private MarkdownParsingResult<List<IMdToken>> SkipNewLines(ITokenizer<IMdToken> tokenizer)
         {
             return tokenizer.UntilMatch(IsWhiteSpaceToken);
-        }
-
-        private MarkdownParsingResult<INode> ParseParagraphContent(ITokenizer<IMdToken> tokenizer)
-        {
-            return ParseText(tokenizer)
-                .IfFail(ParseModificator)
-                .IfFail(ParseBrokenSymbol);
-        }
-
-        private MarkdownParsingResult<INode> ParseBrokenSymbol(ITokenizer<IMdToken> tokenzer)
-        {
-            var brokenParsed = tokenzer.Match(
-                t => t.Has(Md.Emphasis) || t.Has(Md.Code) || t.Has(Md.Strong)
-            );
-            if (brokenParsed.Succeed)
-            {
-                var reason = $"Unexpected token {brokenParsed.Parsed.Text}. May be you need to escape it.";
-                INode node = new BrokenTextNode(brokenParsed.Parsed.Text, reason);
-                return brokenParsed.Remainder.Success(node);
-            }
-            return brokenParsed.Remainder.Fail<INode>();
-        }
-
-        private MarkdownParsingResult<INode> ParsePlainText(ITokenizer<IMdToken> tokenizer)
-        {
-            var tokensParsed = tokenizer.UntilMatch(token => token.Has(Md.PlainText));
-            var tokens = tokensParsed.Parsed;
-            var text = string.Join("", tokens.Select(t => t.Text));
-            if (tokens.Any())
-                return tokensParsed.Remainder.Success<INode>(new TextNode(text));
-            return tokenizer.Fail<INode>();
-        }
-
-        private MarkdownParsingResult<INode> ParseEscaped(ITokenizer<IMdToken> tokenizer)
-        {
-            var tokenParsed = tokenizer.Match(token => token.Has(Md.Escaped));
-            if (tokenParsed.Succeed)
-                return tokenParsed.Remainder.Success<INode>(new EscapedTextNode(tokenParsed.Parsed.Text));
-            return tokenizer.Fail<INode>();
-        }
-
-        private MarkdownParsingResult<INode> ParseText(ITokenizer<IMdToken> tokenizer)
-        {
-            var parsedNodes = ParseNodesUntilNotNull(tokenizer, t => ParsePlainText(t).IfFail(ParseEscaped));
-            var nodes = parsedNodes.Parsed;
-
-            if (!nodes.Any())
-                return tokenizer.Fail<INode>();
-            INode result = nodes.Count == 1 ? nodes[0] : new GroupNode(nodes);
-            return parsedNodes.Remainder.Success(result);
         }
 
         private MarkdownParsingResult<INode> ParseModificator(ITokenizer<IMdToken> tokenizer)
@@ -104,33 +54,82 @@ namespace Markdown.Parsing
                 .IfFail(t => ParseModificator(t, Md.Code));
         }
 
+        private MarkdownParsingResult<INode> ParseBrokenSymbol(ITokenizer<IMdToken> tokenzer)
+        {
+            var broken = tokenzer.Match(t => t.HasAny(Md.Emphasis, Md.Code, Md.Strong));
+            if (broken.Succeed)
+            {
+                var reason = $"Unexpected token {broken.Parsed.Text}. May be you need to escape it.";
+                INode node = new BrokenTextNode(broken.Parsed.Text, reason);
+                return broken.Remainder.SuccessWith(node);
+            }
+            return broken.Remainder.Fail<INode>();
+        }
+
+        private MarkdownParsingResult<INode> ParseParagraphContent(ITokenizer<IMdToken> tokenizer)
+        {
+            return ParseText(tokenizer)
+                .IfFail(ParseModificator)
+                .IfFail(ParseBrokenSymbol);
+        }
+
+        private MarkdownParsingResult<INode> ParsePlainText(ITokenizer<IMdToken> tokenizer)
+        {
+            var tokens = tokenizer.UntilMatch(token => token.Has(Md.PlainText));
+            var text = string.Join("", tokens.Parsed.Select(t => t.Text));
+            if (tokens.Parsed.Any())
+                return tokens.Remainder.SuccessWith<INode>(new TextNode(text));
+            return tokenizer.Fail<INode>();
+        }
+
+        private MarkdownParsingResult<INode> ParseEscaped(ITokenizer<IMdToken> tokenizer)
+        {
+            var tokens = tokenizer.Match(token => token.Has(Md.Escaped));
+            if (tokens.Succeed)
+                return tokens.Remainder.SuccessWith<INode>(new EscapedTextNode(tokens.Parsed.Text));
+            return tokenizer.Fail<INode>();
+        }
+
+        private MarkdownParsingResult<INode> ParseText(ITokenizer<IMdToken> tokenizer)
+        {
+            var parsingResult = ParseNodesUntilMatch(tokenizer, t => ParsePlainText(t).IfFail(ParseEscaped));
+            var nodes = parsingResult.Parsed;
+
+            if (!nodes.Any())
+                return tokenizer.Fail<INode>();
+
+            // No need to create extra nodes if we can
+            INode result = nodes.Count == 1 ? nodes[0] : new GroupNode(nodes);
+            return parsingResult.Remainder.SuccessWith(result);
+        }
+
         private MarkdownParsingResult<INode> ParseModificator(ITokenizer<IMdToken> tokenizer, Md modificatorAttribute)
         {
-            var startParsed = tokenizer.Match(token => token.Has(Md.Open, modificatorAttribute));
+            var open = tokenizer.Match(token => token.Has(Md.Open, modificatorAttribute));
 
-            var childrenParsed = startParsed.IfSuccess(
-                currentT => ParseNodesUntilNotNull(currentT, t => ParseText(t).IfFail(ParseModificator))
+            var children = open.IfSuccess(
+                currentT => ParseNodesUntilMatch(currentT, t => ParseText(t).IfFail(ParseModificator))
             );
 
-            var endParsed = childrenParsed.IfSuccess(t => t.Match(token => token.Has(Md.Close, modificatorAttribute)));
+            var close = children.IfSuccess(t => t.Match(token => token.Has(Md.Close, modificatorAttribute)));
 
-            if (endParsed.Succeed && endParsed.Parsed.Text == startParsed.Parsed.Text)
+            if (close.Succeed && close.Parsed.Text == open.Parsed.Text)
             {
-                var node = CreateModificatorNode(modificatorAttribute, childrenParsed.Parsed);
-                return endParsed.Remainder.Success(node);
+                var node = CreateModificatorNode(modificatorAttribute, children.Parsed);
+                return close.Remainder.SuccessWith(node);
             }
             return tokenizer.Fail<INode>();
         }
 
-        private MarkdownParsingResult<List<T>> ParseNodesUntilNotNull<T>(ITokenizer<IMdToken> tokenizer,
-            Func<ITokenizer<IMdToken>, MarkdownParsingResult<T>> nodeFactory)
+        private MarkdownParsingResult<List<T>> ParseNodesUntilMatch<T>(ITokenizer<IMdToken> tokenizer,
+            Func<ITokenizer<IMdToken>, MarkdownParsingResult<T>> matcher)
         {
             var nodes = new List<T>();
             while (true)
             {
-                var result = nodeFactory(tokenizer);
+                var result = matcher(tokenizer);
                 if (!result.Succeed)
-                    return result.Remainder.Success(nodes);
+                    return result.Remainder.SuccessWith(nodes);
                 tokenizer = result.Remainder;
                 nodes.Add(result.Parsed);
             }

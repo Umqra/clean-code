@@ -3,12 +3,12 @@
     public class BrokenTextNode : INode
     {
         public string Text { get; }
-        public string Reason { get; }
+        public string FailReason { get; }
 
-        public BrokenTextNode(string text, string reason)
+        public BrokenTextNode(string text, string failReason)
         {
             Text = text;
-            Reason = reason;
+            FailReason = failReason;
         }
 
         public override bool Equals(object obj)

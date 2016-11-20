@@ -11,7 +11,7 @@ namespace Markdown.Parsing
         {
             if (tokenizer.AtEnd || !predicate(tokenizer.CurrentToken))
                 return tokenizer.Fail<IMdToken>();
-            return tokenizer.Advance().Success(tokenizer.CurrentToken);
+            return tokenizer.Advance().SuccessWith(tokenizer.CurrentToken);
         }
 
         public static MarkdownParsingResult<List<IMdToken>> UntilMatch(this ITokenizer<IMdToken> tokenizer,
@@ -22,11 +22,11 @@ namespace Markdown.Parsing
             {
                 var token = tokenizer.CurrentToken;
                 if (!predicate(token))
-                    return tokenizer.Success(tokens);
+                    return tokenizer.SuccessWith(tokens);
                 tokenizer = tokenizer.Advance();
                 tokens.Add(token);
             }
-            return tokenizer.Success(tokens);
+            return tokenizer.SuccessWith(tokens);
         }
 
         public static MarkdownParsingResult<T> Fail<T>(this ITokenizer<IMdToken> tokenizer)
@@ -34,7 +34,7 @@ namespace Markdown.Parsing
             return MarkdownParsingResult<T>.Fail<T>(tokenizer);
         }
 
-        public static MarkdownParsingResult<T> Success<T>(this ITokenizer<IMdToken> tokenizer, T parsed)
+        public static MarkdownParsingResult<T> SuccessWith<T>(this ITokenizer<IMdToken> tokenizer, T parsed)
         {
             return MarkdownParsingResult<T>.Success(parsed, tokenizer);
         }

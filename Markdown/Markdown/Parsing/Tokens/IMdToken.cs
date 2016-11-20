@@ -4,7 +4,7 @@
     {
         string Text { get; }
         string UnderlyingText { get; }
-        bool Has(params Md[] attribute);
-        IMdToken With(params Md[] attribute);
+        bool Has(params Md[] attributes);
+        IMdToken With(params Md[] attributes);
     }
 }

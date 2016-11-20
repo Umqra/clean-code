@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Markdown.Parsing.Nodes;
 using Markdown.Parsing.Visitors;
+using Markdown.Rendering.HtmlEntities;
 
 namespace Markdown.Rendering
 {
@@ -19,7 +20,13 @@ namespace Markdown.Rendering
 
         protected override void EnterLeafNode(INode node)
         {
-            htmlMarkup.Append(nodeConverter.ConvertLeaf(node).Content);
+            if (node is BrokenTextNode)
+            {
+                var converted = (HtmlBrokenContent)nodeConverter.ConvertLeaf(node);
+                htmlMarkup.Append($"{converted.Content} ({converted.FailReason})");
+            }
+            else
+                htmlMarkup.Append(nodeConverter.ConvertLeaf(node).Content);
         }
 
         protected override void EnterInternalNode(INode node)
