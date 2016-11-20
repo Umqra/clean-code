@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using Markdown.Parsing;
+using Markdown.Parsing.Nodes;
 using Markdown.Parsing.Tokens;
 using NUnit.Framework;
 
@@ -16,6 +17,16 @@ namespace Markdown.Tests
             TokenizerFactory = new MarkdownTokenizerFactory();
         }
 
+        private INode Parse(string text)
+        {
+            return Parser.Parse(TokenizerFactory.CreateTokenizer(text)).Parsed;
+        }
+
+        private INode ParseParagraph(string text)
+        {
+            return Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text)).Parsed;
+        }
+
         public MarkdownParser Parser { get; set; }
         public ITokenizerFactory<IMdToken> TokenizerFactory { get; set; }
 
@@ -23,7 +34,7 @@ namespace Markdown.Tests
         public void BoldInItalic_ShouldBeParsed()
         {
             var text = "_italic __bold__ end_";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -39,11 +50,11 @@ namespace Markdown.Tests
         public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsed()
         {
             var text = "__bold _still bold end__";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
-                    StrongModificator(Text("bold "), Group(Text("_"), Text("still bold end")))
+                    StrongModificator(Text("bold "), Escaped("_"), Text("still bold end"))
                 )
             );
         }
@@ -52,7 +63,7 @@ namespace Markdown.Tests
         public void ItalicInBold_ShouldBeParsed()
         {
             var text = "__bold _italic_ end__";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -68,7 +79,7 @@ namespace Markdown.Tests
         public void NotPairedUnderscore_ShouldNotModifyText()
         {
             var text = "_a";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(Group(Text("_"), Text("a"))));
         }
@@ -77,7 +88,7 @@ namespace Markdown.Tests
         public void TestBackticks()
         {
             var text = "a `b` c";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -89,7 +100,7 @@ namespace Markdown.Tests
         public void TestBoldUnderscore()
         {
             var text = "__sample text__";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(StrongModificator(Text("sample text"))));
         }
@@ -98,7 +109,7 @@ namespace Markdown.Tests
         public void TestConsecutiveModificators()
         {
             var text = "_first_ __second__ _third_";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -115,7 +126,7 @@ namespace Markdown.Tests
         public void TestEscapedCharacters()
         {
             var text = @"hi \_\_!";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -129,7 +140,7 @@ namespace Markdown.Tests
         public void TestItalicUnderscore()
         {
             var text = "_sample text_";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
         }
@@ -138,7 +149,7 @@ namespace Markdown.Tests
         public void TestManyOpenModificators()
         {
             var text = "a _b _c d _e";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -160,7 +171,7 @@ namespace Markdown.Tests
         public void TestModificatorInBackticks()
         {
             var text = "a `b _c_ d` e";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -178,7 +189,7 @@ namespace Markdown.Tests
         public void TestSimpleText()
         {
             var text = "sample text";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(Text(text)));
         }
@@ -187,7 +198,7 @@ namespace Markdown.Tests
         public void TwoLineBreaks_SeparatesParagraphs()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+            var parsed = Parse(text);
 
             parsed.Should().Be(
                 Group(
@@ -201,7 +212,7 @@ namespace Markdown.Tests
         public void TwoSpacesAtTheEndOfLine_SeparatesParagraph()
         {
             var text = $"hello  {Environment.NewLine}bye";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+            var parsed = Parse(text);
 
             parsed.Should().Be(
                 Group(
@@ -215,7 +226,7 @@ namespace Markdown.Tests
         public void WhiteSpaceSymbols_AfterParagraph_NotTrimmed()
         {
             var text = "new paragraph    ";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+            var parsed = Parse(text);
 
             parsed.Should().Be(
                 Group(
@@ -228,7 +239,7 @@ namespace Markdown.Tests
         public void WhiteSpaceSymbols_BeforeParagraph_Trimmed()
         {
             var text = "   new paragraph";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+            var parsed = Parse(text);
 
             parsed.Should().Be(
                 Group(

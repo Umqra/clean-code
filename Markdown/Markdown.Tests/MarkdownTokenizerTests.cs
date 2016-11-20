@@ -10,7 +10,7 @@ namespace Markdown.Tests
     [TestFixture]
     internal class MarkdownTokenizerTests
     {
-        public BaseTokenizer<IMdToken> Tokenizer { get; set; }
+        public ITokenizer<IMdToken> Tokenizer { get; set; }
 
         public void SetUpTokenizer(string text)
         {
@@ -19,12 +19,10 @@ namespace Markdown.Tests
 
         public IEnumerable<IMdToken> GetAllTokens()
         {
-            while (true)
+            while (!Tokenizer.AtEnd)
             {
-                var node = Tokenizer.TakeToken();
-                if (node == null)
-                    yield break;
-                yield return node;
+                yield return Tokenizer.CurrentToken;
+                Tokenizer = Tokenizer.Advance();
             }
         }
 

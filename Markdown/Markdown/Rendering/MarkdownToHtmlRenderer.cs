@@ -19,7 +19,7 @@ namespace Markdown.Rendering
 
         public string Render(string text)
         {
-            return NodeRenderer.Render(Parser.Parse(new MarkdownTokenizer(text)));
+            return NodeRenderer.Render(Parser.Parse(new MarkdownTokenizer(text)).Parsed);
         }
     }
 }

@@ -4,7 +4,7 @@ using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing
 {
-    public class MarkdownTokenizer : BaseTokenizer<IMdToken>
+    public sealed class MarkdownTokenizer : BaseTokenizer<IMdToken>
     {
         private static readonly Dictionary<string, Md> modificatorAttribute =
             new Dictionary<string, Md>
@@ -16,17 +16,31 @@ namespace Markdown.Parsing
                 {"`", Md.Code}
             };
 
-        public MarkdownTokenizer(string text) : base(text)
+        public override IMdToken CurrentToken { get; }
+
+        public MarkdownTokenizer(string text) : this(text, 0)
         {
         }
 
+        private MarkdownTokenizer(string text, int textPosition) : base(text, textPosition)
+        {
+            CurrentToken = AtEnd ? null : ParseToken();
+        }
+
+        public override ITokenizer<IMdToken> Advance()
+        {
+            if (AtEnd)
+                return this;
+            return new MarkdownTokenizer(Text, TextPosition + CurrentToken.UnderlyingText.Length);
+        }
+
         //TODO: Poor performance because of many-many CharacterToken objects
-        protected override IMdToken ParseToken()
+        private IMdToken ParseToken()
         {
             return TryParseEscapedCharacter() ??
                    TryParseNewLineToken() ??
                    TryParseModificator("__", "**", "_", "*", "`") ??
-                   new MdToken(TakeString(1)).With(Md.PlainText);
+                   new MdToken(LookAtString(1)).With(Md.PlainText);
         }
 
         private IMdToken TryParseNewLineToken()
@@ -51,9 +65,9 @@ namespace Markdown.Parsing
             var after = LookAhead(modificator.Length);
 
             if (before.IsPunctuation() && after.IsLetterOrDigit())
-                return new MdToken(TakeString(modificator.Length)).With(Md.Open);
+                return new MdToken(modificator).With(Md.Open);
             if ((before.IsWhiteSpace() || !before.HasValue) && after.HasValue && !after.IsWhiteSpace())
-                return new MdToken(TakeString(modificator.Length)).With(Md.Open);
+                return new MdToken(modificator).With(Md.Open);
             return null;
         }
 
@@ -65,23 +79,23 @@ namespace Markdown.Parsing
             var after = LookAhead(modificator.Length);
 
             if (before.IsLetterOrDigit() && after.IsPunctuation())
-                return new MdToken(TakeString(modificator.Length)).With(Md.Close);
+                return new MdToken(modificator).With(Md.Close);
             if (before.HasValue && !before.IsWhiteSpace() && (after.IsWhiteSpace() || !after.HasValue))
-                return new MdToken(TakeString(modificator.Length)).With(Md.Close);
+                return new MdToken(modificator).With(Md.Close);
             return null;
         }
 
         private IMdToken TryParseEscapedCharacter()
         {
             if (CurrentSymbol == '\\' && TextPosition < Text.Length - 1)
-                return new MdToken(TakeString(2).Substring(1)).With(Md.Escaped);
+                return new MdToken(LookAtString(2).Substring(1), LookAtString(2)).With(Md.Escaped);
             return null;
         }
 
         private IMdToken TryParseNewLineToken(string newLineToken)
         {
             if (LookAtString(newLineToken.Length) == newLineToken)
-                return new MdToken(TakeString(newLineToken.Length)).With(Md.NewLine);
+                return new MdToken(newLineToken).With(Md.NewLine);
             return null;
         }
     }

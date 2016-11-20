@@ -7,14 +7,19 @@ namespace Markdown.Parsing.Tokens
     public class MdToken : IMdToken
     {
         private SortedSet<Md> Attributes { get; }
+        public string UnderlyingText { get; }
+        public string Text { get; }
 
-        public MdToken(string text)
+        public MdToken(string text, string underlyingText)
         {
             Text = text;
+            UnderlyingText = underlyingText;
             Attributes = new SortedSet<Md>();
         }
 
-        public string Text { get; }
+        public MdToken(string text) : this(text, text)
+        {
+        }
 
         public bool Has(params Md[] attributes)
         {

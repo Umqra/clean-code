@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 namespace Markdown.Parsing
 {
-    public interface ITokenizer<T> where T : class
+    public interface ITokenizer<out T> where T : class
     {
-        T TakeTokenIfMatch(Predicate<T> matchPredicate);
-        List<T> TakeTokensUntilMatch(Predicate<T> matchPredicate);
+        T CurrentToken { get; }
+        bool AtEnd { get; }
+        ITokenizer<T> Advance();
     }
 }
