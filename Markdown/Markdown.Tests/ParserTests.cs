@@ -47,15 +47,14 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsed()
+        public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsedAsBroken()
         {
             var text = "__bold _still bold end__";
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
-                    StrongModificator(Text("bold "), Escaped("_"), Text("still bold end"))
-                )
+                    Broken("__"), Text("bold "), Broken("_"), Text("still bold end"), Broken("__"))
             );
         }
 
@@ -81,7 +80,7 @@ namespace Markdown.Tests
             var text = "_a";
             var parsed = ParseParagraph(text);
 
-            parsed.Should().Be(Paragraph(Group(Text("_"), Text("a"))));
+            parsed.Should().Be(Paragraph(Broken("_"), Text("a")));
         }
 
         [Test]
@@ -130,9 +129,7 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Group(
-                        Text("h"), Text("i"), Text(" "), Escaped("_"), Escaped("_"), Text("!"))
-                )
+                    Group(Text("hi "), Escaped("_"), Escaped("_"), Text("!")))
             );
         }
 
@@ -154,16 +151,12 @@ namespace Markdown.Tests
             parsed.Should().Be(
                 Paragraph(
                     Text("a "),
-                    Group(
-                        Text("_"),
-                        Text("b "),
-                        Group(
-                            Text("_"),
-                            Text("c d "),
-                            Group(Text("_"), Text("e"))
-                        )
-                    )
-                )
+                    Broken("_"),
+                    Text("b "),
+                    Broken("_"),
+                    Text("c d "),
+                    Broken("_"),
+                    Text("e"))
             );
         }
 

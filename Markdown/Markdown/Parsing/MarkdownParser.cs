@@ -61,8 +61,11 @@ namespace Markdown.Parsing
                 t => t.Has(Md.Emphasis) || t.Has(Md.Code) || t.Has(Md.Strong)
             );
             if (brokenParsed.Succeed)
-                return MarkdownParsingResult<INode>.Success
-                    ((INode)new TextNode(brokenParsed.Parsed.Text), brokenParsed.Remainder);
+            {
+                var reason = $"Unexpected token {brokenParsed.Parsed.Text}. May be you need to escape it.";
+                INode node = new BrokenTextNode(brokenParsed.Parsed.Text, reason);
+                return MarkdownParsingResult<INode>.Success(node, brokenParsed.Remainder);
+            }
             return MarkdownParsingResult<INode>.Fail<INode>(brokenParsed.Remainder);
         }
 
