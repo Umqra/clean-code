@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing.Tokenizer
@@ -41,7 +40,21 @@ namespace Markdown.Parsing.Tokenizer
             return TryParseEscapedCharacter() ??
                    TryParseNewLineToken() ??
                    TryParseModificator("__", "**", "_", "*", "`") ??
+                   TryParseLinkTokens() ??
                    new MdToken(LookAtString(1)).With(Md.PlainText);
+        }
+
+        private IMdToken TryParseLinkTokens()
+        {
+            return (TryParseToken("[", Md.Open) ?? TryParseToken("]", Md.Close))?.With(Md.LinkText) ??
+                   (TryParseToken("(", Md.Open) ?? TryParseToken(")", Md.Close))?.With(Md.LinkReference);
+        }
+
+        private IMdToken TryParseToken(string token, params Md[] attributes)
+        {
+            if (LookAtString(token.Length) == token)
+                return new MdToken(token).With(attributes);
+            return null;
         }
 
         private IMdToken TryParseNewLineToken()

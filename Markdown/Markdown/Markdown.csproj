@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Parsing\Nodes\LinkNode.cs" />
     <Compile Include="Parsing\Tokenizer\BaseTokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
     <Compile Include="Parsing\Tokenizer\ITokenizer.cs" />

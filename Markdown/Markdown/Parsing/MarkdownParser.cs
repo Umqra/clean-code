@@ -57,10 +57,10 @@ namespace Markdown.Parsing
 
         private MarkdownParsingResult<INode> ParseBrokenSymbol(ITokenizer<IMdToken> tokenzer)
         {
-            var broken = tokenzer.Match(t => t.HasAny(Md.Emphasis, Md.Code, Md.Strong));
+            var broken = tokenzer.Match(t => !t.Has(Md.NewLine));
             if (broken.Succeed)
             {
-                var reason = $"Unexpected token {broken.Parsed.Text}. May be you need to escape it.";
+                var reason = broken.Parsed.UnexpectedTokenReason();
                 INode node = new BrokenTextNode(broken.Parsed.Text, reason);
                 return broken.Remainder.SuccessWith(node);
             }
@@ -71,6 +71,7 @@ namespace Markdown.Parsing
         {
             return ParseText(tokenizer)
                 .IfFail(ParseModificator)
+                .IfFail(ParseLink)
                 .IfFail(ParseBrokenSymbol);
         }
 
@@ -119,6 +120,22 @@ namespace Markdown.Parsing
                 var node = CreateModificatorNode(modificatorAttribute, children.Parsed);
                 return close.Remainder.SuccessWith(node);
             }
+            return tokenizer.Fail<INode>();
+        }
+
+        private MarkdownParsingResult<INode> ParseLink(ITokenizer<IMdToken> tokenizer)
+        {
+            var openText = tokenizer.Match(token => token.Has(Md.LinkText, Md.Open));
+            var text = openText.IfSuccess(ParseText);
+            var closeText = text.IfSuccess(t => t.Match(token => token.Has(Md.LinkText, Md.Close)));
+
+            var openLink = closeText
+                .IfSuccess(SkipNewLines)
+                .IfSuccess(t => t.Match(token => token.Has(Md.LinkReference, Md.Open)));
+            var link = openLink.IfSuccess(ParsePlainText);
+            var closeLink = link.IfSuccess(t => t.Match(token => token.Has(Md.LinkReference, Md.Close)));
+            if (closeLink.Succeed)
+                return closeLink.Remainder.SuccessWith<INode>(new LinkNode(link.Parsed, text.Parsed));
             return tokenizer.Fail<INode>();
         }
 

@@ -6,7 +6,7 @@ namespace Markdown.Parsing.Tokens
 {
     public struct MdToken : IMdToken
     {
-        private SortedSet<Md> Attributes { get; }
+        public SortedSet<Md> Attributes { get; }
         public string UnderlyingText { get; }
         public string Text { get; }
 

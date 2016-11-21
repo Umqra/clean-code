@@ -27,6 +27,11 @@ namespace Markdown.Tests
             }
         }
 
+        private IEnumerable<IMdToken> Token(string text, params Md[] attributes)
+        {
+            yield return new MdToken(text).With(attributes);
+        }
+
         private IEnumerable<IMdToken> Escaped(string text)
         {
             yield return new MdToken(text).With(Md.Escaped);
@@ -187,7 +192,6 @@ namespace Markdown.Tests
             );
         }
 
-
         [Test]
         public void TestDoubleUnderscoreSurroundingWithSpaces()
         {
@@ -312,6 +316,56 @@ namespace Markdown.Tests
             GetAllTokens().Should().BeEqualToFoldedSequence(
                 PlainText("hello"), NewLine(twoSpacesNewLine), PlainText("bye")
             );
+        }
+
+        [Test]
+        public void TestMatchedLinkTextTokens()
+        {
+            var text = "[link]";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("[", Md.Open, Md.LinkText), 
+                PlainText("link"),
+                Token("]", Md.Close, Md.LinkText)
+            );
+        }
+        
+        [Test]
+        public void TestUnmatchedLinkTextTokens()
+        {
+            var text = "[link";
+            SetUpTokenizer(text);
+            
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("[", Md.Open, Md.LinkText),
+                PlainText("link")
+                );
+        }
+
+        [Test]
+        public void TestMatchedLinkUrlTokens()
+        {
+            var text = "(link)";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("(", Md.Open, Md.LinkReference),
+                PlainText("link"),
+                Token(")", Md.Close, Md.LinkReference)
+            );
+        }
+
+        [Test]
+        public void TestUnmatchedLinkUrlTokens()
+        {
+            var text = "(link";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("(", Md.Open, Md.LinkReference),
+                PlainText("link")
+                );
         }
     }
 }

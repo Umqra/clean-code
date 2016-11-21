@@ -85,6 +85,34 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void OnlyLinkReferenceElement_ShouldNotModifyText()
+        {
+            var text = "(/index.html)";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Broken("("), Text("/index.html"), Broken(")")
+                )
+            );
+        }
+
+        [Test]
+        public void OnlyLinkTextElement_ShouldNotModifyText()
+        {
+            var text = "[link]";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Broken("["), Text("link"), Broken("]")
+                )
+            );
+        }
+
+        [Test]
         public void TestBackticks()
         {
             var text = "a `b` c";
@@ -141,6 +169,19 @@ namespace Markdown.Tests
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
+        }
+
+        [Test]
+        public void TestLinkElement()
+        {
+            var text = "[link](/index.html)";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Link(Text("/index.html"), Text("link")))
+            );
         }
 
         [Test]
