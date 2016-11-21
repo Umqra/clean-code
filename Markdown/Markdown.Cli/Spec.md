@@ -19,9 +19,7 @@ int main()
 There is a little surpirse - you can make your modificators nested!  
 *You will get **something like this***
 
-I say more, you even can use text modificators in your code blocks! Let's look at this:
-`def parse(message):
-	pass # **TODO** very important method`
+ __*It works*__
 
 I don't want to disappoint you, but in this simple parser you can find many disadvantages.
 
@@ -35,6 +33,8 @@ But you can use next hack for this modificator: `\_\*\*It works!\*\*\_`
 Let me show my code:\`code\`
 
 3. I can't find another curious behaviour but i'm sure - it is
+
+You can paste links [like this](http://umqra.github.io/adaptive_design)
 
 # Спецификация языка разметки
 

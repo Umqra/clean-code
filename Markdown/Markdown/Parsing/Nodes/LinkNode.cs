@@ -5,11 +5,13 @@ namespace Markdown.Parsing.Nodes
 {
     public class LinkNode : IInternalNode
     {
+        public string Reference { get; }
         public List<INode> Children { get; }
 
-        public LinkNode(INode reference, INode text)
+        public LinkNode(string reference, INode text)
         {
-            Children = new List<INode> {reference, text};
+            Reference = reference;
+            Children = new List<INode> {text};
         }
 
         public override bool Equals(object obj)
@@ -20,14 +22,21 @@ namespace Markdown.Parsing.Nodes
             return Equals((LinkNode)obj);
         }
 
+
         public override int GetHashCode()
         {
-            return Children?.CombineElementHashCodesUsingParent(this) ?? 0;
+            unchecked
+            {
+                return ((Reference?.GetHashCode() ?? 0) * 397) ^
+                       (Children?.CombineElementHashCodesUsingParent(this) ?? 0);
+            }
         }
+
 
         protected bool Equals(LinkNode other)
         {
-            return Children.SequenceEqual(other.Children);
+            return Children.SequenceEqual(other.Children) &&
+                   Equals(Reference, other.Reference);
         }
     }
 }

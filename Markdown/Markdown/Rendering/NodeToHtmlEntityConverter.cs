@@ -14,7 +14,8 @@ namespace Markdown.Rendering
                 {typeof(EmphasisModificatorNode), node => new HtmlEmphasisTag()},
                 {typeof(StrongModificatorNode), node => new HtmlStrongTag()},
                 {typeof(CodeModificatorNode), node => new HtmlCodeTag()},
-                {typeof(GroupNode), node => new HtmlEmptyTag()}
+                {typeof(GroupNode), node => new HtmlEmptyTag()},
+                {typeof(LinkNode), node => new HtmlLinkTag(((LinkNode)node).Reference)},
             };
 
         private static readonly Dictionary<Type, Func<INode, IHtmlContent>> leafConversionTable = new
@@ -22,7 +23,7 @@ namespace Markdown.Rendering
             {
                 {typeof(TextNode), node => new HtmlTextContent(((TextNode)node).Text)},
                 {typeof(EscapedTextNode), node => new HtmlEscapedTextContent(((EscapedTextNode)node).Text)},
-                {typeof(NewLineNode), node => new HtmlNewLineContent()},
+                {typeof(NewLineNode), node => new HtmlNewLineContent()}
             };
 
         public IHtmlTag ConvertInternal(INode node)

@@ -14,7 +14,7 @@ namespace Markdown.Parsing
             var children = ParseNodesUntilMatch(tokenizer,
                 t =>
                 {
-                    var skipped = SkipNewLines(t.UnboundTokenizer());
+                    var skipped = SkipWhiteSpaces(t.UnboundTokenizer());
                     return skipped.IfSuccess(paragraphTokenizer => ParseParagraph(
                         paragraphTokenizer.UntilNotMatch(token => token.Has(Md.NewLine))
                     ));
@@ -51,16 +51,15 @@ namespace Markdown.Parsing
             return token.Text.All(char.IsWhiteSpace);
         }
 
-        private MarkdownParsingResult<List<IMdToken>> SkipNewLines(ITokenizer<IMdToken> tokenizer)
+        private MarkdownParsingResult<List<IMdToken>> SkipWhiteSpaces(ITokenizer<IMdToken> tokenizer)
         {
             return tokenizer.UntilMatch(IsWhiteSpaceToken);
         }
 
-        private MarkdownParsingResult<INode> ParseModificator(ITokenizer<IMdToken> tokenizer)
+        private MarkdownParsingResult<INode> ParseFormatModificator(ITokenizer<IMdToken> tokenizer)
         {
-            return ParseModificator(tokenizer, Md.Emphasis)
-                .IfFail(t => ParseModificator(t, Md.Strong))
-                .IfFail(t => ParseModificator(t, Md.Code));
+            return ParseFormatModificator(tokenizer, Md.Emphasis)
+                .IfFail(t => ParseFormatModificator(t, Md.Strong));
         }
 
         private MarkdownParsingResult<INode> ParseBrokenSymbol(ITokenizer<IMdToken> tokenizer)
@@ -73,7 +72,8 @@ namespace Markdown.Parsing
         private MarkdownParsingResult<INode> ParseParagraphContent(ITokenizer<IMdToken> tokenizer)
         {
             return ParseText(tokenizer)
-                .IfFail(ParseModificator)
+                .IfFail(ParseCodeModificator)
+                .IfFail(ParseFormatModificator)
                 .IfFail(ParseLink)
                 .IfFail(ParseBrokenSymbol);
         }
@@ -108,16 +108,33 @@ namespace Markdown.Parsing
             return parsingResult.Remainder.SuccessWith(result);
         }
 
-        private MarkdownParsingResult<INode> ParseModificator(ITokenizer<IMdToken> tokenizer, Md modificatorAttribute)
+        private MarkdownParsingResult<INode> ParseCodeModificator(ITokenizer<IMdToken> tokenizer)
+        {
+            var boundedTokenizer = tokenizer.UntilNotMatch(token => token.Has(Md.Close, Md.Code));
+
+            var open = boundedTokenizer.Match(token => token.Has(Md.Open, Md.Code));
+            var children = open.IfSuccess(childrenTokenizer => ParseNodesUntilMatch(childrenTokenizer, ParseBrokenSymbol));
+
+            var close = children.IfSuccess(t => t.UnboundTokenizer()
+                .Match(token => token.Has(Md.Close, Md.Code)));
+            if (close.Succeed)
+            {
+                return close.Remainder.SuccessWith<INode>(new CodeModificatorNode(children.Parsed));
+            }
+            return tokenizer.Fail<INode>();
+        }
+
+        private MarkdownParsingResult<INode> ParseFormatModificator(ITokenizer<IMdToken> tokenizer, Md modificatorAttribute)
         {
             var boundedTokenizer = tokenizer.UntilNotMatch(token => token.Has(Md.Close, modificatorAttribute));
 
             var open = boundedTokenizer.Match(token => token.Has(Md.Open, modificatorAttribute));
 
             var children = open.IfSuccess(
-                t => ParseNodesUntilMatch(t, token => ParseText(token)
-                    .IfFail(ParseModificator)
-                    .IfFail(ParseBrokenSymbol))
+                childrenTokenizer => ParseNodesUntilMatch(childrenTokenizer,
+                    t => ParseText(t)
+                        .IfFail(ParseFormatModificator)
+                        .IfFail(ParseBrokenSymbol))
             );
 
             var close = children.IfSuccess(t => t.UnboundTokenizer()
@@ -139,12 +156,16 @@ namespace Markdown.Parsing
             var closeText = text.IfSuccess(t => t.Match(token => token.Has(Md.LinkText, Md.Close)));
 
             var openLink = closeText
-                .IfSuccess(SkipNewLines)
+                .IfSuccess(SkipWhiteSpaces)
                 .IfSuccess(t => t.Match(token => token.Has(Md.LinkReference, Md.Open)));
             var link = openLink.IfSuccess(ParsePlainText);
             var closeLink = link.IfSuccess(t => t.Match(token => token.Has(Md.LinkReference, Md.Close)));
+
             if (closeLink.Succeed)
-                return closeLink.Remainder.SuccessWith<INode>(new LinkNode(link.Parsed, text.Parsed));
+            {
+                var linkText = ((TextNode)link.Parsed).Text;
+                return closeLink.Remainder.SuccessWith<INode>(new LinkNode(linkText, text.Parsed));
+            }
             return tokenizer.Fail<INode>();
         }
 

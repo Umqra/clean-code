@@ -44,7 +44,7 @@ namespace Markdown.Tests
             return new CodeModificatorNode(nodes);
         }
 
-        protected INode Link(INode reference, INode text)
+        protected INode Link(string reference, INode text)
         {
             return new LinkNode(reference, text);
         }

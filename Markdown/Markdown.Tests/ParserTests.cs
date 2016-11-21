@@ -32,6 +32,44 @@ namespace Markdown.Tests
         public ITokenizerFactory<IMdToken> TokenizerFactory { get; set; }
 
         [Test]
+        public void Backticks_ShouldBeParsed()
+        {
+            var text = "a `b` c";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "), Code(Text("b")), Text(" c"))
+            );
+        }
+
+        [Test]
+        public void Backticks_ShouldIgnoreModificators()
+        {
+            var text = "a `__b__` c";
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "), Code(Text("_"), Text("_"), Text("b"), Text("_"), Text("_")), Text(" c"))
+            );
+        }
+
+        [Test]
+        public void BackticksContents_ShouldBeParsed_CharByChar()
+        {
+            var text = "`a b c`";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Code(Text("a"), Text(" "), Text("b"), Text(" "), Text("c"))
+                ));
+        }
+
+        [Test]
         public void BoldInItalic_ShouldBeParsed()
         {
             var text = "_italic __bold__ end_";
@@ -45,6 +83,43 @@ namespace Markdown.Tests
                         Text(" end"))
                 )
             );
+        }
+        
+        [Test]
+        public void PairedModificators_ShouldNotParsed_IfBordersWithPunctuation()
+        {
+            var text = "__*hello!*__";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(StrongModificator(
+                    Text("*"), Text("hello!*")
+                ))
+            );
+        }
+        
+        [Test]
+        public void BoldItalic_ShouldParsed_WhenDifferentTypeUsed()
+        {
+            var text = "__*hello*__";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(StrongModificator(EmphasisModificator(
+                    Text("hello")
+                )))
+            );
+        }
+
+        [Test]
+        public void BoldUnderscore_ShouldBeParsed()
+        {
+            var text = "__sample text__";
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(Paragraph(StrongModificator(Text("sample text"))));
         }
 
         [Test]
@@ -61,6 +136,35 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void ConsecutiveModificators_ShouldBeParsed()
+        {
+            var text = "_first_ __second__ _third_";
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    EmphasisModificator(Text("first")),
+                    Text(" "),
+                    StrongModificator(Text("second")),
+                    Text(" "),
+                    EmphasisModificator(Text("third"))
+                )
+            );
+        }
+
+        [Test]
+        public void EscapedCharacters_ShouldBeParsed()
+        {
+            var text = @"hi \_\_!";
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Group(Text("hi "), Escaped("_"), Escaped("_"), Text("!")))
+            );
+        }
+
+        [Test]
         public void ItalicInBold_ShouldBeParsed()
         {
             var text = "__bold _italic_ end__";
@@ -73,6 +177,46 @@ namespace Markdown.Tests
                         EmphasisModificator(Text("italic")),
                         Text(" end"))
                 )
+            );
+        }
+
+        [Test]
+        public void ItalicUnderscore_ShouldBeParsed()
+        {
+            var text = "_sample text_";
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
+        }
+
+        [Test]
+        public void LinkElement_ShouldBeParsed()
+        {
+            var text = "[link](/index.html)";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Link("/index.html", Text("link"))
+                ));
+        }
+
+        [Test]
+        public void ManyOpenModificators_ShouldAllBeBroken()
+        {
+            var text = "a _b _c d _e";
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "),
+                    Text("_"),
+                    Text("b "),
+                    Text("_"),
+                    Text("c d "),
+                    Text("_"),
+                    Text("e"))
             );
         }
 
@@ -110,109 +254,6 @@ namespace Markdown.Tests
                 Paragraph(
                     Text("["), Text("link"), Text("]")
                 )
-            );
-        }
-
-        [Test]
-        public void Backticks_ShouldBeParsed()
-        {
-            var text = "a `b` c";
-
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(
-                Paragraph(
-                    Text("a "), Code(Text("b")), Text(" c"))
-            );
-        }
-
-        [Test]
-        public void Backticks_ShouldIgnoreModificators()
-        {
-            var text = "a `__b__` c";
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(
-                Paragraph(
-                    Text("a "), Code(Text("__b__")), Text(" c"))
-            );
-        }
-
-        [Test]
-        public void BoldUnderscore_ShouldBeParsed()
-        {
-            var text = "__sample text__";
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(Paragraph(StrongModificator(Text("sample text"))));
-        }
-
-        [Test]
-        public void ConsecutiveModificators_ShouldBeParsed()
-        {
-            var text = "_first_ __second__ _third_";
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(
-                Paragraph(
-                    EmphasisModificator(Text("first")),
-                    Text(" "),
-                    StrongModificator(Text("second")),
-                    Text(" "),
-                    EmphasisModificator(Text("third"))
-                )
-            );
-        }
-
-        [Test]
-        public void EscapedCharacters_ShouldBeParsed()
-        {
-            var text = @"hi \_\_!";
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(
-                Paragraph(
-                    Group(Text("hi "), Escaped("_"), Escaped("_"), Text("!")))
-            );
-        }
-
-        [Test]
-        public void ItalicUnderscore_ShouldBeParsed()
-        {
-            var text = "_sample text_";
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
-        }
-
-        [Test]
-        public void LinkElement_ShouldBeParsed()
-        {
-            var text = "[link](/index.html)";
-
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(
-                Paragraph(
-                    Link(Text("/index.html"), Text("link")))
-            );
-        }
-
-        [Test]
-        public void ManyOpenModificators_ShouldAllBeBroken()
-        {
-            var text = "a _b _c d _e";
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(
-                Paragraph(
-                    Text("a "),
-                    Text("_"),
-                    Text("b "),
-                    Text("_"),
-                    Text("c d "),
-                    Text("_"),
-                    Text("e"))
             );
         }
 

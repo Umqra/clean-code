@@ -76,6 +76,7 @@
     <Compile Include="Rendering\HtmlEntities\HtmlEmphasisTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEmptyTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEscapedTextContent.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlLinkTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlNewLineContent.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlParagraphTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlStrongTag.cs" />
