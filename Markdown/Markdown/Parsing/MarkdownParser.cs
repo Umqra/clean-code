@@ -11,7 +11,15 @@ namespace Markdown.Parsing
     {
         public MarkdownParsingResult<INode> Parse(ITokenizer<IMdToken> tokenizer)
         {
-            var children = ParseNodesUntilMatch(tokenizer, t => SkipNewLines(t).IfSuccess(ParseParagraph));
+            var children = ParseNodesUntilMatch(tokenizer,
+                t =>
+                {
+                    var skipped = SkipNewLines(t.UnboundTokenizer());
+                    return skipped.IfSuccess(paragraphTokenizer => ParseParagraph(
+                        paragraphTokenizer.UntilNotMatch(token => token.Has(Md.NewLine))
+                    ));
+                }
+            );
             return children.Remainder.SuccessWith<INode>(new GroupNode(children.Parsed));
         }
 
@@ -55,16 +63,11 @@ namespace Markdown.Parsing
                 .IfFail(t => ParseModificator(t, Md.Code));
         }
 
-        private MarkdownParsingResult<INode> ParseBrokenSymbol(ITokenizer<IMdToken> tokenzer)
+        private MarkdownParsingResult<INode> ParseBrokenSymbol(ITokenizer<IMdToken> tokenizer)
         {
-            var broken = tokenzer.Match(t => !t.Has(Md.NewLine));
-            if (broken.Succeed)
-            {
-                var reason = broken.Parsed.UnexpectedTokenReason();
-                INode node = new BrokenTextNode(broken.Parsed.Text, reason);
-                return broken.Remainder.SuccessWith(node);
-            }
-            return broken.Remainder.Fail<INode>();
+            if (tokenizer.AtEnd)
+                return tokenizer.Fail<INode>();
+            return tokenizer.Advance().SuccessWith<INode>(new TextNode(tokenizer.CurrentToken.Text));
         }
 
         private MarkdownParsingResult<INode> ParseParagraphContent(ITokenizer<IMdToken> tokenizer)
@@ -107,13 +110,19 @@ namespace Markdown.Parsing
 
         private MarkdownParsingResult<INode> ParseModificator(ITokenizer<IMdToken> tokenizer, Md modificatorAttribute)
         {
-            var open = tokenizer.Match(token => token.Has(Md.Open, modificatorAttribute));
+            var boundedTokenizer = tokenizer.UntilNotMatch(token => token.Has(Md.Close, modificatorAttribute));
+
+            var open = boundedTokenizer.Match(token => token.Has(Md.Open, modificatorAttribute));
 
             var children = open.IfSuccess(
-                currentT => ParseNodesUntilMatch(currentT, t => ParseText(t).IfFail(ParseModificator))
+                t => ParseNodesUntilMatch(t, token => ParseText(token)
+                    .IfFail(ParseModificator)
+                    .IfFail(ParseBrokenSymbol))
             );
 
-            var close = children.IfSuccess(t => t.Match(token => token.Has(Md.Close, modificatorAttribute)));
+            var close = children.IfSuccess(t => t.UnboundTokenizer()
+                    .Match(token => token.Has(Md.Close, modificatorAttribute))
+            );
 
             if (close.Succeed && close.Parsed.Text == open.Parsed.Text)
             {

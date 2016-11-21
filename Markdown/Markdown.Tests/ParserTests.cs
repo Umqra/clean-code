@@ -48,14 +48,15 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsedAsBroken()
+        public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsed()
         {
             var text = "__bold _still bold end__";
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
-                    Broken("__"), Text("bold "), Broken("_"), Text("still bold end"), Broken("__"))
+                    StrongModificator(Text("bold "), Text("_"), Text("still bold end"))
+                )
             );
         }
 
@@ -81,7 +82,7 @@ namespace Markdown.Tests
             var text = "_a";
             var parsed = ParseParagraph(text);
 
-            parsed.Should().Be(Paragraph(Broken("_"), Text("a")));
+            parsed.Should().Be(Paragraph(Text("_"), Text("a")));
         }
 
         [Test]
@@ -93,7 +94,7 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Broken("("), Text("/index.html"), Broken(")")
+                    Text("("), Text("/index.html"), Text(")")
                 )
             );
         }
@@ -107,15 +108,16 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Broken("["), Text("link"), Broken("]")
+                    Text("["), Text("link"), Text("]")
                 )
             );
         }
 
         [Test]
-        public void TestBackticks()
+        public void Backticks_ShouldBeParsed()
         {
             var text = "a `b` c";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
@@ -125,7 +127,19 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestBoldUnderscore()
+        public void Backticks_ShouldIgnoreModificators()
+        {
+            var text = "a `__b__` c";
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "), Code(Text("__b__")), Text(" c"))
+            );
+        }
+
+        [Test]
+        public void BoldUnderscore_ShouldBeParsed()
         {
             var text = "__sample text__";
             var parsed = ParseParagraph(text);
@@ -134,7 +148,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestConsecutiveModificators()
+        public void ConsecutiveModificators_ShouldBeParsed()
         {
             var text = "_first_ __second__ _third_";
             var parsed = ParseParagraph(text);
@@ -151,7 +165,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestEscapedCharacters()
+        public void EscapedCharacters_ShouldBeParsed()
         {
             var text = @"hi \_\_!";
             var parsed = ParseParagraph(text);
@@ -163,7 +177,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestItalicUnderscore()
+        public void ItalicUnderscore_ShouldBeParsed()
         {
             var text = "_sample text_";
             var parsed = ParseParagraph(text);
@@ -172,7 +186,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestLinkElement()
+        public void LinkElement_ShouldBeParsed()
         {
             var text = "[link](/index.html)";
 
@@ -185,7 +199,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestManyOpenModificators()
+        public void ManyOpenModificators_ShouldAllBeBroken()
         {
             var text = "a _b _c d _e";
             var parsed = ParseParagraph(text);
@@ -193,35 +207,17 @@ namespace Markdown.Tests
             parsed.Should().Be(
                 Paragraph(
                     Text("a "),
-                    Broken("_"),
+                    Text("_"),
                     Text("b "),
-                    Broken("_"),
+                    Text("_"),
                     Text("c d "),
-                    Broken("_"),
+                    Text("_"),
                     Text("e"))
             );
         }
 
         [Test]
-        public void TestModificatorInBackticks()
-        {
-            var text = "a `b _c_ d` e";
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(
-                Paragraph(
-                    Text("a "),
-                    Code(
-                        Text("b "),
-                        EmphasisModificator(Text("c")),
-                        Text(" d")),
-                    Text(" e")
-                )
-            );
-        }
-
-        [Test]
-        public void TestSimpleText()
+        public void SimpleText_ShouldBeParsed()
         {
             var text = "sample text";
             var parsed = ParseParagraph(text);

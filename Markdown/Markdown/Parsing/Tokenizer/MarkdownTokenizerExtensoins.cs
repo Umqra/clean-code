@@ -38,5 +38,18 @@ namespace Markdown.Parsing.Tokenizer
         {
             return MarkdownParsingResult<T>.Success(parsed, tokenizer);
         }
+
+        public static ITokenizer<IMdToken> UntilNotMatch(this ITokenizer<IMdToken> tokenizer,
+            Predicate<IMdToken> matcher)
+        {
+            return new BoundedTokenizer(tokenizer, matcher);
+        }
+
+        public static ITokenizer<IMdToken> UnboundTokenizer(this ITokenizer<IMdToken> tokenizer)
+        {
+            if (tokenizer is BoundedTokenizer)
+                return ((BoundedTokenizer)tokenizer).Tokenizer;
+            return tokenizer;
+        }
     }
 }

@@ -23,10 +23,6 @@ namespace Markdown.Rendering
                 {typeof(TextNode), node => new HtmlTextContent(((TextNode)node).Text)},
                 {typeof(EscapedTextNode), node => new HtmlEscapedTextContent(((EscapedTextNode)node).Text)},
                 {typeof(NewLineNode), node => new HtmlNewLineContent()},
-                {
-                    typeof(BrokenTextNode),
-                    node => new HtmlBrokenContent(((BrokenTextNode)node).Text, ((BrokenTextNode)node).FailReason)
-                }
             };
 
         public IHtmlTag ConvertInternal(INode node)

@@ -20,13 +20,7 @@ namespace Markdown.Rendering
 
         protected override void EnterLeafNode(INode node)
         {
-            if (node is BrokenTextNode)
-            {
-                var converted = (HtmlBrokenContent)nodeConverter.ConvertLeaf(node);
-                htmlMarkup.Append($"{converted.Content} ({converted.FailReason})");
-            }
-            else
-                htmlMarkup.Append(nodeConverter.ConvertLeaf(node).Content);
+            htmlMarkup.Append(nodeConverter.ConvertLeaf(node).Content);
         }
 
         protected override void EnterInternalNode(INode node)

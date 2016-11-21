@@ -44,10 +44,10 @@
     <Compile Include="Parsing\Nodes\LinkNode.cs" />
     <Compile Include="Parsing\Tokenizer\BaseTokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
+    <Compile Include="Parsing\Tokenizer\BoundedTokenizer.cs" />
     <Compile Include="Parsing\Tokenizer\ITokenizer.cs" />
     <Compile Include="Parsing\MarkdownParsingResult.cs" />
     <Compile Include="Parsing\Tokenizer\MarkdownTokenizerExtensoins.cs" />
-    <Compile Include="Parsing\Nodes\BrokenTextNode.cs" />
     <Compile Include="Parsing\Nodes\CodeModificatorNode.cs" />
     <Compile Include="Parsing\Tokens\Md.cs" />
     <Compile Include="Parsing\Tokens\MdToken.cs" />
@@ -72,7 +72,6 @@
     <Compile Include="Parsing\Nodes\TextNode.cs" />
     <Compile Include="Parsing\Tokenizer\MarkdownTokenizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\HtmlEntities\HtmlBrokenContent.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlCodeTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEmphasisTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEmptyTag.cs" />

@@ -44,11 +44,6 @@ namespace Markdown.Tests
             return new CodeModificatorNode(nodes);
         }
 
-        protected INode Broken(string text)
-        {
-            return new BrokenTextNode(text, "");
-        }
-
         protected INode Link(INode reference, INode text)
         {
             return new LinkNode(reference, text);
