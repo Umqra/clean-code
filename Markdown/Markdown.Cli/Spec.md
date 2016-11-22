@@ -36,6 +36,8 @@ Let me show my code:\`code\`
 
 You can paste links [like this](http://umqra.github.io/adaptive_design)
 
+Also you can use [relative paths](/about.html) like this.
+
 # Спецификация языка разметки
 
 Посмотрите этот файл в сыром виде. Сравните с тем, что показывает github.

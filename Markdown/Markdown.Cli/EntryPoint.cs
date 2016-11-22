@@ -4,6 +4,7 @@ using System.Linq;
 using Fclp;
 using Markdown.Parsing;
 using Markdown.Parsing.Tokenizer;
+using Markdown.Parsing.Visitors;
 using Markdown.Rendering;
 
 namespace Markdown.Cli
@@ -51,14 +52,21 @@ namespace Markdown.Cli
         private static void ConvertMarkdownToHtml(CliOptions options)
         {
             var markdownMarkup = File.ReadAllText(options.InputFilename);
-            var markdownToHtmlRenderer =
-                new MarkdownToHtmlRenderer(
-                    new MarkdownParser(),
-                    new MarkdownTokenizerFactory(),
-                    new NodeHtmlRenderer(new HtmlRenderContext(new NodeToHtmlEntityConverter()))
-                );
+            MarkdownToHtmlRenderer markdownToHtmlRenderer = GetRenderer(options);
             var htmlMarkup = markdownToHtmlRenderer.Render(markdownMarkup);
             File.WriteAllText(options.OutputFilename, htmlMarkup);
+        }
+
+        private static MarkdownToHtmlRenderer GetRenderer(CliOptions options)
+        {
+            var renderer = new MarkdownToHtmlRenderer(
+                new MarkdownParser(),
+                new MarkdownTokenizerFactory(),
+                new NodeHtmlRenderer(new HtmlRenderContext(new NodeToHtmlEntityConverter()))
+            );
+            if (options.BaseUrl != null)
+                renderer = renderer.WithModificators(new TransformTreeVisitor(new BaseUrlTransformer(options.BaseUrl)));
+            return renderer;
         }
 
         private static FluentCommandLineParser<CliOptions> ConfigureParser()
@@ -75,6 +83,11 @@ namespace Markdown.Cli
                 .As('o', "output")
                 .Required()
                 .WithDescription("Output file for generated html-markup");
+
+            parser
+                .Setup(arg => arg.BaseUrl)
+                .As("base_url")
+                .WithDescription("Base url for relative links");
 
             parser.SetupHelp("h", "help", "?").Callback(text => Console.WriteLine(text));
             return parser;

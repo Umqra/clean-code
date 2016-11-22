@@ -5,7 +5,7 @@ namespace Markdown.Parsing.Nodes
 {
     public class LinkNode : IInternalNode
     {
-        public string Reference { get; }
+        public string Reference { get; set; }
         public List<INode> Children { get; }
 
         public LinkNode(string reference, INode text)

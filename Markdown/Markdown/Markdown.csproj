@@ -52,10 +52,12 @@
     <Compile Include="Parsing\Tokens\Md.cs" />
     <Compile Include="Parsing\Tokens\MdToken.cs" />
     <Compile Include="Parsing\Tokens\TokenExtensions.cs" />
+    <Compile Include="Parsing\Visitors\BaseUrlTransformer.cs" />
     <Compile Include="Parsing\Visitors\ContextTreeVisitor.cs" />
     <Compile Include="Parsing\Tokenizer\ITokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\StrongModificatorNode.cs" />
     <Compile Include="Parsing\Visitors\BaseTreeContext.cs" />
+    <Compile Include="Parsing\Visitors\INodeTransformer.cs" />
     <Compile Include="Parsing\Visitors\ITreeContext.cs" />
     <Compile Include="Parsing\Tokenizer\MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\IInternalNode.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="Parsing\Nodes\ParagraphNode.cs" />
     <Compile Include="Parsing\Nodes\TextNode.cs" />
     <Compile Include="Parsing\Tokenizer\MarkdownTokenizer.cs" />
+    <Compile Include="Parsing\Visitors\TransformTreeVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlCodeTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEmphasisTag.cs" />

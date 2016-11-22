@@ -62,7 +62,7 @@ namespace Markdown.Parsing
                 .IfFail(t => ParseFormatModificator(t, Md.Strong));
         }
 
-        private MarkdownParsingResult<INode> ParseBrokenSymbol(ITokenizer<IMdToken> tokenizer)
+        private MarkdownParsingResult<INode> ParseAnyTokenAsText(ITokenizer<IMdToken> tokenizer)
         {
             if (tokenizer.AtEnd)
                 return tokenizer.Fail<INode>();
@@ -75,7 +75,7 @@ namespace Markdown.Parsing
                 .IfFail(ParseCodeModificator)
                 .IfFail(ParseFormatModificator)
                 .IfFail(ParseLink)
-                .IfFail(ParseBrokenSymbol);
+                .IfFail(ParseAnyTokenAsText);
         }
 
         private MarkdownParsingResult<INode> ParsePlainText(ITokenizer<IMdToken> tokenizer)
@@ -113,7 +113,7 @@ namespace Markdown.Parsing
             var boundedTokenizer = tokenizer.UntilNotMatch(token => token.Has(Md.Close, Md.Code));
 
             var open = boundedTokenizer.Match(token => token.Has(Md.Open, Md.Code));
-            var children = open.IfSuccess(childrenTokenizer => ParseNodesUntilMatch(childrenTokenizer, ParseBrokenSymbol));
+            var children = open.IfSuccess(childrenTokenizer => ParseNodesUntilMatch(childrenTokenizer, ParseAnyTokenAsText));
 
             var close = children.IfSuccess(t => t.UnboundTokenizer()
                 .Match(token => token.Has(Md.Close, Md.Code)));
@@ -134,7 +134,7 @@ namespace Markdown.Parsing
                 childrenTokenizer => ParseNodesUntilMatch(childrenTokenizer,
                     t => ParseText(t)
                         .IfFail(ParseFormatModificator)
-                        .IfFail(ParseBrokenSymbol))
+                        .IfFail(ParseAnyTokenAsText))
             );
 
             var close = children.IfSuccess(t => t.UnboundTokenizer()

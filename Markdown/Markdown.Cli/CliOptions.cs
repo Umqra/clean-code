@@ -6,6 +6,7 @@ namespace Markdown.Cli
     {
         public string InputFilename { get; set; }
         public string OutputFilename { get; set; }
+        public string BaseUrl { get; set; }
 
         public CliOptions TryInitialize()
         {
