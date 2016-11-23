@@ -7,6 +7,7 @@ using Markdown.Parsing;
 using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Visitors;
 using Markdown.Rendering;
+using Markdown.Rendering.HtmlEntities;
 
 namespace Markdown.Cli
 {
@@ -76,7 +77,12 @@ namespace Markdown.Cli
 
         private static INodeRenderer GetNodeRenderer(CliOptions options)
         {
-            return new NodeHtmlRenderer(new HtmlRenderContext(new NodeToHtmlEntityConverter()));
+            NodeToHtmlEntityConverter converter;
+            if (options.InjectCssClass != null)
+                converter = new NodeToHtmlEntityConverter(new HtmlAttribute("class", options.InjectCssClass));
+            else
+                converter = new NodeToHtmlEntityConverter();
+            return new NodeHtmlRenderer(new HtmlRenderContext(converter));
         }
 
         private static MarkdownToHtmlRenderer GetRenderer(CliOptions options)
@@ -119,14 +125,22 @@ namespace Markdown.Cli
 
             parser
                 .Setup(arg => arg.InjectedHtmlElement)
-                .As("inject_el")
+                .As("inject_element")
                 .WithDescription(
-                    @"Element in HTML DOM in which will be injected generated markup. You can use well-known css-selectors for specifying needed element. For example: --inject_el #markdown, --inject_el body, --inject_el .markdown_class");
+                    "Element in HTML DOM in which will be injected generated markup. " +
+                    "You can use well-known css-selectors for specifying needed element. " +
+                    "For example: --inject_el #markdown, --inject_el body, --inject_el .markdown_class");
+
+            parser
+                .Setup(arg => arg.InjectCssClass)
+                .As("class")
+                .WithDescription("Css class added to all elements in generated markup");
 
             parser
                 .Setup(arg => arg.ConfigFilename)
                 .As('c', "config")
                 .WithDescription("Path to configu file in YAML format");
+
 
             parser.SetupHelp("h", "help", "?").Callback(text => Console.WriteLine(text));
             return parser;

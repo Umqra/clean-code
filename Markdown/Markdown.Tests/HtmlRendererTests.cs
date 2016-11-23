@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Markdown.Parsing.Nodes;
 using Markdown.Rendering;
+using Markdown.Rendering.HtmlEntities;
 using NUnit.Framework;
 
 namespace Markdown.Tests
@@ -19,6 +20,17 @@ namespace Markdown.Tests
         public string Render(INode node)
         {
             return Renderer.Render(node);
+        }
+
+        [Test]
+        public void RendererInsertClassInTags()
+        {
+            Renderer = new NodeHtmlRenderer(new HtmlRenderContext(
+                new NodeToHtmlEntityConverter(new HtmlAttribute("class", "test"))
+            ));
+            var node = StrongModificator(Text("test"));
+
+            Render(node).Should().Be(@"<strong class=""test"">test</strong>");
         }
 
         [Test]

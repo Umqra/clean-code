@@ -1,5 +1,6 @@
 # Markdown parser configuration file
-input_filename: Spec.md
-output_filename: Spec.html
-html_filename: template.html
-injected_html_element: "#markdown"
+input: Spec.md
+output: Spec.html
+html_file: template.html
+inject_element: "#markdown"
+class: .markdown_el

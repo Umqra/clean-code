@@ -10,11 +10,24 @@ namespace Markdown.Cli
 {
     public class CliOptions
     {
+        [YamlMember(Alias = "input")]
         public string InputFilename { get; set; }
+
+        [YamlMember(Alias = "output")]
         public string OutputFilename { get; set; }
+
+        [YamlMember(Alias = "base_url")]
         public string BaseUrl { get; set; }
+
+        [YamlMember(Alias = "html_file")]
         public string HtmlFilename { get; set; }
+
+        [YamlMember(Alias = "inject_element")]
         public string InjectedHtmlElement { get; set; }
+
+        [YamlMember(Alias = "class")]
+        public string InjectCssClass { get; set; }
+
         public string ConfigFilename { get; set; }
 
         public CliOptions TryInitialize()
@@ -44,12 +57,14 @@ namespace Markdown.Cli
             {
                 var deserializer = new DeserializerBuilder()
                     .WithNamingConvention(new UnderscoredNamingConvention()).Build();
+
                 var options = deserializer.Deserialize<CliOptions>(new StreamReader(File.OpenRead(ConfigFilename)));
                 InputFilename = InputFilename ?? options.InputFilename;
                 OutputFilename = OutputFilename ?? options.OutputFilename;
                 BaseUrl = BaseUrl ?? options.BaseUrl;
                 HtmlFilename = HtmlFilename ?? options.HtmlFilename;
                 InjectedHtmlElement = InjectedHtmlElement ?? options.InjectedHtmlElement;
+                InjectCssClass = InjectCssClass ?? options.InjectCssClass;
             }
             catch (Exception exception)
             {

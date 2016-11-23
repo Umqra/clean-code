@@ -7,24 +7,17 @@ namespace Markdown.Rendering
 {
     public class NodeToHtmlEntityConverter : INodeToHtmlEntityConverter
     {
-        private static readonly Dictionary<Type, Func<INode, IHtmlTag>> internalConversionTable = new
-            Dictionary<Type, Func<INode, IHtmlTag>>
-            {
-                {typeof(ParagraphNode), node => new HtmlParagraphTag()},
-                {typeof(EmphasisModificatorNode), node => new HtmlEmphasisTag()},
-                {typeof(StrongModificatorNode), node => new HtmlStrongTag()},
-                {typeof(CodeModificatorNode), node => new HtmlCodeTag()},
-                {typeof(GroupNode), node => new HtmlEmptyTag()},
-                {typeof(LinkNode), node => new HtmlLinkTag(((LinkNode)node).Reference)},
-            };
+        private Dictionary<Type, Func<INode, IHtmlTag>> internalConversionTable;
+        private Dictionary<Type, Func<INode, IHtmlContent>> leafConversionTable;
 
-        private static readonly Dictionary<Type, Func<INode, IHtmlContent>> leafConversionTable = new
-            Dictionary<Type, Func<INode, IHtmlContent>>
-            {
-                {typeof(TextNode), node => new HtmlTextContent(((TextNode)node).Text)},
-                {typeof(EscapedTextNode), node => new HtmlEscapedTextContent(((EscapedTextNode)node).Text)},
-                {typeof(NewLineNode), node => new HtmlNewLineContent()}
-            };
+        public HtmlAttribute[] CommonAttributes { get; set; }
+
+        public NodeToHtmlEntityConverter(params HtmlAttribute[] commonAttributes)
+        {
+            CommonAttributes = commonAttributes;
+            InitInternalConversionTable();
+            InitLeafConversionTable();
+        }
 
         public IHtmlTag ConvertInternal(INode node)
         {
@@ -52,6 +45,46 @@ namespace Markdown.Rendering
                     $"No conversion rule for leaf node {node}. {exception.Message}",
                     exception);
             }
+        }
+
+        private void InitLeafConversionTable()
+        {
+            leafConversionTable = new Dictionary<Type, Func<INode, IHtmlContent>>
+            {
+                {typeof(TextNode), node => new HtmlTextContent(((TextNode)node).Text)},
+                {typeof(EscapedTextNode), node => new HtmlEscapedTextContent(((EscapedTextNode)node).Text)},
+                {typeof(NewLineNode), node => new HtmlNewLineContent()}
+            };
+        }
+
+        private void InitInternalConversionTable()
+        {
+            internalConversionTable = new Dictionary<Type, Func<INode, IHtmlTag>>
+            {
+                {
+                    typeof(ParagraphNode), node => new BaseHtmlTag("p")
+                        .AddAttributes(CommonAttributes)
+                },
+                {
+                    typeof(EmphasisModificatorNode), node => new BaseHtmlTag("em")
+                        .AddAttributes(CommonAttributes)
+                },
+                {
+                    typeof(StrongModificatorNode), node => new BaseHtmlTag("strong")
+                        .AddAttributes(CommonAttributes)
+                },
+                {
+                    typeof(CodeModificatorNode), node => new BaseHtmlTag("pre")
+                        .AddAttributes(CommonAttributes)
+                },
+                {typeof(GroupNode), node => new HtmlEmptyTag()},
+                {
+                    typeof(LinkNode),
+                    node =>
+                        new BaseHtmlTag("a", new HtmlAttribute("href", ((LinkNode)node).Reference))
+                            .AddAttributes(CommonAttributes)
+                }
+            };
         }
     }
 }
