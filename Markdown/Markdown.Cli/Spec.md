@@ -2,7 +2,7 @@
 
 You can simply _emphasize_ any string with __next__ available modificators: \_, \_\_, \*, \*\*.
 
-`You can simply \_emphasize\_ any string with \_\_next\_\_ available modificators: \\\_, \\\_\\\_, \\\*, \\\*\\\*.`
+`You can simply _emphasize_ any string with __next__ available modificators: \_, \_\_, \*, \*\*.`
 
 If you do not want to apply modificators - simply escape it with \\ character!
 
@@ -16,6 +16,11 @@ int main()
 	return 0;
 }`
 
+	You can also simply indent
+	you code with tabulation (\t)
+	or four spaces and it will be
+	well-formated!
+
 There is a little surpirse - you can make your modificators nested!  
 *You will get **something like this***
 
@@ -25,8 +30,8 @@ I don't want to disappoint you, but in this simple parser you can find many disa
 
 I want enumerate some example of such bad cases:
 
-1. You can't parse triple-modificators like this: `\*\*\*Be careful! Very angry dog!\*\*\*` 
-But you can use next hack for this modificator: `\_\*\*It works!\*\*\_`
+1. You can't parse triple-modificators like this: `***Be careful! Very angry dog!***` 
+But you can use next hack for this modificator: `_**It works!**_`
 
 2. Your code must be surrounded with spaces. So, you can't write something like this:
 

@@ -341,6 +341,20 @@ text";
         }
 
         [Test]
+        public void TestCodeIndented()
+        {
+            var text = @"    a
+    b";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(Code(Escaped("a"), Escaped(Environment.NewLine), Escaped("b"))
+                )
+            );
+        }
+
+        [Test]
         public void TwoLineBreaks_SeparatesParagraphs()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
@@ -385,7 +399,7 @@ text";
         }
 
         [Test]
-        public void WhiteSpaceSymbols_BeforeParagraph_Trimmed()
+        public void WhiteSpaceSymbols_BeforeParagraph_NotTrimmed()
         {
             var text = "   new paragraph";
 
@@ -393,7 +407,7 @@ text";
 
             parsed.Should().Be(
                 Group(
-                    Paragraph(Text("new paragraph"))
+                    Paragraph(Text(text))
                 )
             );
         }

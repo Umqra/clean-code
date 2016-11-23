@@ -46,7 +46,21 @@ namespace Markdown.Parsing.Tokenizer
                    TryParseNewLineToken() ?? 
                    TryParseModificator("__", "**", "_", "*", "`") ??
                    TryParseLinkTokens() ??
+                   TryParseIndentToken() ?? 
                    new MdToken(LookAtString(1)).With(Md.PlainText);
+        }
+
+        private IMdToken TryParseIndentToken()
+        {
+            var previous = LookBehind(1);
+            if (previous.HasValue && previous.Value != '\n')
+                return null;
+            if (CurrentSymbol == '\t')
+                return new MdToken(LookAtString(1)).With(Md.Indent);
+            var prefix = LookAtString(4);
+            if (prefix.Length == 4 && prefix.All(char.IsWhiteSpace))
+                return new MdToken(prefix).With(Md.Indent);
+            return null;
         }
 
         private IMdToken TryParseNewLineToken()

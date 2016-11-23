@@ -14,5 +14,6 @@
         LinkText,
         Header,
         NewLine,
+        Indent
     }
 }

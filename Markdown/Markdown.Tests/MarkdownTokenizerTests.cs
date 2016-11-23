@@ -75,7 +75,7 @@ namespace Markdown.Tests
         private readonly string twoSpacesNewLine = "  " + Environment.NewLine;
         private readonly string twoLineBreaksNewLine = Environment.NewLine + Environment.NewLine;
 
-        private IEnumerable<IMdToken> NewLine(string text)
+        private IEnumerable<IMdToken> Break(string text)
         {
             yield return new MdToken(text).With(Md.Break);
         }
@@ -213,6 +213,38 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestIndentToken_WithFourSpaces()
+        {
+            var text = "    text";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("    ", Md.Indent), PlainText("text")
+            );
+        }
+
+        [Test]
+        public void TestIndentToken_WithTabulation()
+        {
+            var text = "\ttext";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("\t", Md.Indent), PlainText("text"));
+        }
+
+        [Test]
+        public void TestIndentToken_AfterNewLine()
+        {
+            var text = @"a
+    b";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a"), Token(Environment.NewLine, Md.NewLine), Token("    ", Md.Indent), PlainText("b"));
+        }
+
+        [Test]
         public void TestMatchedLinkTextTokens()
         {
             var text = "[link]";
@@ -248,16 +280,6 @@ namespace Markdown.Tests
                 Token("##", Md.Header),
                 PlainText("header")
             );
-        }
-
-        [Test]
-        public void TooMuchHeaderTokens_Ignored()
-        {
-            var text = "####### header";
-            SetUpTokenizer(text);
-
-            GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText(text));
         }
 
         [Test]
@@ -362,7 +384,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("hello"), NewLine(twoLineBreaksNewLine), PlainText("bye")
+                PlainText("hello"), Break(twoLineBreaksNewLine), PlainText("bye")
             );
         }
 
@@ -373,7 +395,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("hello"), NewLine(twoSpacesNewLine), PlainText("bye")
+                PlainText("hello"), Break(twoSpacesNewLine), PlainText("bye")
             );
         }
 
@@ -399,6 +421,16 @@ namespace Markdown.Tests
                 Token("(", Md.Open, Md.LinkReference),
                 PlainText("link")
             );
+        }
+
+        [Test]
+        public void TooMuchHeaderTokens_Ignored()
+        {
+            var text = "####### header";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText(text));
         }
     }
 }
