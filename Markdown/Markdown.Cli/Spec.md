@@ -1,4 +1,4 @@
-# Implemented Markdown syntax
+### Implemented Markdown syntax
 
 You can simply _emphasize_ any string with __next__ available modificators: \_, \_\_, \*, \*\*.
 

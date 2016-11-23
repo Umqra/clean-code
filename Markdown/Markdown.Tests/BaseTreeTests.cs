@@ -48,5 +48,10 @@ namespace Markdown.Tests
         {
             return new LinkNode(reference, text);
         }
+
+        protected INode Header(int headerType, params INode[] nodes)
+        {
+            return new HeaderNode(headerType, nodes);
+        }
     }
 }

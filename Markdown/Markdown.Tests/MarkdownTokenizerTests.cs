@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Markdown.Parsing;
 using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 using NUnit.Framework;
@@ -78,7 +77,7 @@ namespace Markdown.Tests
 
         private IEnumerable<IMdToken> NewLine(string text)
         {
-            yield return new MdToken(text).With(Md.NewLine);
+            yield return new MdToken(text).With(Md.Break);
         }
 
         [TestCase("sample", TestName = "When passed simple plain text")]
@@ -214,6 +213,66 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void TestMatchedLinkTextTokens()
+        {
+            var text = "[link]";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("[", Md.Open, Md.LinkText),
+                PlainText("link"),
+                Token("]", Md.Close, Md.LinkText)
+            );
+        }
+
+        [Test]
+        public void TestMatchedLinkUrlTokens()
+        {
+            var text = "(link)";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("(", Md.Open, Md.LinkReference),
+                PlainText("link"),
+                Token(")", Md.Close, Md.LinkReference)
+            );
+        }
+
+        [Test]
+        public void TestMultipleHeaderToken()
+        {
+            var text = "## header";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("##", Md.Header),
+                PlainText("header")
+            );
+        }
+
+        [Test]
+        public void TooMuchHeaderTokens_Ignored()
+        {
+            var text = "####### header";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText(text));
+        }
+
+        [Test]
+        public void TestSingleHeaderToken()
+        {
+            var text = "# header";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("#", Md.Header),
+                PlainText("header")
+            );
+        }
+
+        [Test]
         public void TestSingleUnderscore_AtTheEndOfSentence()
         {
             var text = "This is the _end_.";
@@ -319,40 +378,14 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestMatchedLinkTextTokens()
-        {
-            var text = "[link]";
-            SetUpTokenizer(text);
-
-            GetAllTokens().Should().BeEqualToFoldedSequence(
-                Token("[", Md.Open, Md.LinkText), 
-                PlainText("link"),
-                Token("]", Md.Close, Md.LinkText)
-            );
-        }
-        
-        [Test]
         public void TestUnmatchedLinkTextTokens()
         {
             var text = "[link";
             SetUpTokenizer(text);
-            
+
             GetAllTokens().Should().BeEqualToFoldedSequence(
                 Token("[", Md.Open, Md.LinkText),
                 PlainText("link")
-                );
-        }
-
-        [Test]
-        public void TestMatchedLinkUrlTokens()
-        {
-            var text = "(link)";
-            SetUpTokenizer(text);
-
-            GetAllTokens().Should().BeEqualToFoldedSequence(
-                Token("(", Md.Open, Md.LinkReference),
-                PlainText("link"),
-                Token(")", Md.Close, Md.LinkReference)
             );
         }
 
@@ -365,7 +398,7 @@ namespace Markdown.Tests
             GetAllTokens().Should().BeEqualToFoldedSequence(
                 Token("(", Md.Open, Md.LinkReference),
                 PlainText("link")
-                );
+            );
         }
     }
 }

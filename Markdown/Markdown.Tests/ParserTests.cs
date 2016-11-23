@@ -48,6 +48,7 @@ namespace Markdown.Tests
         public void Backticks_ShouldIgnoreModificators()
         {
             var text = "a `__b__` c";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
@@ -73,6 +74,7 @@ namespace Markdown.Tests
         public void BoldInItalic_ShouldBeParsed()
         {
             var text = "_italic __bold__ end_";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
@@ -84,21 +86,7 @@ namespace Markdown.Tests
                 )
             );
         }
-        
-        [Test]
-        public void PairedModificators_ShouldNotParsed_IfBordersWithPunctuation()
-        {
-            var text = "__*hello!*__";
 
-            var parsed = ParseParagraph(text);
-
-            parsed.Should().Be(
-                Paragraph(StrongModificator(
-                    Text("*"), Text("hello!*")
-                ))
-            );
-        }
-        
         [Test]
         public void BoldItalic_ShouldParsed_WhenDifferentTypeUsed()
         {
@@ -117,6 +105,7 @@ namespace Markdown.Tests
         public void BoldUnderscore_ShouldBeParsed()
         {
             var text = "__sample text__";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(StrongModificator(Text("sample text"))));
@@ -126,6 +115,7 @@ namespace Markdown.Tests
         public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsed()
         {
             var text = "__bold _still bold end__";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
@@ -139,6 +129,7 @@ namespace Markdown.Tests
         public void ConsecutiveModificators_ShouldBeParsed()
         {
             var text = "_first_ __second__ _third_";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
@@ -156,6 +147,7 @@ namespace Markdown.Tests
         public void EscapedCharacters_ShouldBeParsed()
         {
             var text = @"hi \_\_!";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
@@ -165,9 +157,22 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void HeaderNotTrimTrailingHashes()
+        {
+            var text = "## header ####";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(2, Text("header ####")))
+            );
+        }
+
+        [Test]
         public void ItalicInBold_ShouldBeParsed()
         {
             var text = "__bold _italic_ end__";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
@@ -184,6 +189,7 @@ namespace Markdown.Tests
         public void ItalicUnderscore_ShouldBeParsed()
         {
             var text = "_sample text_";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
@@ -203,9 +209,36 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void ManyHeaderTokens_ShouldParsed()
+        {
+            var text = "## header";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(2, Text("header")))
+            );
+        }
+
+        [Test]
+        public void ManyNewLines_ShouldBreakHeader()
+        {
+            var text = @"# header
+
+text";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(1, Text("header")), Paragraph(Text("text")))
+            );
+        }
+
+        [Test]
         public void ManyOpenModificators_ShouldAllBeBroken()
         {
             var text = "a _b _c d _e";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
@@ -221,9 +254,23 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void NewLine_ShouldBreakHeader()
+        {
+            var text = @"# header
+text";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(1, Text("header")), Paragraph(Text("text")))
+            );
+        }
+
+        [Test]
         public void NotPairedUnderscore_ShouldNotModifyText()
         {
             var text = "_a";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(Text("_"), Text("a")));
@@ -258,18 +305,46 @@ namespace Markdown.Tests
         }
 
         [Test]
+        public void PairedModificators_ShouldNotParsed_IfBordersWithPunctuation()
+        {
+            var text = "__*hello!*__";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(StrongModificator(
+                    Text("*"), Text("hello!*")
+                ))
+            );
+        }
+
+        [Test]
         public void SimpleText_ShouldBeParsed()
         {
             var text = "sample text";
+
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(Text(text)));
         }
 
         [Test]
+        public void SingleHeaderToken_ShouldParsed()
+        {
+            var text = "# header";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(1, Text("header")))
+            );
+        }
+
+        [Test]
         public void TwoLineBreaks_SeparatesParagraphs()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
+
             var parsed = Parse(text);
 
             parsed.Should().Be(
@@ -284,6 +359,7 @@ namespace Markdown.Tests
         public void TwoSpacesAtTheEndOfLine_SeparatesParagraph()
         {
             var text = $"hello  {Environment.NewLine}bye";
+
             var parsed = Parse(text);
 
             parsed.Should().Be(
@@ -298,6 +374,7 @@ namespace Markdown.Tests
         public void WhiteSpaceSymbols_AfterParagraph_NotTrimmed()
         {
             var text = "new paragraph    ";
+
             var parsed = Parse(text);
 
             parsed.Should().Be(
@@ -311,6 +388,7 @@ namespace Markdown.Tests
         public void WhiteSpaceSymbols_BeforeParagraph_Trimmed()
         {
             var text = "   new paragraph";
+
             var parsed = Parse(text);
 
             parsed.Should().Be(

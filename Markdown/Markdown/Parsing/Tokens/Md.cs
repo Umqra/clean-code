@@ -9,8 +9,10 @@
         Code,
         Escaped,
         PlainText,
-        NewLine,
+        Break,
         LinkReference,
-        LinkText
+        LinkText,
+        Header,
+        NewLine,
     }
 }

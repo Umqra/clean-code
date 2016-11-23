@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing.Tokenizer
 {
     public sealed class MarkdownTokenizer : BaseTokenizer<IMdToken>
     {
+        private const int HeaderTokenMaxSize = 6;
+
         private static readonly Dictionary<string, Md> modificatorAttribute =
             new Dictionary<string, Md>
             {
@@ -37,11 +40,33 @@ namespace Markdown.Parsing.Tokenizer
         //TODO: Poor performance because of many-many CharacterToken objects
         private IMdToken ParseToken()
         {
-            return TryParseEscapedCharacter() ??
-                   TryParseNewLineToken() ??
+            return TryParseHeaderToken() ??
+                   TryParseEscapedCharacter() ??
+                   TryParseBreakParagraphToken() ??
+                   TryParseNewLineToken() ?? 
                    TryParseModificator("__", "**", "_", "*", "`") ??
                    TryParseLinkTokens() ??
                    new MdToken(LookAtString(1)).With(Md.PlainText);
+        }
+
+        private IMdToken TryParseNewLineToken()
+        {
+            return (TryParseSimpleToken("\n") ?? TryParseSimpleToken(Environment.NewLine))?.With(Md.NewLine);
+        }
+
+        private IMdToken TryParseHeaderToken()
+        {
+            var previous = LookBehind(1);
+            if (previous.HasValue && previous.Value != '\n')
+                return null;
+            var prefix = LookAtString(HeaderTokenMaxSize + 1);
+            var leadHashes = new string(prefix.TakeWhile(c => c == '#').ToArray());
+            if (leadHashes.Length == 0 || leadHashes.Length == prefix.Length)
+                return null;
+            int skippedSpaces = 0;
+            while (LookAhead(leadHashes.Length + skippedSpaces) == ' ')
+                skippedSpaces++;
+            return new MdToken(leadHashes, leadHashes + new string(' ', skippedSpaces)).With(Md.Header);
         }
 
         private IMdToken TryParseLinkTokens()
@@ -57,10 +82,11 @@ namespace Markdown.Parsing.Tokenizer
             return null;
         }
 
-        private IMdToken TryParseNewLineToken()
+        private IMdToken TryParseBreakParagraphToken()
         {
-            return TryParseNewLineToken("  " + Environment.NewLine) ??
-                   TryParseNewLineToken(Environment.NewLine + Environment.NewLine);
+            return (TryParseSimpleToken("  " + Environment.NewLine) ??
+                    TryParseSimpleToken(Environment.NewLine + Environment.NewLine))
+                    ?.With(Md.Break);
         }
 
         private IMdToken TryParseModificator(params string[] modificators)
@@ -106,10 +132,10 @@ namespace Markdown.Parsing.Tokenizer
             return null;
         }
 
-        private IMdToken TryParseNewLineToken(string newLineToken)
+        private IMdToken TryParseSimpleToken(string token)
         {
-            if (LookAtString(newLineToken.Length) == newLineToken)
-                return new MdToken(newLineToken).With(Md.NewLine);
+            if (LookAtString(token.Length) == token)
+                return new MdToken(token);
             return null;
         }
     }

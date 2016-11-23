@@ -83,6 +83,14 @@ namespace Markdown.Rendering
                     node =>
                         new BaseHtmlTag("a", new HtmlAttribute("href", ((LinkNode)node).Reference))
                             .AddAttributes(CommonAttributes)
+                },
+                {
+                    typeof(HeaderNode),
+                    node =>
+                    {
+                        var header = (HeaderNode)node;
+                        return new BaseHtmlTag($"h{header.HeaderType}").AddAttributes(CommonAttributes);
+                    }
                 }
             };
         }
