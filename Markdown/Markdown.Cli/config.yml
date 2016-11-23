@@ -1,0 +1,5 @@
+# Markdown parser configuration file
+input_filename: Spec.md
+output_filename: Spec.html
+html_filename: template.html
+injected_html_element: "#markdown"

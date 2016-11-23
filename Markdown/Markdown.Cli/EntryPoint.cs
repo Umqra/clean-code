@@ -66,7 +66,6 @@ namespace Markdown.Cli
             else
             {
                 var templateDom = new HtmlParser().Parse(File.OpenRead(options.HtmlFilename));
-                Console.WriteLine(templateDom.QuerySelector(options.InjectedHtmlElement).OuterHtml);
                 templateDom.QuerySelector(options.InjectedHtmlElement).InnerHtml = htmlMarkup;
 
                 File.WriteAllText(options.OutputFilename, templateDom.DocumentElement.OuterHtml);
@@ -98,13 +97,11 @@ namespace Markdown.Cli
             parser
                 .Setup(arg => arg.InputFilename)
                 .As('i', "input")
-                .Required()
                 .WithDescription("Input file with markdown markup");
 
             parser
                 .Setup(arg => arg.OutputFilename)
                 .As('o', "output")
-                .Required()
                 .WithDescription("Output file for generated html-markup");
 
             parser
@@ -121,6 +118,11 @@ namespace Markdown.Cli
                 .Setup(arg => arg.InjectedHtmlElement)
                 .As("inject_el")
                 .WithDescription(@"Element in HTML DOM in which will be injected generated markup. You can use well-known css-selectors for specifying needed element. For example: --inject_el #markdown, --inject_el body, --inject_el .markdown_class");
+
+            parser
+                .Setup(arg => arg.ConfigFilename)
+                .As('c', "config")
+                .WithDescription("Path to configu file in YAML format");
 
             parser.SetupHelp("h", "help", "?").Callback(text => Console.WriteLine(text));
             return parser;

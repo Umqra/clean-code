@@ -1,4 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using YamlDotNet.Core;
+using YamlDotNet.RepresentationModel;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Markdown.Cli
 {
@@ -9,13 +15,45 @@ namespace Markdown.Cli
         public string BaseUrl { get; set; }
         public string HtmlFilename { get; set; }
         public string InjectedHtmlElement { get; set; }
+        public string ConfigFilename { get; set; }
 
         public CliOptions TryInitialize()
         {
+            TryInitializeConfigFile();
+
             TryInitializeInputFile();
             TryInitializeOutputFile();
             TryInitializeHtmlFile();
             return this;
+        }
+
+        private void TryInitializeConfigFile()
+        {
+            if (ConfigFilename == null)
+                return;
+            try
+            {
+                FileExtensions.TryGetReadAccess(ConfigFilename);
+            }
+            catch (Exception exception)
+            {
+                throw new ArgumentException($"Can't read config file {ConfigFilename}", exception);
+            }
+
+            try
+            {
+                var deserializer = new DeserializerBuilder().WithNamingConvention(new UnderscoredNamingConvention()).Build();
+                var options = deserializer.Deserialize<CliOptions>(new StreamReader(File.OpenRead(ConfigFilename)));
+                InputFilename = InputFilename ?? options.InputFilename;
+                OutputFilename = OutputFilename ?? options.OutputFilename;
+                BaseUrl = BaseUrl ?? options.BaseUrl;
+                HtmlFilename = HtmlFilename ?? options.HtmlFilename;
+                InjectedHtmlElement = InjectedHtmlElement ?? options.InjectedHtmlElement;
+            }
+            catch (Exception exception)
+            {
+                throw new YamlException($"Exception during parseing YAML configuartion file {ConfigFilename}", exception);
+            }            
         }
 
         private void TryInitializeHtmlFile()
