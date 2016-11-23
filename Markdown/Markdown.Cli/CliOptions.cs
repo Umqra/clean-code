@@ -42,7 +42,8 @@ namespace Markdown.Cli
 
             try
             {
-                var deserializer = new DeserializerBuilder().WithNamingConvention(new UnderscoredNamingConvention()).Build();
+                var deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(new UnderscoredNamingConvention()).Build();
                 var options = deserializer.Deserialize<CliOptions>(new StreamReader(File.OpenRead(ConfigFilename)));
                 InputFilename = InputFilename ?? options.InputFilename;
                 OutputFilename = OutputFilename ?? options.OutputFilename;

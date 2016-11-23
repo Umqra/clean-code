@@ -62,7 +62,9 @@ namespace Markdown.Cli
         private static void WriteResult(CliOptions options, string htmlMarkup)
         {
             if (options.HtmlFilename == null)
+            {
                 File.WriteAllText(options.OutputFilename, htmlMarkup);
+            }
             else
             {
                 var templateDom = new HtmlParser().Parse(File.OpenRead(options.HtmlFilename));
@@ -87,7 +89,8 @@ namespace Markdown.Cli
                 nodeRenderer
             );
             if (options.BaseUrl != null)
-                htmlRenderer = htmlRenderer.WithModificators(new TransformTreeVisitor(new BaseUrlTransformer(options.BaseUrl)));
+                htmlRenderer =
+                    htmlRenderer.WithModificators(new TransformTreeVisitor(new BaseUrlTransformer(options.BaseUrl)));
             return htmlRenderer;
         }
 
@@ -117,7 +120,8 @@ namespace Markdown.Cli
             parser
                 .Setup(arg => arg.InjectedHtmlElement)
                 .As("inject_el")
-                .WithDescription(@"Element in HTML DOM in which will be injected generated markup. You can use well-known css-selectors for specifying needed element. For example: --inject_el #markdown, --inject_el body, --inject_el .markdown_class");
+                .WithDescription(
+                    @"Element in HTML DOM in which will be injected generated markup. You can use well-known css-selectors for specifying needed element. For example: --inject_el #markdown, --inject_el body, --inject_el .markdown_class");
 
             parser
                 .Setup(arg => arg.ConfigFilename)

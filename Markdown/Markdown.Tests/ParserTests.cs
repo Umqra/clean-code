@@ -40,7 +40,7 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Text("a "), Code(Text("b")), Text(" c"))
+                    Text("a "), Code(Escaped("b")), Text(" c"))
             );
         }
 
@@ -52,7 +52,7 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Text("a "), Code(Text("_"), Text("_"), Text("b"), Text("_"), Text("_")), Text(" c"))
+                    Text("a "), Code(Escaped("_"), Escaped("_"), Escaped("b"), Escaped("_"), Escaped("_")), Text(" c"))
             );
         }
 
@@ -65,7 +65,7 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Code(Text("a"), Text(" "), Text("b"), Text(" "), Text("c"))
+                    Code(Escaped("a"), Escaped(" "), Escaped("b"), Escaped(" "), Escaped("c"))
                 ));
         }
 
