@@ -43,5 +43,15 @@ namespace Markdown.Tests
         {
             return new CodeModificatorNode(nodes);
         }
+
+        protected INode Link(string reference, INode text)
+        {
+            return new LinkNode(reference, text);
+        }
+
+        protected INode Header(int headerType, params INode[] nodes)
+        {
+            return new HeaderNode(headerType, nodes);
+        }
     }
 }

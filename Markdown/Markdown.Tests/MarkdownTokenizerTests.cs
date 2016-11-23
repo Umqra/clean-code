@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Markdown.Parsing;
+using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 using NUnit.Framework;
 
@@ -10,7 +10,7 @@ namespace Markdown.Tests
     [TestFixture]
     internal class MarkdownTokenizerTests
     {
-        public BaseTokenizer<IMdToken> Tokenizer { get; set; }
+        public ITokenizer<IMdToken> Tokenizer { get; set; }
 
         public void SetUpTokenizer(string text)
         {
@@ -19,13 +19,16 @@ namespace Markdown.Tests
 
         public IEnumerable<IMdToken> GetAllTokens()
         {
-            while (true)
+            while (!Tokenizer.AtEnd)
             {
-                var node = Tokenizer.TakeToken();
-                if (node == null)
-                    yield break;
-                yield return node;
+                yield return Tokenizer.CurrentToken;
+                Tokenizer = Tokenizer.Advance();
             }
+        }
+
+        private IEnumerable<IMdToken> Token(string text, params Md[] attributes)
+        {
+            yield return new MdToken(text).With(attributes);
         }
 
         private IEnumerable<IMdToken> Escaped(string text)
@@ -72,9 +75,9 @@ namespace Markdown.Tests
         private readonly string twoSpacesNewLine = "  " + Environment.NewLine;
         private readonly string twoLineBreaksNewLine = Environment.NewLine + Environment.NewLine;
 
-        private IEnumerable<IMdToken> NewLine(string text)
+        private IEnumerable<IMdToken> Break(string text)
         {
-            yield return new MdToken(text).With(Md.NewLine);
+            yield return new MdToken(text).With(Md.Break);
         }
 
         [TestCase("sample", TestName = "When passed simple plain text")]
@@ -188,7 +191,6 @@ namespace Markdown.Tests
             );
         }
 
-
         [Test]
         public void TestDoubleUnderscoreSurroundingWithSpaces()
         {
@@ -207,6 +209,88 @@ namespace Markdown.Tests
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
                 PlainText("a"), Escaped("\\"), Escaped("_")
+            );
+        }
+
+        [Test]
+        public void TestIndentToken_WithFourSpaces()
+        {
+            var text = "    text";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("    ", Md.Indent), PlainText("text")
+            );
+        }
+
+        [Test]
+        public void TestIndentToken_WithTabulation()
+        {
+            var text = "\ttext";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("\t", Md.Indent), PlainText("text"));
+        }
+
+        [Test]
+        public void TestIndentToken_AfterNewLine()
+        {
+            var text = @"a
+    b";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText("a"), Token(Environment.NewLine, Md.NewLine), Token("    ", Md.Indent), PlainText("b"));
+        }
+
+        [Test]
+        public void TestMatchedLinkTextTokens()
+        {
+            var text = "[link]";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("[", Md.Open, Md.LinkText),
+                PlainText("link"),
+                Token("]", Md.Close, Md.LinkText)
+            );
+        }
+
+        [Test]
+        public void TestMatchedLinkUrlTokens()
+        {
+            var text = "(link)";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("(", Md.Open, Md.LinkReference),
+                PlainText("link"),
+                Token(")", Md.Close, Md.LinkReference)
+            );
+        }
+
+        [Test]
+        public void TestMultipleHeaderToken()
+        {
+            var text = "## header";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("##", Md.Header),
+                PlainText("header")
+            );
+        }
+
+        [Test]
+        public void TestSingleHeaderToken()
+        {
+            var text = "# header";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("#", Md.Header),
+                PlainText("header")
             );
         }
 
@@ -300,7 +384,7 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("hello"), NewLine(twoLineBreaksNewLine), PlainText("bye")
+                PlainText("hello"), Break(twoLineBreaksNewLine), PlainText("bye")
             );
         }
 
@@ -311,8 +395,42 @@ namespace Markdown.Tests
             SetUpTokenizer(text);
 
             GetAllTokens().Should().BeEqualToFoldedSequence(
-                PlainText("hello"), NewLine(twoSpacesNewLine), PlainText("bye")
+                PlainText("hello"), Break(twoSpacesNewLine), PlainText("bye")
             );
+        }
+
+        [Test]
+        public void TestUnmatchedLinkTextTokens()
+        {
+            var text = "[link";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("[", Md.Open, Md.LinkText),
+                PlainText("link")
+            );
+        }
+
+        [Test]
+        public void TestUnmatchedLinkUrlTokens()
+        {
+            var text = "(link";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                Token("(", Md.Open, Md.LinkReference),
+                PlainText("link")
+            );
+        }
+
+        [Test]
+        public void TooMuchHeaderTokens_Ignored()
+        {
+            var text = "####### header";
+            SetUpTokenizer(text);
+
+            GetAllTokens().Should().BeEqualToFoldedSequence(
+                PlainText(text));
         }
     }
 }

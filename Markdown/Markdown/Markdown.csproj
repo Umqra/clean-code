@@ -32,6 +32,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\Facades\System.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -41,18 +44,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Parsing\BaseTokenizer.cs" />
+    <Compile Include="Parsing\Nodes\HeaderNode.cs" />
+    <Compile Include="Parsing\Nodes\LinkNode.cs" />
+    <Compile Include="Parsing\Tokenizer\BaseTokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
-    <Compile Include="Parsing\ITokenizer.cs" />
+    <Compile Include="Parsing\Tokenizer\BoundedTokenizer.cs" />
+    <Compile Include="Parsing\Tokenizer\ITokenizer.cs" />
+    <Compile Include="Parsing\MarkdownParsingResult.cs" />
+    <Compile Include="Parsing\Tokenizer\MarkdownTokenizerExtensoins.cs" />
     <Compile Include="Parsing\Nodes\CodeModificatorNode.cs" />
     <Compile Include="Parsing\Tokens\Md.cs" />
     <Compile Include="Parsing\Tokens\MdToken.cs" />
+    <Compile Include="Parsing\Tokens\TokenExtensions.cs" />
+    <Compile Include="Parsing\Visitors\BaseUrlTransformer.cs" />
     <Compile Include="Parsing\Visitors\ContextTreeVisitor.cs" />
-    <Compile Include="Parsing\ITokenizerFactory.cs" />
+    <Compile Include="Parsing\Tokenizer\ITokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\StrongModificatorNode.cs" />
     <Compile Include="Parsing\Visitors\BaseTreeContext.cs" />
+    <Compile Include="Parsing\Visitors\INodeTransformer.cs" />
     <Compile Include="Parsing\Visitors\ITreeContext.cs" />
-    <Compile Include="Parsing\MarkdownTokenizerFactory.cs" />
+    <Compile Include="Parsing\Tokenizer\MarkdownTokenizerFactory.cs" />
     <Compile Include="Parsing\Nodes\IInternalNode.cs" />
     <Compile Include="Parsing\Nodes\EscapedTextNode.cs" />
     <Compile Include="Parsing\Nodes\INode.cs" />
@@ -65,15 +76,14 @@
     <Compile Include="Parsing\Nodes\SequenceExtensions.cs" />
     <Compile Include="Parsing\Nodes\ParagraphNode.cs" />
     <Compile Include="Parsing\Nodes\TextNode.cs" />
-    <Compile Include="Parsing\MarkdownTokenizer.cs" />
+    <Compile Include="Parsing\Tokenizer\MarkdownTokenizer.cs" />
+    <Compile Include="Parsing\Visitors\TransformTreeVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\HtmlEntities\HtmlCodeTag.cs" />
-    <Compile Include="Rendering\HtmlEntities\HtmlEmphasisTag.cs" />
+    <Compile Include="Rendering\HtmlEntities\BaseHtmlTag.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlAttribute.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEmptyTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEscapedTextContent.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlNewLineContent.cs" />
-    <Compile Include="Rendering\HtmlEntities\HtmlParagraphTag.cs" />
-    <Compile Include="Rendering\HtmlEntities\HtmlStrongTag.cs" />
     <Compile Include="Rendering\HtmlRenderContext.cs" />
     <Compile Include="Rendering\NodeHtmlRenderer.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlTextContent.cs" />

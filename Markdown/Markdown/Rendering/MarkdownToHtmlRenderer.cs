@@ -1,13 +1,17 @@
-﻿using Markdown.Parsing;
+﻿using System.Collections.Generic;
+using Markdown.Parsing;
+using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
+using Markdown.Parsing.Visitors;
 
 namespace Markdown.Rendering
 {
     public class MarkdownToHtmlRenderer
     {
-        public MarkdownParser Parser { get; set; }
-        public ITokenizerFactory<IMdToken> Tokenizer { get; set; }
-        public INodeRenderer NodeRenderer { get; set; }
+        public List<INodeVisitor> Modificators;
+        public MarkdownParser Parser { get; }
+        public ITokenizerFactory<IMdToken> Tokenizer { get; }
+        public INodeRenderer NodeRenderer { get; }
 
         public MarkdownToHtmlRenderer(MarkdownParser parser, ITokenizerFactory<IMdToken> tokenizer,
             INodeRenderer nodeRenderer)
@@ -15,11 +19,21 @@ namespace Markdown.Rendering
             Parser = parser;
             Tokenizer = tokenizer;
             NodeRenderer = nodeRenderer;
+            Modificators = new List<INodeVisitor>();
+        }
+
+        public MarkdownToHtmlRenderer WithModificators(params INodeVisitor[] modificators)
+        {
+            Modificators.AddRange(modificators);
+            return this;
         }
 
         public string Render(string text)
         {
-            return NodeRenderer.Render(Parser.Parse(new MarkdownTokenizer(text)));
+            var tree = Parser.Parse(Tokenizer.CreateTokenizer(text)).Parsed;
+            foreach (var modificator in Modificators)
+                modificator.Visit(tree);
+            return NodeRenderer.Render(tree);
         }
     }
 }

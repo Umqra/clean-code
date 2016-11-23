@@ -3,7 +3,8 @@
     public interface IMdToken
     {
         string Text { get; }
-        bool Has(params Md[] attribute);
-        IMdToken With(params Md[] attribute);
+        string UnderlyingText { get; }
+        bool Has(params Md[] attributes);
+        IMdToken With(params Md[] attributes);
     }
 }

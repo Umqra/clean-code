@@ -1,6 +1,8 @@
 ﻿using System;
 using FluentAssertions;
 using Markdown.Parsing;
+using Markdown.Parsing.Nodes;
+using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 using NUnit.Framework;
 
@@ -16,14 +18,64 @@ namespace Markdown.Tests
             TokenizerFactory = new MarkdownTokenizerFactory();
         }
 
+        private INode Parse(string text)
+        {
+            return Parser.Parse(TokenizerFactory.CreateTokenizer(text)).Parsed;
+        }
+
+        private INode ParseParagraph(string text)
+        {
+            return Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text)).Parsed;
+        }
+
         public MarkdownParser Parser { get; set; }
         public ITokenizerFactory<IMdToken> TokenizerFactory { get; set; }
+
+        [Test]
+        public void Backticks_ShouldBeParsed()
+        {
+            var text = "a `b` c";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "), Code(Escaped("b")), Text(" c"))
+            );
+        }
+
+        [Test]
+        public void Backticks_ShouldIgnoreModificators()
+        {
+            var text = "a `__b__` c";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("a "), Code(Escaped("_"), Escaped("_"), Escaped("b"), Escaped("_"), Escaped("_")), Text(" c"))
+            );
+        }
+
+        [Test]
+        public void BackticksContents_ShouldBeParsed_CharByChar()
+        {
+            var text = "`a b c`";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Code(Escaped("a"), Escaped(" "), Escaped("b"), Escaped(" "), Escaped("c"))
+                ));
+        }
 
         [Test]
         public void BoldInItalic_ShouldBeParsed()
         {
             var text = "_italic __bold__ end_";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -36,69 +88,49 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsed()
+        public void BoldItalic_ShouldParsed_WhenDifferentTypeUsed()
         {
-            var text = "__bold _still bold end__";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var text = "__*hello*__";
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
-                Paragraph(
-                    StrongModificator(Text("bold "), Group(Text("_"), Text("still bold end")))
-                )
+                Paragraph(StrongModificator(EmphasisModificator(
+                    Text("hello")
+                )))
             );
         }
 
         [Test]
-        public void ItalicInBold_ShouldBeParsed()
-        {
-            var text = "__bold _italic_ end__";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
-
-            parsed.Should().Be(
-                Paragraph(
-                    StrongModificator(
-                        Text("bold "),
-                        EmphasisModificator(Text("italic")),
-                        Text(" end"))
-                )
-            );
-        }
-
-        [Test]
-        public void NotPairedUnderscore_ShouldNotModifyText()
-        {
-            var text = "_a";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
-
-            parsed.Should().Be(Paragraph(Group(Text("_"), Text("a"))));
-        }
-
-        [Test]
-        public void TestBackticks()
-        {
-            var text = "a `b` c";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
-
-            parsed.Should().Be(
-                Paragraph(
-                    Text("a "), Code(Text("b")), Text(" c"))
-            );
-        }
-
-        [Test]
-        public void TestBoldUnderscore()
+        public void BoldUnderscore_ShouldBeParsed()
         {
             var text = "__sample text__";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(StrongModificator(Text("sample text"))));
         }
 
         [Test]
-        public void TestConsecutiveModificators()
+        public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsed()
+        {
+            var text = "__bold _still bold end__";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    StrongModificator(Text("bold "), Text("_"), Text("still bold end"))
+                )
+            );
+        }
+
+        [Test]
+        public void ConsecutiveModificators_ShouldBeParsed()
         {
             var text = "_first_ __second__ _third_";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
@@ -112,82 +144,222 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestEscapedCharacters()
+        public void EscapedCharacters_ShouldBeParsed()
         {
             var text = @"hi \_\_!";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
-                    Group(
-                        Text("h"), Text("i"), Text(" "), Escaped("_"), Escaped("_"), Text("!"))
+                    Group(Text("hi "), Escaped("_"), Escaped("_"), Text("!")))
+            );
+        }
+
+        [Test]
+        public void HeaderNotTrimTrailingHashes()
+        {
+            var text = "## header ####";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(2, Text("header ####")))
+            );
+        }
+
+        [Test]
+        public void ItalicInBold_ShouldBeParsed()
+        {
+            var text = "__bold _italic_ end__";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    StrongModificator(
+                        Text("bold "),
+                        EmphasisModificator(Text("italic")),
+                        Text(" end"))
                 )
             );
         }
 
         [Test]
-        public void TestItalicUnderscore()
+        public void ItalicUnderscore_ShouldBeParsed()
         {
             var text = "_sample text_";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
         }
 
         [Test]
-        public void TestManyOpenModificators()
+        public void LinkElement_ShouldBeParsed()
+        {
+            var text = "[link](/index.html)";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Link("/index.html", Text("link"))
+                ));
+        }
+
+        [Test]
+        public void ManyHeaderTokens_ShouldParsed()
+        {
+            var text = "## header";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(2, Text("header")))
+            );
+        }
+
+        [Test]
+        public void ManyNewLines_ShouldBreakHeader()
+        {
+            var text = @"# header
+
+text";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(1, Text("header")), Paragraph(Text("text")))
+            );
+        }
+
+        [Test]
+        public void ManyOpenModificators_ShouldAllBeBroken()
         {
             var text = "a _b _c d _e";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
                     Text("a "),
-                    Group(
-                        Text("_"),
-                        Text("b "),
-                        Group(
-                            Text("_"),
-                            Text("c d "),
-                            Group(Text("_"), Text("e"))
-                        )
-                    )
-                )
+                    Text("_"),
+                    Text("b "),
+                    Text("_"),
+                    Text("c d "),
+                    Text("_"),
+                    Text("e"))
             );
         }
 
         [Test]
-        public void TestModificatorInBackticks()
+        public void NewLine_ShouldBreakHeader()
         {
-            var text = "a `b _c_ d` e";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+            var text = @"# header
+text";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(1, Text("header")), Paragraph(Text("text")))
+            );
+        }
+
+        [Test]
+        public void NotPairedUnderscore_ShouldNotModifyText()
+        {
+            var text = "_a";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(Paragraph(Text("_"), Text("a")));
+        }
+
+        [Test]
+        public void OnlyLinkReferenceElement_ShouldNotModifyText()
+        {
+            var text = "(/index.html)";
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
                 Paragraph(
-                    Text("a "),
-                    Code(
-                        Text("b "),
-                        EmphasisModificator(Text("c")),
-                        Text(" d")),
-                    Text(" e")
+                    Text("("), Text("/index.html"), Text(")")
                 )
             );
         }
 
         [Test]
-        public void TestSimpleText()
+        public void OnlyLinkTextElement_ShouldNotModifyText()
+        {
+            var text = "[link]";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(
+                    Text("["), Text("link"), Text("]")
+                )
+            );
+        }
+
+        [Test]
+        public void PairedModificators_ShouldNotParsed_IfBordersWithPunctuation()
+        {
+            var text = "__*hello!*__";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(StrongModificator(
+                    Text("*"), Text("hello!*")
+                ))
+            );
+        }
+
+        [Test]
+        public void SimpleText_ShouldBeParsed()
         {
             var text = "sample text";
-            var parsed = Parser.ParseParagraph(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = ParseParagraph(text);
 
             parsed.Should().Be(Paragraph(Text(text)));
+        }
+
+        [Test]
+        public void SingleHeaderToken_ShouldParsed()
+        {
+            var text = "# header";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(Header(1, Text("header")))
+            );
+        }
+
+        [Test]
+        public void TestCodeIndented()
+        {
+            var text = @"    a
+    b";
+
+            var parsed = ParseParagraph(text);
+
+            parsed.Should().Be(
+                Paragraph(Code(Escaped("a"), Escaped(Environment.NewLine), Escaped("b"))
+                )
+            );
         }
 
         [Test]
         public void TwoLineBreaks_SeparatesParagraphs()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = Parse(text);
 
             parsed.Should().Be(
                 Group(
@@ -201,7 +373,8 @@ namespace Markdown.Tests
         public void TwoSpacesAtTheEndOfLine_SeparatesParagraph()
         {
             var text = $"hello  {Environment.NewLine}bye";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = Parse(text);
 
             parsed.Should().Be(
                 Group(
@@ -215,7 +388,8 @@ namespace Markdown.Tests
         public void WhiteSpaceSymbols_AfterParagraph_NotTrimmed()
         {
             var text = "new paragraph    ";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = Parse(text);
 
             parsed.Should().Be(
                 Group(
@@ -225,14 +399,15 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void WhiteSpaceSymbols_BeforeParagraph_Trimmed()
+        public void WhiteSpaceSymbols_BeforeParagraph_NotTrimmed()
         {
             var text = "   new paragraph";
-            var parsed = Parser.Parse(TokenizerFactory.CreateTokenizer(text));
+
+            var parsed = Parse(text);
 
             parsed.Should().Be(
                 Group(
-                    Paragraph(Text("new paragraph"))
+                    Paragraph(Text(text))
                 )
             );
         }
