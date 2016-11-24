@@ -40,7 +40,7 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Text("a "), Code(Escaped("b")), Text(" c"))
+                    Text("a "), CodeInline(Escaped("b")), Text(" c"))
             );
         }
 
@@ -53,7 +53,7 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Text("a "), Code(Escaped("_"), Escaped("_"), Escaped("b"), Escaped("_"), Escaped("_")), Text(" c"))
+                    Text("a "), CodeInline(Escaped("_"), Escaped("_"), Escaped("b"), Escaped("_"), Escaped("_")), Text(" c"))
             );
         }
 
@@ -66,7 +66,7 @@ namespace Markdown.Tests
 
             parsed.Should().Be(
                 Paragraph(
-                    Code(Escaped("a"), Escaped(" "), Escaped("b"), Escaped(" "), Escaped("c"))
+                    CodeInline(Escaped("a"), Escaped(" "), Escaped("b"), Escaped(" "), Escaped("c"))
                 ));
         }
 
@@ -346,11 +346,10 @@ text";
             var text = @"    a
     b";
 
-            var parsed = ParseParagraph(text);
+            var parsed = Parse(text);
 
             parsed.Should().Be(
-                Paragraph(Code(Escaped("a"), Escaped(Environment.NewLine), Escaped("b"))
-                )
+                Group(CodeBlock(Escaped("a"), Escaped(Environment.NewLine), Escaped("b")))
             );
         }
 

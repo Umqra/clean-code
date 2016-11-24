@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Parsing\Nodes\CodeInlineModificatorNode.cs" />
     <Compile Include="Parsing\Nodes\HeaderNode.cs" />
     <Compile Include="Parsing\Nodes\LinkNode.cs" />
     <Compile Include="Parsing\Tokenizer\BaseTokenizer.cs" />
@@ -52,7 +53,7 @@
     <Compile Include="Parsing\Tokenizer\ITokenizer.cs" />
     <Compile Include="Parsing\MarkdownParsingResult.cs" />
     <Compile Include="Parsing\Tokenizer\MarkdownTokenizerExtensoins.cs" />
-    <Compile Include="Parsing\Nodes\CodeModificatorNode.cs" />
+    <Compile Include="Parsing\Nodes\CodeBlockModificatorNode.cs" />
     <Compile Include="Parsing\Tokens\Md.cs" />
     <Compile Include="Parsing\Tokens\MdToken.cs" />
     <Compile Include="Parsing\Tokens\TokenExtensions.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Rendering\HtmlEntities\HtmlEmptyTag.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlEscapedTextContent.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlNewLineContent.cs" />
+    <Compile Include="Rendering\HtmlEntities\HtmlTagsSequence.cs" />
     <Compile Include="Rendering\HtmlRenderContext.cs" />
     <Compile Include="Rendering\NodeHtmlRenderer.cs" />
     <Compile Include="Rendering\HtmlEntities\HtmlTextContent.cs" />

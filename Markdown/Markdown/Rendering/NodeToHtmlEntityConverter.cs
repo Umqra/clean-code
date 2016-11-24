@@ -74,8 +74,12 @@ namespace Markdown.Rendering
                         .AddAttributes(CommonAttributes)
                 },
                 {
-                    typeof(CodeModificatorNode), node => new BaseHtmlTag("pre")
+                    typeof(CodeBlockModificatorNode), node =>
+                        new HtmlTagsSequence(new BaseHtmlTag("pre"), new BaseHtmlTag("code"))
                         .AddAttributes(CommonAttributes)
+                },
+                {
+                    typeof(CodeInlineModificatorNode), node => new BaseHtmlTag("code").AddAttributes(CommonAttributes)
                 },
                 {typeof(GroupNode), node => new HtmlEmptyTag()},
                 {

@@ -3,4 +3,4 @@ input: Spec.md
 output: Spec.html
 html_file: template.html
 inject_element: "#markdown"
-class: .markdown_el
+class: markdown_el

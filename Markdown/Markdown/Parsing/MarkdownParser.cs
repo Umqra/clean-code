@@ -16,7 +16,8 @@ namespace Markdown.Parsing
                 {
                     var skipped = t.UntilMatch(token => token.HasAny(Md.NewLine, Md.Break));
                     var header = skipped.IfSuccess(ParseHeader);
-                    var paragraph = header.IfFail(inner =>
+                    var code = header.IfFail(ParseBlockCode);
+                    var paragraph = code.IfFail(inner =>
                         ParseParagraph(
                             inner.UntilNotMatch(token => token.HasAny(Md.Header, Md.Break)
                             )));
@@ -65,7 +66,7 @@ namespace Markdown.Parsing
                 case Md.Strong:
                     return new StrongModificatorNode(nodes);
                 case Md.Code:
-                    return new CodeModificatorNode(nodes);
+                    return new CodeBlockModificatorNode(nodes);
                 default:
                     throw new ArgumentException($"Unknown modificator attribute: {modificatorAttribute}");
             }
@@ -73,12 +74,7 @@ namespace Markdown.Parsing
 
         private bool IsWhiteSpaceToken(IMdToken token)
         {
-            return token.Text.All(char.IsWhiteSpace);
-        }
-
-        private MarkdownParsingResult<IMdToken> SkipSingleToken(ITokenizer<IMdToken> tokenizer)
-        {
-            return tokenizer.Advance().SuccessWith(tokenizer.CurrentToken);
+            return token.Has(Md.PlainText) && token.Text.All(char.IsWhiteSpace);
         }
 
         private MarkdownParsingResult<List<IMdToken>> SkipWhiteSpaces(ITokenizer<IMdToken> tokenizer)
@@ -110,18 +106,13 @@ namespace Markdown.Parsing
         private MarkdownParsingResult<INode> ParseFormattedText(ITokenizer<IMdToken> tokenizer)
         {
             return ParseTextWithEscaped(tokenizer)
-                .IfFail(ParseCode)
+                .IfFail(ParseInlineCode)
                 .IfFail(ParseFormatModificator)
                 .IfFail(ParseLink)
                 .IfFail(ParseAnyTokenAsText);
         }
 
-        private MarkdownParsingResult<INode> ParseCode(ITokenizer<IMdToken> tokenizer)
-        {
-            return ParseCodeInBackticks(tokenizer).IfFail(ParseCodeIndented);
-        }
-
-        private MarkdownParsingResult<INode> ParseCodeIndented(ITokenizer<IMdToken> tokenizer)
+        private MarkdownParsingResult<INode> ParseBlockCode(ITokenizer<IMdToken> tokenizer)
         {
             var codeLines = ParseNodesUntilMatch(tokenizer, t =>
             {
@@ -144,7 +135,7 @@ namespace Markdown.Parsing
             if (!codeLines.Parsed.Any())
                 return tokenizer.Fail<INode>();
             var unpackedText = codeLines.Parsed.SelectMany(node => node);
-            return codeLines.Remainder.SuccessWith<INode>(new CodeModificatorNode(unpackedText));
+            return codeLines.Remainder.SuccessWith<INode>(new CodeBlockModificatorNode(unpackedText));
         }
 
         private MarkdownParsingResult<INode> ParsePlainText(ITokenizer<IMdToken> tokenizer)
@@ -177,7 +168,7 @@ namespace Markdown.Parsing
             return parsingResult.Remainder.SuccessWith(result);
         }
 
-        private MarkdownParsingResult<INode> ParseCodeInBackticks(ITokenizer<IMdToken> tokenizer)
+        private MarkdownParsingResult<INode> ParseInlineCode(ITokenizer<IMdToken> tokenizer)
         {
             var boundedTokenizer = tokenizer.UntilNotMatch(token => token.Has(Md.Close, Md.Code));
 
@@ -189,7 +180,7 @@ namespace Markdown.Parsing
                 .Match(token => token.Has(Md.Close, Md.Code)));
             if (close.Succeed)
             {
-                return close.Remainder.SuccessWith<INode>(new CodeModificatorNode(children.Parsed));
+                return close.Remainder.SuccessWith<INode>(new CodeInlineModificatorNode(children.Parsed));
             }
             return tokenizer.Fail<INode>();
         }

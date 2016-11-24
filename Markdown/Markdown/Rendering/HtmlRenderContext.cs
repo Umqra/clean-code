@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Markdown.Parsing.Nodes;
 using Markdown.Parsing.Visitors;
 using Markdown.Rendering.HtmlEntities;

@@ -43,11 +43,19 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void TestCodeNode()
+        public void TestCodeBlockNode()
         {
-            var node = Code(Text("sample"));
+            var node = CodeBlock(Text("sample"));
 
-            Render(node).Should().Be("<pre>sample</pre>");
+            Render(node).Should().Be("<pre><code>sample</code></pre>");
+        }
+
+        [Test]
+        public void TestCodeInlineNode()
+        {
+            var node = CodeInline(Text("sample"));
+
+            Render(node).Should().Be("<code>sample</code>");
         }
 
         [Test]

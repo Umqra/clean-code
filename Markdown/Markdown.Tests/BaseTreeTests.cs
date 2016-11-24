@@ -39,9 +39,14 @@ namespace Markdown.Tests
             return new EscapedTextNode(text);
         }
 
-        protected INode Code(params INode[] nodes)
+        protected INode CodeBlock(params INode[] nodes)
         {
-            return new CodeModificatorNode(nodes);
+            return new CodeBlockModificatorNode(nodes);
+        }
+
+        protected INode CodeInline(params INode[] nodes)
+        {
+            return new CodeInlineModificatorNode(nodes);
         }
 
         protected INode Link(string reference, INode text)
