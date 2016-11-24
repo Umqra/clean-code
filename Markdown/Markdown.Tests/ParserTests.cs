@@ -341,7 +341,7 @@ text";
         }
 
         [Test]
-        public void TestCodeIndented()
+        public void CodeBlockTest()
         {
             var text = @"    a
     b";
@@ -350,6 +350,33 @@ text";
 
             parsed.Should().Be(
                 Group(CodeBlock(Escaped("a"), Escaped(Environment.NewLine), Escaped("b")))
+            );
+        }
+
+        [Test]
+        public void CodeBlock_ShouldBreak_IfNoIndent()
+        {
+            var text = @"    a
+b";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(CodeBlock(Escaped("a")), Paragraph(Text("b")))
+            );
+        }
+
+        [Test]
+        public void CodeBlock_ShouldBreak_IfEnteredBreakToken()
+        {
+            var text = @"    a
+
+b";
+
+            var parsed = Parse(text);
+
+            parsed.Should().Be(
+                Group(CodeBlock(Escaped("a")), Paragraph(Text("b")))
             );
         }
 

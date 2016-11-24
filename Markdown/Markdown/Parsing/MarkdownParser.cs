@@ -119,7 +119,7 @@ namespace Markdown.Parsing
                 var start = t.Match(token => token.Has(Md.Indent));
                 var codeLine = start.IfSuccess(inner =>
                 {
-                    var bounded = inner.UntilNotMatch(token => token.Has(Md.NewLine));
+                    var bounded = inner.UntilNotMatch(token => token.HasAny(Md.NewLine, Md.Break));
                     return ParseNodesUntilMatch(bounded, ParseAnyTokenAsEscaped);
                 });
                 if (codeLine.Succeed)
@@ -134,7 +134,10 @@ namespace Markdown.Parsing
             });
             if (!codeLines.Parsed.Any())
                 return tokenizer.Fail<INode>();
-            var unpackedText = codeLines.Parsed.SelectMany(node => node);
+            var unpackedText = codeLines.Parsed.SelectMany(node => node).ToList();
+
+            while (unpackedText.Any() && ((EscapedTextNode)unpackedText.Last()).Text.All(char.IsWhiteSpace))
+                unpackedText.Remove(unpackedText.Last());
             return codeLines.Remainder.SuccessWith<INode>(new CodeBlockModificatorNode(unpackedText));
         }
 
