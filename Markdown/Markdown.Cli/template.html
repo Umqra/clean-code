@@ -1,13 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Markdown</title>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+    <title>Markdown</title>
+    <style>
+         #markdown {
+             width: 70%;
+             margin: auto;
+         }
+        .float_left {
+            float: left;
+            width: 95%;
+        }
+        .float_right {
+            float: right;
+            width: 95%;
+        }
+        .row > div {
+            width: 50%;
+            display: inline-block;
+            word-wrap: break-word;
+            vertical-align: middle;
+        }
+        code {
+            width: 100px;
+            background-color: #eeeeff;
+            border-radius: 3px 3px 3px 3px;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid gray;
+            border-radius: 3px 3px 3px 3px;
+            padding: 8px;
+        }
+        pre, pre code {
+            background-color: #eeeeff;
+        }
+    </style>
+    <script>
+        $(function () {
+            $("pre").each(function () {
+                var next = $(this).next();
+                if (next.prop("tagName") === "PRE") {
+                    $(this).add(next).wrapAll('<div class="row"></div>');
+                    $(this).wrap('<div><div class="float_left"></div></div>');
+                    next.wrap('<div><div class="float_right"></div></div>');
+                    $(this).addClass('processed');
+                    next.addClass('processed');
+                }
+            });
+            $("p").each(function () {
+                $(this).add($(this).next("pre")).wrapAll('<div class="row"></div>');
+            });
+            $(":header").each(function () {
+                $(this).add($(this).next("pre")).wrapAll('<div class="row"></div>');
+            });
+            $("pre").each(function() {
+                if ($(this).hasClass('processed')) return;
+                $(this).wrap('<div><div class="float_right"></div></div>');
+            });
+            $("p").wrap('<div><div class="float_left"></div></div>');
+            $(":header").wrap('<div><div class="float_left"></div></div>');
+        });
+    </script>
 </head>
 <body>
-<center>
-	<h1>Simple markdown template</h1>
-	<div id="markdown">
-	</div>
-</center>
+<div id="markdown">
+</div>
 </body>
 </html>

@@ -118,9 +118,12 @@ namespace Markdown.Parsing.Tokenizer
             var before = LookBehind(1);
             var after = LookAhead(modificator.Length);
 
+            if (!before.HasValue || before.Value == '\n')
+                return new MdToken(modificator).With(Md.Open);
+
             if (before.IsPunctuation() && after.IsLetterOrDigit())
                 return new MdToken(modificator).With(Md.Open);
-            if ((before.IsWhiteSpace() || !before.HasValue) && after.HasValue && !after.IsWhiteSpace())
+            if (before.IsWhiteSpace() && after.HasValue && !after.IsWhiteSpace())
                 return new MdToken(modificator).With(Md.Open);
             return null;
         }

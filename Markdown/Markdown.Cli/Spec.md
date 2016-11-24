@@ -1,76 +1,73 @@
-### Implemented Markdown syntax
+## Markdown specification
+    ## Markdown specification
 
-You can simply _emphasize_ any string with __next__ available modificators: \_, \_\_, \*, \*\*.
+### Format text
+	### Format text
 
-`You can simply _emphasize_ any string with __next__ available modificators: \_, \_\_, \*, \*\*.`
+You can use __underscores__ or **asterics** for highlight text with strong tag.  
+	You can use __underscores__ or **asterics** for highlight text with strong tag.
 
-If you do not want to apply modificators - simply escape it with \\ character!
+You _can write __nested__ constructions_ with this modificators.  
+	You _can write __nested__ constructions_ with this modificators.
 
-You can use backticks (\`) for selecting blocks of code. For example:
+You also can use `backtics for insert __text__ _without_ formatting`.  
+	You also can use `backtics for insert __text__ _without_ formatting`.
 
-`#include <iostream>
-using namespace std;
-int main()
-{
-	cout << "Hello, world!";
-	return 0;
-}`
+If you want use strong and emphasis modificator simultaneously you can write __*something*__ **_like_** *__this__*.  
+	If you want use strong and emphasis modificator simultaneously you can write __*something*__ **_like_** *__this__*.
 
-	You can also simply indent
-	you code with tabulation (\t)
-	or four spaces and it will be
-	well-formated!
+Use modificators careful. You can't surround it with punctuation signs or spaces. It won't parsed **!in this case!**.  
+	Use modificators careful. You can't surround it with punctuation signs or spaces. It won't parsed **!in this case!**.
 
-There is a little surpirse - you can make your modificators nested!  
-*You will get **something like this***
+### Paragraphs
+	### Paragraphs
 
- __*It works*__
+You can simply break paragraph with two spaces "  " at the end of line.  
+	You can simply break paragraph with two spaces "  " at the end of line.
 
-I don't want to disappoint you, but in this simple parser you can find many disadvantages.
+You can also break paragraph with two line breaks.
 
-I want enumerate some example of such bad cases:
+### Code blocks
+	### Code blocks
 
-1. You can't parse triple-modificators like this: `***Be careful! Very angry dog!***` 
-But you can use next hack for this modificator: `_**It works!**_`
+Just indent your code with four spaces or single tab and it will be well formated!
 
-2. Your code must be surrounded with spaces. So, you can't write something like this:
+	def hypot(a, b):
+		return math.sqrt(a**2 + b**2)
 
-Let me show my code:\`code\`
+		def hypot(a, b):
+			return math.sqrt(a**2 + b**2)
 
-3. I can't find another curious behaviour but i'm sure - it is
+### Links
+	### Links
 
-You can paste links [like this](http://umqra.github.io/adaptive_design)
+You can simply include [links](https://daringfireball.net/projects/markdown/syntax) into your text.  
+	You can simply include [links](https://daringfireball.net/projects/markdown/syntax) into your text.
 
-Also you can use [relative paths](/about.html) like this.
+You allowed to insert as many spaces as you need between link text and link reference.
 
-# Спецификация языка разметки
+Unfortunately, you can't use format modificators in [your *link* text](http://sor.ry).  
+	Unfortunately, you can't use format modificators in [your *link* text](http://sor.ry).
 
-Посмотрите этот файл в сыром виде. Сравните с тем, что показывает github.
+### Configuration
+	### Configuration
 
-Процессору на вход подается одна строка — параграф текста. 
-На выходе должен быть HTML-код этого параграфа.
+Simple way is to use command line interface arguments. For example: `MarkdownCli.exe -i Spec.md -o Spec.html`  
+	Simple way is to use command line interface arguments. For example: `MarkdownCli.exe -i Spec.md -o Spec.html`
 
-Текст _окруженный с двух сторон_  одинарными символами подчерка 
-должен помещаться в HTML-тег em вот так:
+Also you can pass configuration file as parameter and set some parameters from this file:
+`MarkdownCli.exe --config config.yml`  
+	Also you can pass configuration file as parameter and set some parameters from this file: `MarkdownCli.exe --config config.yml`
 
-`Текст <em>окруженный с двух сторон</em>  одинарными символами подчерка 
-должен помещаться в HTML-тег em вот так:`
+Configuration file must be written in [YAML](https://en.wikipedia.org/wiki/YAML) format.  
+	Configuration file must be written in [YAML](https://en.wikipedia.org/wiki/YAML) format.
 
-Любой символ можно экранировать, чтобы он не считался частью разметки. 
-\_Вот это\_, не должно выделиться тегом \<em\>.
+Your fields in YAML file must has same name with CLI arguments.  
+	input: Spec.md
+	output: Spec.html
+	html_file: template.html
+	inject_element: "#markdown"
+	class: markdown_el
 
-__Двумя символами__ — должен становиться жирным с помощью тега \<strong\>.
-
-Внутри __двойного выделения _одинарное_ тоже__ работает.
-
-Но не наоборот — внутри _одинарного __двойное__ не работает_.
-
-Подчерки внутри текста c цифрами_12_3 не считаются выделением и должны оставаться символами подчерка.
-
-__непарные _символы не считаются выделением.
-
-За подчерками, начинающими выделение, должен следовать непробельный символ. Иначе эти_ подчерки_ не считаются выделением 
-и остаются просто символами подчерка.
-
-Подчерки, заканчивающие выделение, должны следовать за непробельным символом. Иначе эти _подчерки _не считаются_ окончанием выделения 
-и остаются просто символами подчерка.
+Configuration file parameters **do not override** parameters passed as command lina arguments.  
+	Configuration file parameters **do not override** parameters passed as command lina arguments.
