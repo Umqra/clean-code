@@ -8,6 +8,7 @@ namespace Markdown.Rendering
 {
     public class MarkdownToHtmlRenderer
     {
+        // CR (krait): Более правильное слово - modifiers.
         public List<INodeVisitor> Modificators;
         public MarkdownParser Parser { get; }
         public ITokenizerFactory<IMdToken> Tokenizer { get; }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Markdown.Parsing.Nodes;
+﻿using Markdown.Parsing.Nodes;
 
 namespace Markdown.Parsing.Visitors
 {

@@ -6,6 +6,8 @@ using NUnit.Framework;
 
 namespace Markdown.Tests
 {
+    // CR (krait): Схема именования тестов не очень. Плохо читается, что именно проверяет тест.
+    // CR (krait): Лучше, чтобы имена тестов образовывали корректные фразы на английском, типа: HtmlRenderer_should_insert_class_in_tags.
     [TestFixture]
     internal class HtmlRendererTests : BaseTreeTests
     {

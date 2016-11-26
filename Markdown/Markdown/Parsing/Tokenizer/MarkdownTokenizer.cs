@@ -30,6 +30,7 @@ namespace Markdown.Parsing.Tokenizer
             CurrentToken = AtEnd ? null : ParseToken();
         }
 
+        // CR (krait): Вообще не круто создавать новый токенайзер каждый раз.
         public override ITokenizer<IMdToken> Advance()
         {
             if (AtEnd)

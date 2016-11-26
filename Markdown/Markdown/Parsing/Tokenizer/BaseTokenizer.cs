@@ -21,6 +21,8 @@ namespace Markdown.Parsing.Tokenizer
 
         protected string LookAtString(int length)
         {
+            // CR (krait): Надо как-то переделать всю инфраструктуру, чтобы избежать постоянных ToString-ов.
+            // CR (krait): Обрати внимание на string.Compare.
             return Text.Substring(TextPosition, Math.Min(Text.Length - TextPosition, length));
         }
 

@@ -23,8 +23,10 @@ namespace Markdown.Cli
             {
                 var innerExceptions = exception.EnumerateInnerExceptions().ToList();
                 Console.WriteLine(string.Join("\n", innerExceptions.Select(e => " - " + e.Message)));
+                // CR (krait): Подсказка вводит в заблуждение: надо писать -? и -h (с дефисами), иначе не работает.
                 if (innerExceptions.Any(e => e is ParseArgumentException))
                     Console.WriteLine("Type ?, h, --help to call help message");
+                // CR (krait): А ещё в хелпе не хватает честного usage: непонятно, какие параметры обязательные, а какие нет.
                 Environment.Exit(1);
             }
         }
@@ -68,6 +70,7 @@ namespace Markdown.Cli
             }
             else
             {
+                // CR (krait): А стрим кто закрывать будет?
                 var templateDom = new HtmlParser().Parse(File.OpenRead(options.HtmlFilename));
                 templateDom.QuerySelector(options.InjectedHtmlElement).InnerHtml = htmlMarkup;
 
@@ -123,6 +126,7 @@ namespace Markdown.Cli
                 .As("html_file")
                 .WithDescription("HTML template file when generated markup will be injected");
 
+            // CR (krait): Почему-то тут inject_element, а во всех текстах - inject_el.
             parser
                 .Setup(arg => arg.InjectedHtmlElement)
                 .As("inject_element")

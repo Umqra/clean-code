@@ -2,6 +2,7 @@
 
 namespace Markdown.Cli
 {
+    // CR (krait): Корректнее будет назвать ArgumentParseException
     public class ParseArgumentException : ArgumentException
     {
         public ParseArgumentException(string message) : base(message)

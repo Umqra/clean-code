@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Markdown.Parsing.Nodes;
 
 namespace Markdown.Parsing.Visitors

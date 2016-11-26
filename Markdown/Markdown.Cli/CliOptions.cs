@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using YamlDotNet.Core;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -44,6 +42,7 @@ namespace Markdown.Cli
         {
             if (ConfigFilename == null)
                 return;
+            // CR (krait): Для этого написан экстеншн, но почему-то не используется.
             try
             {
                 FileExtensions.TryGetReadAccess(ConfigFilename);
@@ -58,6 +57,7 @@ namespace Markdown.Cli
                 var deserializer = new DeserializerBuilder()
                     .WithNamingConvention(new UnderscoredNamingConvention()).Build();
 
+                // CR (krait): А стрим кто будет закрывать?
                 var options = deserializer.Deserialize<CliOptions>(new StreamReader(File.OpenRead(ConfigFilename)));
                 InputFilename = InputFilename ?? options.InputFilename;
                 OutputFilename = OutputFilename ?? options.OutputFilename;
