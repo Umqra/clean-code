@@ -8,8 +8,7 @@ namespace Markdown.Rendering
 {
     public class MarkdownToHtmlRenderer
     {
-        // CR (krait): Более правильное слово - modifiers.
-        public List<INodeVisitor> Modificators;
+        public readonly List<INodeVisitor> Modifiers;
         public MarkdownParser Parser { get; }
         public ITokenizerFactory<IMdToken> Tokenizer { get; }
         public INodeRenderer NodeRenderer { get; }
@@ -20,19 +19,19 @@ namespace Markdown.Rendering
             Parser = parser;
             Tokenizer = tokenizer;
             NodeRenderer = nodeRenderer;
-            Modificators = new List<INodeVisitor>();
+            Modifiers = new List<INodeVisitor>();
         }
 
         public MarkdownToHtmlRenderer WithModificators(params INodeVisitor[] modificators)
         {
-            Modificators.AddRange(modificators);
+            Modifiers.AddRange(modificators);
             return this;
         }
 
         public string Render(string text)
         {
             var tree = Parser.Parse(Tokenizer.CreateTokenizer(text)).Parsed;
-            foreach (var modificator in Modificators)
+            foreach (var modificator in Modifiers)
                 modificator.Visit(tree);
             return NodeRenderer.Render(tree);
         }

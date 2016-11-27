@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Markdown.Tests
 {
     [TestFixture]
-    internal class ParserTests : BaseTreeTests
+    internal class MarkdownParser_Should : BaseTreeTests
     {
         [SetUp]
         public void SetUp()
@@ -32,7 +32,7 @@ namespace Markdown.Tests
         public ITokenizerFactory<IMdToken> TokenizerFactory { get; set; }
 
         [Test]
-        public void Backticks_ShouldBeParsed()
+        public void ParseCodeNode_FromBackticks()
         {
             var text = "a `b` c";
 
@@ -45,7 +45,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void Backticks_ShouldIgnoreModificators()
+        public void ParseCodeNode_FromBackticks_IgnoringModificators()
         {
             var text = "a `__b__` c";
 
@@ -58,7 +58,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BackticksContents_ShouldBeParsed_CharByChar()
+        public void ParseCodeNode_FromBackticks_CharByChar()
         {
             var text = "`a b c`";
 
@@ -71,7 +71,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BoldInItalic_ShouldBeParsed()
+        public void ParseEmphasisThenStrongModificators()
         {
             var text = "_italic __bold__ end_";
 
@@ -88,7 +88,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BoldItalic_ShouldParsed_WhenDifferentTypeUsed()
+        public void ParseNestedTextModificators_IfDifferentTypesAreUsed()
         {
             var text = "__*hello*__";
 
@@ -102,7 +102,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BoldUnderscore_ShouldBeParsed()
+        public void ParseStrongModificatorNode_FromDoubleUnderscores()
         {
             var text = "__sample text__";
 
@@ -112,7 +112,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void BoldWithUnmatchedUnderscoreInside_ShouldBeParsed()
+        public void ParseStrongModificatorNode_WithUnmatchedModificatorInside()
         {
             var text = "__bold _still bold end__";
 
@@ -126,7 +126,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void ConsecutiveModificators_ShouldBeParsed()
+        public void ParseConsecutiveModificators()
         {
             var text = "_first_ __second__ _third_";
 
@@ -144,7 +144,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void EscapedCharacters_ShouldBeParsed()
+        public void ParseEscapeNode_FromEscapeSequence()
         {
             var text = @"hi \_\_!";
 
@@ -157,7 +157,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void HeaderNotTrimTrailingHashes()
+        public void ParseHeaderNode_TrimmingTrailingHashes()
         {
             var text = "## header ####";
 
@@ -169,7 +169,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void ItalicInBold_ShouldBeParsed()
+        public void ParseStrongThenEmphasisModificators()
         {
             var text = "__bold _italic_ end__";
 
@@ -186,7 +186,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void ItalicUnderscore_ShouldBeParsed()
+        public void ParseEmphasisModificatorNode_FromUnderscores()
         {
             var text = "_sample text_";
 
@@ -196,7 +196,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void LinkElement_ShouldBeParsed()
+        public void ParseLinkNode()
         {
             var text = "[link](/index.html)";
 
@@ -209,7 +209,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void ManyHeaderTokens_ShouldParsed()
+        public void ParseHeaderNode_FromHashes()
         {
             var text = "## header";
 
@@ -221,7 +221,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void ManyNewLines_ShouldBreakHeader()
+        public void ParseHeaderThenParagraph_DelimitedWithTwoNewLines()
         {
             var text = @"# header
 
@@ -235,7 +235,7 @@ text";
         }
 
         [Test]
-        public void ManyOpenModificators_ShouldAllBeBroken()
+        public void ParsePlainText_FromManyNotPairedUnderscores()
         {
             var text = "a _b _c d _e";
 
@@ -254,7 +254,7 @@ text";
         }
 
         [Test]
-        public void NewLine_ShouldBreakHeader()
+        public void ParseHeaderThenParagraph_DelimietedWithNewLines()
         {
             var text = @"# header
 text";
@@ -267,7 +267,7 @@ text";
         }
 
         [Test]
-        public void NotPairedUnderscore_ShouldNotModifyText()
+        public void ParsePlainText_FromNotPairedSingleUnderscore()
         {
             var text = "_a";
 
@@ -277,7 +277,7 @@ text";
         }
 
         [Test]
-        public void OnlyLinkReferenceElement_ShouldNotModifyText()
+        public void ParsePlainText_FromLinkRefElement_WithoutLinkTextElement()
         {
             var text = "(/index.html)";
 
@@ -291,7 +291,7 @@ text";
         }
 
         [Test]
-        public void OnlyLinkTextElement_ShouldNotModifyText()
+        public void ParsePlainText_FromLinkTextElement_WithoutLinkRefElement()
         {
             var text = "[link]";
 
@@ -305,7 +305,7 @@ text";
         }
 
         [Test]
-        public void PairedModificators_ShouldNotParsed_IfBordersWithPunctuation()
+        public void NotParseNestedModificators_IfInnerTextEndsWithPunctuation()
         {
             var text = "__*hello!*__";
 
@@ -319,7 +319,7 @@ text";
         }
 
         [Test]
-        public void SimpleText_ShouldBeParsed()
+        public void ParsePlainText_FromPlainText()
         {
             var text = "sample text";
 
@@ -329,7 +329,7 @@ text";
         }
 
         [Test]
-        public void SingleHeaderToken_ShouldParsed()
+        public void ParseHeaderNode_FromHashes_AtTheBeginningOfLine()
         {
             var text = "# header";
 
@@ -341,7 +341,7 @@ text";
         }
 
         [Test]
-        public void TestCodeIndented()
+        public void ParseCodeNode_FromFourSpaceIndentation()
         {
             var text = @"    a
     b";
@@ -355,7 +355,7 @@ text";
         }
 
         [Test]
-        public void TwoLineBreaks_SeparatesParagraphs()
+        public void ParseTwoParagraphs_SeparatedWithTwoNewLines()
         {
             var text = $"hello{Environment.NewLine}{Environment.NewLine}bye";
 
@@ -370,7 +370,7 @@ text";
         }
 
         [Test]
-        public void TwoSpacesAtTheEndOfLine_SeparatesParagraph()
+        public void ParseTwoParagraphs_IfFirstEndsWithTwoSpaces()
         {
             var text = $"hello  {Environment.NewLine}bye";
 
@@ -385,7 +385,7 @@ text";
         }
 
         [Test]
-        public void WhiteSpaceSymbols_AfterParagraph_NotTrimmed()
+        public void ParseParagraph_WihoutTrimmingTrailingSpaces()
         {
             var text = "new paragraph    ";
 
@@ -399,7 +399,7 @@ text";
         }
 
         [Test]
-        public void WhiteSpaceSymbols_BeforeParagraph_NotTrimmed()
+        public void ParseParagraph_WithouTrimmingLeadingSpaces()
         {
             var text = "   new paragraph";
 

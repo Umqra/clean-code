@@ -59,7 +59,7 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="FileExtensions.cs" />
-    <Compile Include="ParseArgumentException.cs" />
+    <Compile Include="ArgumentParseException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

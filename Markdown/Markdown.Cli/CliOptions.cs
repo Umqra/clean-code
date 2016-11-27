@@ -57,8 +57,13 @@ namespace Markdown.Cli
                 var deserializer = new DeserializerBuilder()
                     .WithNamingConvention(new UnderscoredNamingConvention()).Build();
 
-                // CR (krait): А стрим кто будет закрывать?
-                var options = deserializer.Deserialize<CliOptions>(new StreamReader(File.OpenRead(ConfigFilename)));
+                CliOptions options;
+                using (var reader = new StreamReader(File.OpenRead(ConfigFilename)))
+                {
+                    options = deserializer.Deserialize<CliOptions>(reader);
+                }
+                if (options == null)
+                    throw new Exception("Can't retrieve data from config file");
                 InputFilename = InputFilename ?? options.InputFilename;
                 OutputFilename = OutputFilename ?? options.OutputFilename;
                 BaseUrl = BaseUrl ?? options.BaseUrl;

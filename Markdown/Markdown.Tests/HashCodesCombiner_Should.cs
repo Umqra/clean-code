@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace Markdown.Tests
 {
     [TestFixture]
-    internal class SequenceCollectionTests
+    internal class HashCodesCombiner_Should
     {
         private class FirstSampleParent
         {
@@ -17,8 +17,8 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void HashCodesCombiner_DependOnElementsOrder()
-        {
+        public void DependsOnElementsOrder()
+        {   
             var first = new[] {"1", "2"};
             var second = first.Reverse();
 
@@ -29,7 +29,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void HashCodesCombiner_DependOnInitialValue()
+        public void DependsOnInitialValue()
         {
             var sample = new[] {"sample"};
 
@@ -40,7 +40,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void HashCodesCombiner_DependOnParentType()
+        public void DependsOnParentType()
         {
             var sample = new[] {"sample"};
             var firstParent = new FirstSampleParent();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
 using Fclp;
 using Markdown.Parsing;
@@ -23,9 +24,8 @@ namespace Markdown.Cli
             {
                 var innerExceptions = exception.EnumerateInnerExceptions().ToList();
                 Console.WriteLine(string.Join("\n", innerExceptions.Select(e => " - " + e.Message)));
-                // CR (krait): Подсказка вводит в заблуждение: надо писать -? и -h (с дефисами), иначе не работает.
-                if (innerExceptions.Any(e => e is ParseArgumentException))
-                    Console.WriteLine("Type ?, h, --help to call help message");
+                if (innerExceptions.Any(e => e is ArgumentParseException))
+                    Console.WriteLine("Type /?, -h, --help to call help message");
                 // CR (krait): А ещё в хелпе не хватает честного usage: непонятно, какие параметры обязательные, а какие нет.
                 Environment.Exit(1);
             }
@@ -38,7 +38,7 @@ namespace Markdown.Cli
             var parsingStatus = parser.Parse(args);
             if (parsingStatus.HelpCalled) return;
             if (parsingStatus.HasErrors)
-                throw new ParseArgumentException(parsingStatus.ErrorText);
+                throw new ArgumentParseException(parsingStatus.ErrorText);
 
             CliOptions options;
             try
@@ -47,7 +47,7 @@ namespace Markdown.Cli
             }
             catch (Exception exception)
             {
-                throw new ParseArgumentException("Invalid cli arguments", exception);
+                throw new ArgumentParseException("Invalid cli arguments", exception);
             }
 
             ConvertMarkdownToHtml(options);
@@ -70,10 +70,15 @@ namespace Markdown.Cli
             }
             else
             {
-                // CR (krait): А стрим кто закрывать будет?
-                var templateDom = new HtmlParser().Parse(File.OpenRead(options.HtmlFilename));
-                templateDom.QuerySelector(options.InjectedHtmlElement).InnerHtml = htmlMarkup;
+                IHtmlDocument templateDom;
+                using (var fileStream = File.OpenRead(options.HtmlFilename))
+                {
+                    templateDom = new HtmlParser().Parse(fileStream);
+                }
+                if (templateDom == null)
+                    throw new Exception($"Error while insert generated html markup into {options.HtmlFilename}");
 
+                templateDom.QuerySelector(options.InjectedHtmlElement).InnerHtml = htmlMarkup;
                 File.WriteAllText(options.OutputFilename, templateDom.DocumentElement.OuterHtml);
             }
         }
