@@ -26,7 +26,6 @@ namespace Markdown.Cli
                 Console.WriteLine(string.Join("\n", innerExceptions.Select(e => " - " + e.Message)));
                 if (innerExceptions.Any(e => e is ArgumentParseException))
                     Console.WriteLine("Type /?, -h, --help to call help message");
-                // CR (krait): А ещё в хелпе не хватает честного usage: непонятно, какие параметры обязательные, а какие нет.
                 Environment.Exit(1);
             }
         }
@@ -119,7 +118,7 @@ namespace Markdown.Cli
             parser
                 .Setup(arg => arg.OutputFilename)
                 .As('o', "output")
-                .WithDescription("Output file for generated html-markup");
+                .WithDescription("Output file for generated html markup");
 
             parser
                 .Setup(arg => arg.BaseUrl)
@@ -129,29 +128,47 @@ namespace Markdown.Cli
             parser
                 .Setup(arg => arg.HtmlFilename)
                 .As("html_file")
-                .WithDescription("HTML template file when generated markup will be injected");
+                .WithDescription("File with HTML template in which generated markup will be placed. ");
 
-            // CR (krait): Почему-то тут inject_element, а во всех текстах - inject_el.
             parser
                 .Setup(arg => arg.InjectedHtmlElement)
                 .As("inject_element")
                 .WithDescription(
-                    "Element in HTML DOM in which will be injected generated markup. " +
-                    "You can use well-known css-selectors for specifying needed element. " +
-                    "For example: --inject_el #markdown, --inject_el body, --inject_el .markdown_class");
+                    "HTML DOM element in which generated markup will be injected. " +
+                    "Use of this option REQUIRES html_file option specified via command line or config file. " + 
+                    "Use css selectors for specifying necessary element. " +
+                    "For example: --inject_element #markdown, --inject_element body, --inject_element .markdown_class");
 
             parser
                 .Setup(arg => arg.InjectCssClass)
                 .As("class")
-                .WithDescription("Css class added to all elements in generated markup");
+                .WithDescription("Css class added to all elements in generated markup. " +
+                                 "For example: --class .markdown_element");
 
             parser
                 .Setup(arg => arg.ConfigFilename)
                 .As('c', "config")
-                .WithDescription("Path to configu file in YAML format");
+                .WithDescription("Сonfiguration file in YAML format");
 
+            parser
+                .SetupHelp("h", "help", "?")
+                .WithHeader(@"USAGE:
+    MarkdownCli.exe [-i|--input filename] [-o|--output filename] [--config filename] [--base_url /url] [--inject_element #element] [--class .class]
 
-            parser.SetupHelp("h", "help", "?").Callback(text => Console.WriteLine(text));
+EXAMPLES:
+    MarkdownCli.exe -i Spec.md -o Spec.html --base_url http://google.com/ --inject_element #markdown --class .markdown_el
+    MarkdownCli.exe --config configu.yml
+
+CONFIG EXAMPLE:
+    # Markdown parser configuration file
+    input: Spec.md
+    output: Spec.html
+    html_file: template.html
+    inject_element: ""#markdown""
+    class: .markdown_el
+
+OPTIONS:")
+                .Callback(Console.Write);
             return parser;
         }
     }

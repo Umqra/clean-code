@@ -83,7 +83,7 @@ namespace Markdown.Cli
             {
                 if (InjectedHtmlElement == null)
                     throw new ArgumentException(
-                        "InjectedField must be specified if used HtmlFilename. It can be specified with --inject_el option"
+                        "InjectedField must be specified if used HtmlFilename. It can be specified with --inject_element option"
                     );
                 try
                 {
