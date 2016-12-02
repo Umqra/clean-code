@@ -1,0 +1,17 @@
+language: csharp
+solution: Markdown/Markdown.sln
+before_install:
+- openssl aes-256-cbc -K $encrypted_b993b7b2c557_key -iv $encrypted_b993b7b2c557_iv
+  -in deploy_key.enc -out deploy_key -d
+- chmod +x scripts/run_benchmark.sh
+- chmod 600 deploy_key
+- mv deploy_key ~/.ssh/id_rsa
+install:
+- curl -L -o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+- mono nuget.exe restore Markdown/Markdown.sln
+script:
+- xbuild /p:Configuration=Release Markdown/Markdown.sln
+- scripts/run_benchmark.sh
+branches:
+  except:
+  - benchmarks
