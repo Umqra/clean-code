@@ -8,16 +8,17 @@ cp Markdown/Markdown.Bench/bin/Release/BenchmarkDotNet.Artifacts/results/TravisB
 TARGET_BRANCH="benchmarks"
 
 REPO=`git config remote.origin.url`
+SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
 SHA=`git rev-parse --verify HEAD`
 
 git clone $REPO --branch $TARGET_BRANCH --single-branch out
 cd out
 git branch -l
 
-git config user.name "Travis CI"
+git config user.name $TRAVIS_LOGIN
 git config user.email $TRAVIS_EMAIL
 cp ../benchmark.md ./
 git add benchmark.md
 git commit -m "Benchmark for commit ${TRAVIS_BRANCH}: ${SHA}"
 
-git push $REPO $TARGET_BRANCH
+git push $SSH_REPO $TARGET_BRANCH
