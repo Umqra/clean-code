@@ -2,7 +2,6 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Exporters;
 using BenchmarkDotNet.Attributes.Jobs;
-using BenchmarkDotNet.Running;
 using Markdown.Parsing;
 using Markdown.Parsing.Tokenizer;
 using Markdown.Rendering;
@@ -10,10 +9,10 @@ using Markdown.Rendering;
 namespace MarkdownBench
 {
     [MarkdownExporter]
-    [SimpleJob(targetCount: 10, id: "FastBenchmark")]
-    public class MarkdownBench
+    [SimpleJob(targetCount: 10, id: "TravisBenchmark")]
+    public class TravisBench
     {
-        [Params(10000, 100000, 1000000)]
+        [Params(500, 5000)]
         public int Length { get; set; }
 
         public string Data { get; set; }
@@ -38,23 +37,20 @@ namespace MarkdownBench
             Data = new string(symbols);
         }
 
-        [Benchmark]
-        public string ParseMarkdown() => 
-            new MarkdownToHtmlRenderer(Parser, Factory, 
-                new NodeHtmlRenderer(new HtmlRenderContext(Converter)))
-            .Render(Data);
-    }
-
-    internal class EntryPoint
-    {
-        private static void Main(string[] args)
+        [Benchmark(Baseline = true)]
+        public long BaseLine()
         {
-            if (args.Length > 0 && args[0] == "travis")
-            {
-                BenchmarkRunner.Run<TravisBench>();
-                return;
-            }
-            BenchmarkRunner.Run<MarkdownBench>();
+            int count = (int)1e7;
+            long sum = 0;
+            for (long i = 0; i < count; i++)
+                sum += i;
+            return sum;
         }
+
+        [Benchmark]
+        public string ParseMarkdown() =>
+            new MarkdownToHtmlRenderer(Parser, Factory,
+                    new NodeHtmlRenderer(new HtmlRenderContext(Converter)))
+                .Render(Data);
     }
 }
