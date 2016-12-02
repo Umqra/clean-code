@@ -12,7 +12,7 @@ namespace MarkdownBench
     [SimpleJob(targetCount: 10, id: "TravisBenchmark")]
     public class TravisBench
     {
-        [Params(500, 5000)]
+        [Params(500, 5000, 50000)]
         public int Length { get; set; }
 
         public string Data { get; set; }
