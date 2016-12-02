@@ -56,18 +56,18 @@ namespace Markdown.Parsing
             return tokenizer.Fail<INode>();
         }
 
-        private INode CreateModificatorNode(Md modificatorAttribute, IEnumerable<INode> nodes)
+        private INode CreateModifierNode(Md modifierAttribute, IEnumerable<INode> nodes)
         {
-            switch (modificatorAttribute)
+            switch (modifierAttribute)
             {
                 case Md.Emphasis:
-                    return new EmphasisModificatorNode(nodes);
+                    return new EmphasisModifierNode(nodes);
                 case Md.Strong:
-                    return new StrongModificatorNode(nodes);
+                    return new StrongModifierNode(nodes);
                 case Md.Code:
-                    return new CodeModificatorNode(nodes);
+                    return new CodeModifierNode(nodes);
                 default:
-                    throw new ArgumentException($"Unknown modificator attribute: {modificatorAttribute}");
+                    throw new ArgumentException($"Unknown modifier attribute: {modifierAttribute}");
             }
         }
 
@@ -86,10 +86,10 @@ namespace Markdown.Parsing
             return tokenizer.UntilMatch(IsWhiteSpaceToken);
         }
 
-        private MarkdownParsingResult<INode> ParseFormatModificator(ITokenizer<IMdToken> tokenizer)
+        private MarkdownParsingResult<INode> ParseFormatModifier(ITokenizer<IMdToken> tokenizer)
         {
-            return ParseFormatModificator(tokenizer, Md.Emphasis)
-                .IfFail(t => ParseFormatModificator(t, Md.Strong));
+            return ParseFormatModifier(tokenizer, Md.Emphasis)
+                .IfFail(t => ParseFormatModifier(t, Md.Strong));
         }
 
         private MarkdownParsingResult<INode> ParseAnyTokenAsText(ITokenizer<IMdToken> tokenizer)
@@ -111,7 +111,7 @@ namespace Markdown.Parsing
         {
             return ParseTextWithEscaped(tokenizer)
                 .IfFail(ParseCode)
-                .IfFail(ParseFormatModificator)
+                .IfFail(ParseFormatModifier)
                 .IfFail(ParseLink)
                 .IfFail(ParseAnyTokenAsText);
         }
@@ -144,7 +144,7 @@ namespace Markdown.Parsing
             if (!codeLines.Parsed.Any())
                 return tokenizer.Fail<INode>();
             var unpackedText = codeLines.Parsed.SelectMany(node => node);
-            return codeLines.Remainder.SuccessWith<INode>(new CodeModificatorNode(unpackedText));
+            return codeLines.Remainder.SuccessWith<INode>(new CodeModifierNode(unpackedText));
         }
 
         private MarkdownParsingResult<INode> ParsePlainText(ITokenizer<IMdToken> tokenizer)
@@ -189,32 +189,32 @@ namespace Markdown.Parsing
                 .Match(token => token.Has(Md.Close, Md.Code)));
             if (close.Succeed)
             {
-                return close.Remainder.SuccessWith<INode>(new CodeModificatorNode(children.Parsed));
+                return close.Remainder.SuccessWith<INode>(new CodeModifierNode(children.Parsed));
             }
             return tokenizer.Fail<INode>();
         }
 
-        private MarkdownParsingResult<INode> ParseFormatModificator(ITokenizer<IMdToken> tokenizer,
-            Md modificatorAttribute)
+        private MarkdownParsingResult<INode> ParseFormatModifier(ITokenizer<IMdToken> tokenizer,
+            Md modifierAttribute)
         {
-            var boundedTokenizer = tokenizer.UntilNotMatch(token => token.Has(Md.Close, modificatorAttribute));
+            var boundedTokenizer = tokenizer.UntilNotMatch(token => token.Has(Md.Close, modifierAttribute));
 
-            var open = boundedTokenizer.Match(token => token.Has(Md.Open, modificatorAttribute));
+            var open = boundedTokenizer.Match(token => token.Has(Md.Open, modifierAttribute));
 
             var children = open.IfSuccess(
                 childrenTokenizer => ParseNodesUntilMatch(childrenTokenizer,
                     t => ParseTextWithEscaped(t)
-                        .IfFail(ParseFormatModificator)
+                        .IfFail(ParseFormatModifier)
                         .IfFail(ParseAnyTokenAsText))
             );
 
             var close = children.IfSuccess(t => t.UnboundTokenizer()
-                    .Match(token => token.Has(Md.Close, modificatorAttribute))
+                    .Match(token => token.Has(Md.Close, modifierAttribute))
             );
 
             if (close.Succeed && close.Parsed.Text == open.Parsed.Text)
             {
-                var node = CreateModificatorNode(modificatorAttribute, children.Parsed);
+                var node = CreateModifierNode(modifierAttribute, children.Parsed);
                 return close.Remainder.SuccessWith(node);
             }
             return tokenizer.Fail<INode>();

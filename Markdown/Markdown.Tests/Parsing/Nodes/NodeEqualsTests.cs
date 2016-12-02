@@ -8,10 +8,10 @@ namespace Markdown.Tests.Parsing.Nodes
     internal class NodeEqualsTests : BaseTreeTests
     {
         [Test]
-        public void TestEqualsEmphasisModificatorNodes()
+        public void TestEqualsEmphasisModifierNodes()
         {
-            var a = EmphasisModificator(Text("a"), Text("b"));
-            var b = EmphasisModificator(Text("a"), Text("b"));
+            var a = EmphasisModifier(Text("a"), Text("b"));
+            var b = EmphasisModifier(Text("a"), Text("b"));
 
             a.Equals(b).Should().BeTrue();
         }
@@ -28,17 +28,17 @@ namespace Markdown.Tests.Parsing.Nodes
         [Test]
         public void TestEqualsParagraphNodes()
         {
-            var a = Paragraph(EmphasisModificator(Text("a")), StrongModificator(Text("b")));
-            var b = Paragraph(EmphasisModificator(Text("a")), StrongModificator(Text("b")));
+            var a = Paragraph(EmphasisModifier(Text("a")), StrongModifier(Text("b")));
+            var b = Paragraph(EmphasisModifier(Text("a")), StrongModifier(Text("b")));
 
             a.Equals(b).Should().BeTrue();
         }
 
         [Test]
-        public void TestEqualsStrongModificatorNodes()
+        public void TestEqualsStrongModifierNodes()
         {
-            var a = StrongModificator(Text("a"), Text("b"));
-            var b = StrongModificator(Text("a"), Text("b"));
+            var a = StrongModifier(Text("a"), Text("b"));
+            var b = StrongModifier(Text("a"), Text("b"));
 
             a.Equals(b).Should().BeTrue();
         }
@@ -53,10 +53,10 @@ namespace Markdown.Tests.Parsing.Nodes
         }
 
         [Test]
-        public void TestNotEqualsEmphasisModificatorNodes()
+        public void TestNotEqualsEmphasisModifierNodes()
         {
-            var a = EmphasisModificator(Text("a"), Text("b"));
-            var b = EmphasisModificator(Text("b"), Text("a"));
+            var a = EmphasisModifier(Text("a"), Text("b"));
+            var b = EmphasisModifier(Text("b"), Text("a"));
 
             a.Equals(b).Should().BeFalse();
         }
@@ -73,17 +73,17 @@ namespace Markdown.Tests.Parsing.Nodes
         [Test]
         public void TestNotEqualsParagraphNodes()
         {
-            var a = Paragraph(EmphasisModificator(Text("a")), EmphasisModificator(Text("b")));
-            var b = Paragraph(EmphasisModificator(Text("b")), EmphasisModificator(Text("a")));
+            var a = Paragraph(EmphasisModifier(Text("a")), EmphasisModifier(Text("b")));
+            var b = Paragraph(EmphasisModifier(Text("b")), EmphasisModifier(Text("a")));
 
             a.Equals(b).Should().BeFalse();
         }
 
         [Test]
-        public void TestNotEqualsStrongModificatorNodes()
+        public void TestNotEqualsStrongModifierNodes()
         {
-            var a = StrongModificator(Text("a"), Text("b"));
-            var b = StrongModificator(Text("b"), Text("a"));
+            var a = StrongModifier(Text("a"), Text("b"));
+            var b = StrongModifier(Text("b"), Text("a"));
 
             a.Equals(b).Should().BeFalse();
         }

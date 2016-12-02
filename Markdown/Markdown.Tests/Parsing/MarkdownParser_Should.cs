@@ -45,7 +45,7 @@ namespace Markdown.Tests.Parsing
         }
 
         [Test]
-        public void ParseCodeNode_FromBackticks_IgnoringModificators()
+        public void ParseCodeNode_FromBackticks_IgnoringModifiers()
         {
             var text = "a `__b__` c";
 
@@ -71,7 +71,7 @@ namespace Markdown.Tests.Parsing
         }
 
         [Test]
-        public void ParseEmphasisThenStrongModificators()
+        public void ParseEmphasisThenStrongModifiers()
         {
             var text = "_italic __bold__ end_";
 
@@ -79,40 +79,40 @@ namespace Markdown.Tests.Parsing
 
             parsed.Should().Be(
                 Paragraph(
-                    EmphasisModificator(
+                    EmphasisModifier(
                         Text("italic "),
-                        StrongModificator(Text("bold")),
+                        StrongModifier(Text("bold")),
                         Text(" end"))
                 )
             );
         }
 
         [Test]
-        public void ParseNestedTextModificators_IfDifferentTypesAreUsed()
+        public void ParseNestedTextModifiers_IfDifferentTypesAreUsed()
         {
             var text = "__*hello*__";
 
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
-                Paragraph(StrongModificator(EmphasisModificator(
+                Paragraph(StrongModifier(EmphasisModifier(
                     Text("hello")
                 )))
             );
         }
 
         [Test]
-        public void ParseStrongModificatorNode_FromDoubleUnderscores()
+        public void ParseStrongModifierNode_FromDoubleUnderscores()
         {
             var text = "__sample text__";
 
             var parsed = ParseParagraph(text);
 
-            parsed.Should().Be(Paragraph(StrongModificator(Text("sample text"))));
+            parsed.Should().Be(Paragraph(StrongModifier(Text("sample text"))));
         }
 
         [Test]
-        public void ParseStrongModificatorNode_WithUnmatchedModificatorInside()
+        public void ParseStrongModifierNode_WithUnmatchedModifierInside()
         {
             var text = "__bold _still bold end__";
 
@@ -120,13 +120,13 @@ namespace Markdown.Tests.Parsing
 
             parsed.Should().Be(
                 Paragraph(
-                    StrongModificator(Text("bold "), Text("_"), Text("still bold end"))
+                    StrongModifier(Text("bold "), Text("_"), Text("still bold end"))
                 )
             );
         }
 
         [Test]
-        public void ParseConsecutiveModificators()
+        public void ParseConsecutiveModifiers()
         {
             var text = "_first_ __second__ _third_";
 
@@ -134,11 +134,11 @@ namespace Markdown.Tests.Parsing
 
             parsed.Should().Be(
                 Paragraph(
-                    EmphasisModificator(Text("first")),
+                    EmphasisModifier(Text("first")),
                     Text(" "),
-                    StrongModificator(Text("second")),
+                    StrongModifier(Text("second")),
                     Text(" "),
-                    EmphasisModificator(Text("third"))
+                    EmphasisModifier(Text("third"))
                 )
             );
         }
@@ -169,7 +169,7 @@ namespace Markdown.Tests.Parsing
         }
 
         [Test]
-        public void ParseStrongThenEmphasisModificators()
+        public void ParseStrongThenEmphasisModifiers()
         {
             var text = "__bold _italic_ end__";
 
@@ -177,22 +177,22 @@ namespace Markdown.Tests.Parsing
 
             parsed.Should().Be(
                 Paragraph(
-                    StrongModificator(
+                    StrongModifier(
                         Text("bold "),
-                        EmphasisModificator(Text("italic")),
+                        EmphasisModifier(Text("italic")),
                         Text(" end"))
                 )
             );
         }
 
         [Test]
-        public void ParseEmphasisModificatorNode_FromUnderscores()
+        public void ParseEmphasisModifierNode_FromUnderscores()
         {
             var text = "_sample text_";
 
             var parsed = ParseParagraph(text);
 
-            parsed.Should().Be(Paragraph(EmphasisModificator(Text("sample text"))));
+            parsed.Should().Be(Paragraph(EmphasisModifier(Text("sample text"))));
         }
 
         [Test]
@@ -305,14 +305,14 @@ text";
         }
 
         [Test]
-        public void NotParseNestedModificators_IfInnerTextEndsWithPunctuation()
+        public void NotParseNestedModifiers_IfInnerTextEndsWithPunctuation()
         {
             var text = "__*hello!*__";
 
             var parsed = ParseParagraph(text);
 
             parsed.Should().Be(
-                Paragraph(StrongModificator(
+                Paragraph(StrongModifier(
                     Text("*"), Text("hello!*")
                 ))
             );

@@ -9,7 +9,7 @@ namespace Markdown.Parsing.Tokenizer
     {
         private const int HeaderTokenMaxSize = 6;
 
-        private static readonly Dictionary<string, Md> modificatorAttribute =
+        private static readonly Dictionary<string, Md> modifierAttribute =
             new Dictionary<string, Md>
             {
                 {"__", Md.Strong},
@@ -45,7 +45,7 @@ namespace Markdown.Parsing.Tokenizer
                    TryParseEscapedCharacter() ??
                    TryParseBreakParagraphToken() ??
                    TryParseNewLineToken() ?? 
-                   TryParseModificator("__", "**", "_", "*", "`") ??
+                   TryParseModifier("__", "**", "_", "*", "`") ??
                    TryParseLinkTokens() ??
                    TryParseIndentToken() ?? 
                    new MdToken(LookAtString(1)).With(Md.PlainText);
@@ -104,39 +104,39 @@ namespace Markdown.Parsing.Tokenizer
                     ?.With(Md.Break);
         }
 
-        private IMdToken TryParseModificator(params string[] modificators)
+        private IMdToken TryParseModifier(params string[] modifiers)
         {
             IMdToken token = null;
-            foreach (var modificator in modificators)
-                token = token ?? TryParseOpenModificator(modificator) ?? TryParseCloseModificator(modificator);
-            return token?.With(modificatorAttribute[token.Text]);
+            foreach (var modifier in modifiers)
+                token = token ?? TryParseOpenModifier(modifier) ?? TryParseCloseModifier(modifier);
+            return token?.With(modifierAttribute[token.Text]);
         }
 
-        private IMdToken TryParseOpenModificator(string modificator)
+        private IMdToken TryParseOpenModifier(string modifier)
         {
-            if (LookAtString(modificator.Length) != modificator)
+            if (LookAtString(modifier.Length) != modifier)
                 return null;
             var before = LookBehind(1);
-            var after = LookAhead(modificator.Length);
+            var after = LookAhead(modifier.Length);
 
             if (before.IsPunctuation() && after.IsLetterOrDigit())
-                return new MdToken(modificator).With(Md.Open);
+                return new MdToken(modifier).With(Md.Open);
             if ((before.IsWhiteSpace() || !before.HasValue) && after.HasValue && !after.IsWhiteSpace())
-                return new MdToken(modificator).With(Md.Open);
+                return new MdToken(modifier).With(Md.Open);
             return null;
         }
 
-        private IMdToken TryParseCloseModificator(string modificator)
+        private IMdToken TryParseCloseModifier(string modifier)
         {
-            if (LookAtString(modificator.Length) != modificator)
+            if (LookAtString(modifier.Length) != modifier)
                 return null;
             var before = LookBehind(1);
-            var after = LookAhead(modificator.Length);
+            var after = LookAhead(modifier.Length);
 
             if (before.IsLetterOrDigit() && after.IsPunctuation())
-                return new MdToken(modificator).With(Md.Close);
+                return new MdToken(modifier).With(Md.Close);
             if (before.HasValue && !before.IsWhiteSpace() && (after.IsWhiteSpace() || !after.HasValue))
-                return new MdToken(modificator).With(Md.Close);
+                return new MdToken(modifier).With(Md.Close);
             return null;
         }
 

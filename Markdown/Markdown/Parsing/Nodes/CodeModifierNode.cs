@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace Markdown.Parsing.Nodes
 {
-    public class CodeModificatorNode : IInternalNode
+    public class CodeModifierNode : IInternalNode
     {
-        public CodeModificatorNode(IEnumerable<INode> children)
+        public CodeModifierNode(IEnumerable<INode> children)
         {
             Children = children.ToList();
         }
@@ -17,7 +17,7 @@ namespace Markdown.Parsing.Nodes
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((CodeModificatorNode)obj);
+            return Equals((CodeModifierNode)obj);
         }
 
         public override int GetHashCode()
@@ -25,7 +25,7 @@ namespace Markdown.Parsing.Nodes
             return Children?.CombineElementHashCodesUsingParent(this) ?? 0;
         }
 
-        protected bool Equals(CodeModificatorNode other)
+        protected bool Equals(CodeModifierNode other)
         {
             return Children.SequenceEqual(other.Children);
         }

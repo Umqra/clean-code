@@ -22,17 +22,17 @@ namespace Markdown.Rendering
             Modifiers = new List<INodeVisitor>();
         }
 
-        public MarkdownToHtmlRenderer WithModificators(params INodeVisitor[] modificators)
+        public MarkdownToHtmlRenderer WithModifiers(params INodeVisitor[] modifiers)
         {
-            Modifiers.AddRange(modificators);
+            Modifiers.AddRange(modifiers);
             return this;
         }
 
         public string Render(string text)
         {
             var tree = Parser.Parse(Tokenizer.CreateTokenizer(text)).Parsed;
-            foreach (var modificator in Modifiers)
-                modificator.Visit(tree);
+            foreach (var modifier in Modifiers)
+                modifier.Visit(tree);
             return NodeRenderer.Render(tree);
         }
     }

@@ -103,7 +103,7 @@ namespace Markdown.Cli
             );
             if (options.BaseUrl != null)
                 htmlRenderer =
-                    htmlRenderer.WithModificators(new TransformTreeVisitor(new BaseUrlTransformer(options.BaseUrl)));
+                    htmlRenderer.WithModifiers(new TransformTreeVisitor(new BaseUrlTransformer(options.BaseUrl)));
             return htmlRenderer;
         }
 

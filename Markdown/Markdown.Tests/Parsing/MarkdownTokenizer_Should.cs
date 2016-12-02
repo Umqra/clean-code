@@ -41,34 +41,34 @@ namespace Markdown.Tests.Parsing
                 yield return new MdToken(new string(c, 1)).With(Md.PlainText);
         }
 
-        protected IEnumerable<IMdToken> OpenEmphasis(string modificator)
+        protected IEnumerable<IMdToken> OpenEmphasis(string modifier)
         {
-            yield return new MdToken(modificator).With(Md.Open, Md.Emphasis);
+            yield return new MdToken(modifier).With(Md.Open, Md.Emphasis);
         }
 
-        protected IEnumerable<IMdToken> CloseEmphasis(string modificator)
+        protected IEnumerable<IMdToken> CloseEmphasis(string modifier)
         {
-            yield return new MdToken(modificator).With(Md.Close, Md.Emphasis);
+            yield return new MdToken(modifier).With(Md.Close, Md.Emphasis);
         }
 
-        protected IEnumerable<IMdToken> OpenStrong(string modificator)
+        protected IEnumerable<IMdToken> OpenStrong(string modifier)
         {
-            yield return new MdToken(modificator).With(Md.Open, Md.Strong);
+            yield return new MdToken(modifier).With(Md.Open, Md.Strong);
         }
 
-        protected IEnumerable<IMdToken> CloseStrong(string modificator)
+        protected IEnumerable<IMdToken> CloseStrong(string modifier)
         {
-            yield return new MdToken(modificator).With(Md.Close, Md.Strong);
+            yield return new MdToken(modifier).With(Md.Close, Md.Strong);
         }
 
-        protected IEnumerable<IMdToken> OpenCode(string modificator)
+        protected IEnumerable<IMdToken> OpenCode(string modifier)
         {
-            yield return new MdToken(modificator).With(Md.Open, Md.Code);
+            yield return new MdToken(modifier).With(Md.Open, Md.Code);
         }
 
-        protected IEnumerable<IMdToken> CloseCode(string modificator)
+        protected IEnumerable<IMdToken> CloseCode(string modifier)
         {
-            yield return new MdToken(modificator).With(Md.Close, Md.Code);
+            yield return new MdToken(modifier).With(Md.Close, Md.Code);
         }
 
         protected IEnumerable<IMdToken> Break(string text)
@@ -119,7 +119,7 @@ namespace Markdown.Tests.Parsing
             );
         }
 
-        internal class ParseCodeModificator : BaseMarkdownTokenizerTests
+        internal class ParseCodeModifier : BaseMarkdownTokenizerTests
         {
             [Test]
             public void FromBackticks_AtTheEndOfSentence()
@@ -173,7 +173,7 @@ namespace Markdown.Tests.Parsing
             }
         }
 
-        internal class ParseStrongModificator : BaseMarkdownTokenizerTests
+        internal class ParseStrongModifier : BaseMarkdownTokenizerTests
         {
             [Test]
             public void FromDoubleUnderscore_AtTheEndOfSentence()
@@ -317,7 +317,7 @@ namespace Markdown.Tests.Parsing
             }
         }
 
-        internal class ParseEmphasisModificator : BaseMarkdownTokenizerTests
+        internal class ParseEmphasisModifier : BaseMarkdownTokenizerTests
         {
             [Test]
             public void FromSingleUnderscore_AtTheEndOfSentence()

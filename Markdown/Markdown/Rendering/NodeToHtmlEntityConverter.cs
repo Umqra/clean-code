@@ -66,15 +66,15 @@ namespace Markdown.Rendering
                         .AddAttributes(CommonAttributes)
                 },
                 {
-                    typeof(EmphasisModificatorNode), node => new BaseHtmlTag("em")
+                    typeof(EmphasisModifierNode), node => new BaseHtmlTag("em")
                         .AddAttributes(CommonAttributes)
                 },
                 {
-                    typeof(StrongModificatorNode), node => new BaseHtmlTag("strong")
+                    typeof(StrongModifierNode), node => new BaseHtmlTag("strong")
                         .AddAttributes(CommonAttributes)
                 },
                 {
-                    typeof(CodeModificatorNode), node => new BaseHtmlTag("pre")
+                    typeof(CodeModifierNode), node => new BaseHtmlTag("pre")
                         .AddAttributes(CommonAttributes)
                 },
                 {typeof(GroupNode), node => new HtmlEmptyTag()},

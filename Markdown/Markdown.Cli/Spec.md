@@ -1,10 +1,10 @@
 ### Implemented Markdown syntax
 
-You can simply _emphasize_ any string with __next__ available modificators: \_, \_\_, \*, \*\*.
+You can simply _emphasize_ any string with __next__ available modifiers: \_, \_\_, \*, \*\*.
 
-`You can simply _emphasize_ any string with __next__ available modificators: \_, \_\_, \*, \*\*.`
+`You can simply _emphasize_ any string with __next__ available modifiers: \_, \_\_, \*, \*\*.`
 
-If you do not want to apply modificators - simply escape it with \\ character!
+If you do not want to apply modifiers - simply escape it with \\ character!
 
 You can use backticks (\`) for selecting blocks of code. For example:
 
@@ -21,7 +21,7 @@ int main()
 	or four spaces and it will be
 	well-formated!
 
-There is a little surpirse - you can make your modificators nested!  
+There is a little surpirse - you can make your modifiers nested!  
 *You will get **something like this***
 
  __*It works*__
@@ -30,8 +30,8 @@ I don't want to disappoint you, but in this simple parser you can find many disa
 
 I want enumerate some example of such bad cases:
 
-1. You can't parse triple-modificators like this: `***Be careful! Very angry dog!***` 
-But you can use next hack for this modificator: `_**It works!**_`
+1. You can't parse triple-modifiers like this: `***Be careful! Very angry dog!***` 
+But you can use next hack for this modifier: `_**It works!**_`
 
 2. Your code must be surrounded with spaces. So, you can't write something like this:
 

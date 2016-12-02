@@ -4,14 +4,14 @@ namespace Markdown.Tests.Parsing
 {
     internal abstract class BaseTreeTests
     {
-        protected INode StrongModificator(params INode[] nodes)
+        protected INode StrongModifier(params INode[] nodes)
         {
-            return new StrongModificatorNode(nodes);
+            return new StrongModifierNode(nodes);
         }
 
-        protected INode EmphasisModificator(params INode[] nodes)
+        protected INode EmphasisModifier(params INode[] nodes)
         {
-            return new EmphasisModificatorNode(nodes);
+            return new EmphasisModifierNode(nodes);
         }
 
         protected INode Paragraph(params INode[] nodes)
@@ -41,7 +41,7 @@ namespace Markdown.Tests.Parsing
 
         protected INode Code(params INode[] nodes)
         {
-            return new CodeModificatorNode(nodes);
+            return new CodeModifierNode(nodes);
         }
 
         protected INode Link(string reference, INode text)

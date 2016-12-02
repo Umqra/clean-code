@@ -29,7 +29,7 @@ namespace Markdown.Tests.Rendering
             Renderer = new NodeHtmlRenderer(new HtmlRenderContext(
                 new NodeToHtmlEntityConverter(new HtmlAttribute("class", "test"))
             ));
-            var node = StrongModificator(Text("test"));
+            var node = StrongModifier(Text("test"));
 
             Render(node).Should().Be(@"<strong class=""test"">test</strong>");
         }
@@ -52,9 +52,9 @@ namespace Markdown.Tests.Rendering
         }
 
         [Test]
-        public void Render_EmphasisModificator()
+        public void Render_EmphasisModifier()
         {
-            var node = EmphasisModificator(Text("sample"));
+            var node = EmphasisModifier(Text("sample"));
 
             Render(node).Should().Be("<em>sample</em>");
         }
@@ -69,9 +69,9 @@ namespace Markdown.Tests.Rendering
         }
 
         [Test]
-        public void Render_StrongModificator()
+        public void Render_StrongModifier()
         {
-            var node = StrongModificator(Text("sample"));
+            var node = StrongModifier(Text("sample"));
 
             Render(node).Should().Be("<strong>sample</strong>");
         }
