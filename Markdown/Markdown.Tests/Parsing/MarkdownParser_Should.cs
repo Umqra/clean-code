@@ -6,7 +6,7 @@ using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 using NUnit.Framework;
 
-namespace Markdown.Tests
+namespace Markdown.Tests.Parsing
 {
     [TestFixture]
     internal class MarkdownParser_Should : BaseTreeTests

@@ -2,12 +2,13 @@
 using Markdown.Parsing.Nodes;
 using Markdown.Rendering;
 using Markdown.Rendering.HtmlEntities;
+using Markdown.Tests.Parsing;
 using NUnit.Framework;
 
-namespace Markdown.Tests
+namespace Markdown.Tests.Rendering
 {
     [TestFixture]
-    internal class HtmlRenderer_Should : BaseTreeTests
+    internal class NodeHtmlRenderer_Should : BaseTreeTests
     {
         [SetUp]
         public void SetUp()

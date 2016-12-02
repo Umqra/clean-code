@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Markdown.Tests.Parsing;
+using NUnit.Framework;
 
-namespace Markdown.Tests
+namespace Markdown.Tests.Parsing.Nodes
 {
     // CR (krait): Пора бы уже и сделать.
     [TestFixture]

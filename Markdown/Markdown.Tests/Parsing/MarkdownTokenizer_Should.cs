@@ -5,7 +5,7 @@ using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 using NUnit.Framework;
 
-namespace Markdown.Tests
+namespace Markdown.Tests.Parsing
 {
     internal class BaseMarkdownTokenizerTests
     {

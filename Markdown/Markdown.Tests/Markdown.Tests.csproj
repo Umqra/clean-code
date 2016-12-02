@@ -56,15 +56,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseTreeTests.cs" />
+    <Compile Include="Parsing\BaseTreeTests.cs" />
     <Compile Include="FluentAssertionsExtension.cs" />
-    <Compile Include="HtmlRenderer_Should.cs" />
-    <Compile Include="NodeEqualsTests.cs" />
-    <Compile Include="NodeHashCodeTests.cs" />
-    <Compile Include="MarkdownParser_Should.cs" />
+    <Compile Include="Rendering\NodeHtmlRenderer_Should.cs" />
+    <Compile Include="Parsing\Nodes\NodeEqualsTests.cs" />
+    <Compile Include="Parsing\Nodes\NodeHashCodeTests.cs" />
+    <Compile Include="Parsing\MarkdownParser_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="HashCodesCombiner_Should.cs" />
-    <Compile Include="MarkdownTokenizer_Should.cs" />
+    <Compile Include="Parsing\SequenceExtensionsTests.cs" />
+    <Compile Include="Parsing\MarkdownTokenizer_Should.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

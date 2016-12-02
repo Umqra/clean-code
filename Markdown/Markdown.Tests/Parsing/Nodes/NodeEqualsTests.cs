@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
+using Markdown.Tests.Parsing;
 using NUnit.Framework;
 
-namespace Markdown.Tests
+namespace Markdown.Tests.Parsing.Nodes
 {
     [TestFixture]
     internal class NodeEqualsTests : BaseTreeTests

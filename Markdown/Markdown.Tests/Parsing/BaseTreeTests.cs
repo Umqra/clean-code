@@ -1,6 +1,6 @@
 ﻿using Markdown.Parsing.Nodes;
 
-namespace Markdown.Tests
+namespace Markdown.Tests.Parsing
 {
     internal abstract class BaseTreeTests
     {
