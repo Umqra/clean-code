@@ -5,7 +5,7 @@ using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing.Tokenizer
 {
-    public sealed class MarkdownTokenizer : BaseTokenizer<IMdToken>
+    public sealed class MarkdownTokenizer : ITokenizer<IMdToken>
     {
         private const int HeaderTokenMaxSize = 6;
 
@@ -19,23 +19,27 @@ namespace Markdown.Parsing.Tokenizer
                 {"`", Md.Code}
             };
 
-        public override IMdToken CurrentToken { get; }
+        private IInput Input { get; }
+        private ITokenizer<IMdToken> AdvancedTokenzier { get; set; }
 
-        public MarkdownTokenizer(string text) : this(text, 0)
-        {
-        }
+        private char? CurrentSymbol => Input.LookAhead(0);
+        public IMdToken CurrentToken { get; }
+        public bool AtEnd => Input.AtEnd;
 
-        private MarkdownTokenizer(string text, int textPosition) : base(text, textPosition)
+        public MarkdownTokenizer(IInput input)
         {
+            Input = input;
             CurrentToken = AtEnd ? null : ParseToken();
         }
 
         // CR (krait): Вообще не круто создавать новый токенайзер каждый раз.
-        public override ITokenizer<IMdToken> Advance()
+        public ITokenizer<IMdToken> Advance()
         {
             if (AtEnd)
                 return this;
-            return new MarkdownTokenizer(Text, TextPosition + CurrentToken.UnderlyingText.Length);
+            if (AdvancedTokenzier == null)
+                AdvancedTokenzier = new MarkdownTokenizer(Input.Advance(CurrentToken.UnderlyingText.Length));
+            return AdvancedTokenzier;
         }
 
         //TODO: Poor performance because of many-many CharacterToken objects
@@ -44,21 +48,21 @@ namespace Markdown.Parsing.Tokenizer
             return TryParseHeaderToken() ??
                    TryParseEscapedCharacter() ??
                    TryParseBreakParagraphToken() ??
-                   TryParseNewLineToken() ?? 
+                   TryParseNewLineToken() ??
                    TryParseModifier("__", "**", "_", "*", "`") ??
                    TryParseLinkTokens() ??
-                   TryParseIndentToken() ?? 
-                   new MdToken(LookAtString(1)).With(Md.PlainText);
+                   TryParseIndentToken() ??
+                   new MdToken(Input.LookAtString(1)).With(Md.PlainText);
         }
 
         private IMdToken TryParseIndentToken()
         {
-            var previous = LookBehind(1);
+            var previous = Input.LookBehind(1);
             if (previous.HasValue && previous.Value != '\n')
                 return null;
             if (CurrentSymbol == '\t')
-                return new MdToken(LookAtString(1)).With(Md.Indent);
-            var prefix = LookAtString(4);
+                return new MdToken(Input.LookAtString(1)).With(Md.Indent);
+            var prefix = Input.LookAtString(4);
             if (prefix.Length == 4 && prefix.All(char.IsWhiteSpace))
                 return new MdToken(prefix).With(Md.Indent);
             return null;
@@ -71,15 +75,15 @@ namespace Markdown.Parsing.Tokenizer
 
         private IMdToken TryParseHeaderToken()
         {
-            var previous = LookBehind(1);
+            var previous = Input.LookBehind(1);
             if (previous.HasValue && previous.Value != '\n')
                 return null;
-            var prefix = LookAtString(HeaderTokenMaxSize + 1);
+            var prefix = Input.LookAtString(HeaderTokenMaxSize + 1);
             var leadHashes = new string(prefix.TakeWhile(c => c == '#').ToArray());
             if (leadHashes.Length == 0 || leadHashes.Length == prefix.Length)
                 return null;
             int skippedSpaces = 0;
-            while (LookAhead(leadHashes.Length + skippedSpaces) == ' ')
+            while (Input.LookAhead(leadHashes.Length + skippedSpaces) == ' ')
                 skippedSpaces++;
             return new MdToken(leadHashes, leadHashes + new string(' ', skippedSpaces)).With(Md.Header);
         }
@@ -92,7 +96,7 @@ namespace Markdown.Parsing.Tokenizer
 
         private IMdToken TryParseToken(string token, params Md[] attributes)
         {
-            if (LookAtString(token.Length) == token)
+            if (Input.LookAtString(token.Length) == token)
                 return new MdToken(token).With(attributes);
             return null;
         }
@@ -101,7 +105,7 @@ namespace Markdown.Parsing.Tokenizer
         {
             return (TryParseSimpleToken("  " + Environment.NewLine) ??
                     TryParseSimpleToken(Environment.NewLine + Environment.NewLine))
-                    ?.With(Md.Break);
+                ?.With(Md.Break);
         }
 
         private IMdToken TryParseModifier(params string[] modifiers)
@@ -114,10 +118,10 @@ namespace Markdown.Parsing.Tokenizer
 
         private IMdToken TryParseOpenModifier(string modifier)
         {
-            if (LookAtString(modifier.Length) != modifier)
+            if (Input.LookAtString(modifier.Length) != modifier)
                 return null;
-            var before = LookBehind(1);
-            var after = LookAhead(modifier.Length);
+            var before = Input.LookBehind(1);
+            var after = Input.LookAhead(modifier.Length);
 
             if (before.IsPunctuation() && after.IsLetterOrDigit())
                 return new MdToken(modifier).With(Md.Open);
@@ -128,10 +132,10 @@ namespace Markdown.Parsing.Tokenizer
 
         private IMdToken TryParseCloseModifier(string modifier)
         {
-            if (LookAtString(modifier.Length) != modifier)
+            if (Input.LookAtString(modifier.Length) != modifier)
                 return null;
-            var before = LookBehind(1);
-            var after = LookAhead(modifier.Length);
+            var before = Input.LookBehind(1);
+            var after = Input.LookAhead(modifier.Length);
 
             if (before.IsLetterOrDigit() && after.IsPunctuation())
                 return new MdToken(modifier).With(Md.Close);
@@ -142,14 +146,14 @@ namespace Markdown.Parsing.Tokenizer
 
         private IMdToken TryParseEscapedCharacter()
         {
-            if (CurrentSymbol == '\\' && TextPosition < Text.Length - 1)
-                return new MdToken(LookAtString(2).Substring(1), LookAtString(2)).With(Md.Escaped);
+            if (CurrentSymbol == '\\' && Input.LookAhead(1).HasValue)
+                return new MdToken(Input.LookAtString(2).Substring(1), Input.LookAtString(2)).With(Md.Escaped);
             return null;
         }
 
         private IMdToken TryParseSimpleToken(string token)
         {
-            if (LookAtString(token.Length) == token)
+            if (Input.LookAtString(token.Length) == token)
                 return new MdToken(token);
             return null;
         }

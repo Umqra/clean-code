@@ -13,7 +13,7 @@ namespace Markdown.Tests.Parsing
 
         public void SetUpTokenizer(string text)
         {
-            Tokenizer = new MarkdownTokenizer(text);
+            Tokenizer = new MarkdownTokenizer(new StringInput(text));
         }
 
         public IEnumerable<IMdToken> GetAllTokens()

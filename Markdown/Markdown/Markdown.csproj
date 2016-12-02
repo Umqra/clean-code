@@ -46,13 +46,14 @@
   <ItemGroup>
     <Compile Include="Parsing\Nodes\HeaderNode.cs" />
     <Compile Include="Parsing\Nodes\LinkNode.cs" />
-    <Compile Include="Parsing\Tokenizer\BaseTokenizer.cs" />
     <Compile Include="Parsing\CharExtensions.cs" />
     <Compile Include="Parsing\Tokenizer\BoundedTokenizer.cs" />
+    <Compile Include="Parsing\Tokenizer\IInput.cs" />
     <Compile Include="Parsing\Tokenizer\ITokenizer.cs" />
     <Compile Include="Parsing\MarkdownParsingResult.cs" />
     <Compile Include="Parsing\Tokenizer\MarkdownTokenizerExtensoins.cs" />
     <Compile Include="Parsing\Nodes\CodeModifierNode.cs" />
+    <Compile Include="Parsing\Tokenizer\StringInput.cs" />
     <Compile Include="Parsing\Tokens\Md.cs" />
     <Compile Include="Parsing\Tokens\MdToken.cs" />
     <Compile Include="Parsing\Tokens\TokenExtensions.cs" />

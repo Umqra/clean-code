@@ -6,7 +6,7 @@ namespace Markdown.Parsing.Tokenizer
     {
         public ITokenizer<IMdToken> CreateTokenizer(string text)
         {
-            return new MarkdownTokenizer(text);
+            return new MarkdownTokenizer(new StringInput(text));
         }
     }
 }
