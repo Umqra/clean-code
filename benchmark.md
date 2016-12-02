@@ -1,21 +1,21 @@
 ``` ini
 
 BenchmarkDotNet=v0.10.0
-OS=Microsoft Windows NT 6.2.9200.0
-Processor=Intel(R) Core(TM) i7-4510U CPU 2.00GHz, ProcessorCount=4
-Frequency=2533198 Hz, Resolution=394.7579 ns, Timer=TSC
-Host Runtime=Clr 4.0.30319.42000, Arch=32-bit RELEASE
+OS=Unix 4.8.7.40807
+Processor=?, ProcessorCount=32
+Frequency=10000000 Hz, Resolution=100.0000 ns, Timer=UNKNOWN
+Host Runtime=Mono 4.6.2 (Stable 4.6.2.7/08fd525 Mon Nov 14 12:30:00 UTC 2016), Arch=64-bit RELEASE
 GC=Concurrent Workstation
-JitModules=clrjit-v4.6.1055.0
+JitModules=
 Job Runtime(s):
-	Clr 4.0.30319.42000, Arch=32-bit RELEASE
+	Mono 4.6.2 (Stable 4.6.2.7/08fd525 Mon Nov 14 12:30:00 UTC 2016), Arch=64-bit RELEASE
 
 Job=TravisBenchmark  TargetCount=10  
 
 ```
         Method | Length |       Mean |    StdErr |    StdDev |     Median | Scaled | Scaled-StdDev |
 -------------- |------- |----------- |---------- |---------- |----------- |------- |-------------- |
-      **BaseLine** |    **500** | **29.8885 ms** | **0.2116 ms** | **0.5986 ms** | **29.7965 ms** |   **1.00** |          **0.00** |
- ParseMarkdown |    500 |  4.4253 ms | 0.0782 ms | 0.2473 ms |  4.3353 ms |   0.15 |          0.01 |
-      **BaseLine** |   **5000** | **30.6426 ms** | **0.3223 ms** | **1.0191 ms** | **30.7957 ms** |   **1.00** |          **0.00** |
- ParseMarkdown |   5000 | 32.3744 ms | 0.4637 ms | 1.4664 ms | 31.9979 ms |   1.06 |          0.06 |
+      **BaseLine** |    **500** |  **5.7948 ms** | **0.0518 ms** | **0.1638 ms** |  **5.7414 ms** |   **1.00** |          **0.00** |
+ ParseMarkdown |    500 |  5.2297 ms | 0.1456 ms | 0.4604 ms |  5.1466 ms |   0.90 |          0.08 |
+      **BaseLine** |   **5000** |  **5.8008 ms** | **0.0156 ms** | **0.0469 ms** |  **5.8038 ms** |   **1.00** |          **0.00** |
+ ParseMarkdown |   5000 | 39.4559 ms | 0.5613 ms | 1.7750 ms | 39.3688 ms |   6.80 |          0.29 |
