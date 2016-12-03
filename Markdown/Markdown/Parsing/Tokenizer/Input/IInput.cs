@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Markdown.Parsing.Tokenizer
+namespace Markdown.Parsing.Tokenizer.Input
 {
     public interface IInput : IDisposable
     {

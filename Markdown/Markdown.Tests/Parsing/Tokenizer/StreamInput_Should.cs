@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Markdown.Parsing.Tokenizer;
+using Markdown.Parsing.Tokenizer.Input;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework.Internal;
 using NUnit.Framework;

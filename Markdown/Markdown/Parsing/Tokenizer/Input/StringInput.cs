@@ -1,6 +1,7 @@
 ﻿using System;
+using Markdown.Parsing.Tokenizer.Input;
 
-namespace Markdown.Parsing.Tokenizer
+namespace Markdown.Parsing.Tokenizer.Input
 {
     public class StringInput : IInput
     {
