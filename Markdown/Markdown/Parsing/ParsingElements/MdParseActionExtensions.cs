@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Markdown.Parsing.Tokenizer;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.ParsingElements
 {
     public static class MdParseActionExtensions
     {

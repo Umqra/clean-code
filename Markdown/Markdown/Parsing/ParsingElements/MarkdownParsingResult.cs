@@ -1,8 +1,7 @@
-﻿using System;
-using Markdown.Parsing.Tokenizer;
+﻿using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.ParsingElements
 {
     public class MarkdownParsingResult<TValue>
     {
@@ -25,20 +24,6 @@ namespace Markdown.Parsing
         public static MarkdownParsingResult<T> Fail<T>(ITokenizer<IMdToken> remainder)
         {
             return new MarkdownParsingResult<T>(false, default(T), remainder);
-        }
-
-        public MarkdownParsingResult<U> IfSuccess<U>(Func<ITokenizer<IMdToken>, MarkdownParsingResult<U>> parser)
-        {
-            if (!Succeed)
-                return MarkdownParsingResult<U>.Fail<U>(Remainder);
-            return parser(Remainder);
-        }
-
-        public MarkdownParsingResult<TValue> IfFail(Func<ITokenizer<IMdToken>, MarkdownParsingResult<TValue>> parser)
-        {
-            if (Succeed)
-                return this;
-            return parser(Remainder);
         }
     }
 }

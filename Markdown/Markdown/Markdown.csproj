@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Parsing\ParsingElements\MarkdownParsingResultExtensions.cs" />
     <Compile Include="Parsing\ParsingElements\MdParseActionExtensions.cs" />
     <Compile Include="Parsing\ParsingElements\MdParserAction.cs" />
     <Compile Include="Parsing\Nodes\HeaderNode.cs" />
@@ -53,7 +54,7 @@
     <Compile Include="Parsing\Tokenizer\BoundedTokenizer.cs" />
     <Compile Include="Parsing\Tokenizer\Input\IInput.cs" />
     <Compile Include="Parsing\Tokenizer\ITokenizer.cs" />
-    <Compile Include="Parsing\MarkdownParsingResult.cs" />
+    <Compile Include="Parsing\ParsingElements\MarkdownParsingResult.cs" />
     <Compile Include="Parsing\Tokenizer\MarkdownTokenizerExtensoins.cs" />
     <Compile Include="Parsing\Nodes\CodeModifierNode.cs" />
     <Compile Include="Parsing\Tokenizer\Input\StreamInput.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Markdown.Parsing.ParsingElements;
 using Markdown.Parsing.Tokens;
 
 namespace Markdown.Parsing.Tokenizer

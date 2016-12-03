@@ -2,7 +2,7 @@
 using Markdown.Parsing.Tokenizer;
 using Markdown.Parsing.Tokens;
 
-namespace Markdown.Parsing
+namespace Markdown.Parsing.ParsingElements
 {
     public class MdParserAction<T>
     {
