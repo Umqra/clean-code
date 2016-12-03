@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Parsing\BaseTreeTests.cs" />
     <Compile Include="FluentAssertionsExtension.cs" />
+    <Compile Include="Parsing\Tokenizer\StreamInput_Should.cs" />
     <Compile Include="Rendering\NodeHtmlRenderer_Should.cs" />
     <Compile Include="Parsing\Nodes\NodeEqualsTests.cs" />
     <Compile Include="Parsing\Nodes\NodeHashCodeTests.cs" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Markdown.Parsing.Tokenizer
 {
-    public interface IInput
+    public interface IInput : IDisposable
     {
         string LookAtString(int length);
         char? LookAhead(int distance);

@@ -53,6 +53,8 @@
     <Compile Include="Parsing\MarkdownParsingResult.cs" />
     <Compile Include="Parsing\Tokenizer\MarkdownTokenizerExtensoins.cs" />
     <Compile Include="Parsing\Nodes\CodeModifierNode.cs" />
+    <Compile Include="Parsing\Tokenizer\StreamInput.cs" />
+    <Compile Include="Parsing\Tokenizer\StreamReaderExtensions.cs" />
     <Compile Include="Parsing\Tokenizer\StringInput.cs" />
     <Compile Include="Parsing\Tokens\Md.cs" />
     <Compile Include="Parsing\Tokens\MdToken.cs" />

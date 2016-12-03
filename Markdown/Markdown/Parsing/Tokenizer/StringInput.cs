@@ -42,5 +42,9 @@ namespace Markdown.Parsing.Tokenizer
         {
             return new StringInput(Text, Position + distance);
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

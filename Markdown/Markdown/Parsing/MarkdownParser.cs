@@ -76,11 +76,6 @@ namespace Markdown.Parsing
             return token.Text.All(char.IsWhiteSpace);
         }
 
-        private MarkdownParsingResult<IMdToken> SkipSingleToken(ITokenizer<IMdToken> tokenizer)
-        {
-            return tokenizer.Advance().SuccessWith(tokenizer.CurrentToken);
-        }
-
         private MarkdownParsingResult<List<IMdToken>> SkipWhiteSpaces(ITokenizer<IMdToken> tokenizer)
         {
             return tokenizer.UntilMatch(IsWhiteSpaceToken);
